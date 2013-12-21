@@ -1,4 +1,4 @@
-# REACT-WHO
+# REACT-WHO [![Build Status](https://travis-ci.org/r0man/react-who.png)](https://travis-ci.org/r0man/react-who)
 
 A Clojure library designed to ... well, that part is up to you.
 
