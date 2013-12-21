@@ -27,12 +27,23 @@
                   {:source-paths ["test"]
                    :output-path "target/test-classes"
                    :rules :cljs}]}
-  :cljsbuild {:builds [{:source-paths ["test" "target/classes" "target/test-classes"]
-                        :compiler {:output-to "target/testable.js"
+  :cljsbuild {:builds [{:id "test"
+                        :source-paths ["test" "target/classes" "target/test-classes"]
+                        :compiler {:output-to "target/test/react-who.js"
+                                   :output-dir "target/test"
                                    :optimizations :advanced
                                    :pretty-print true
                                    :preamble ["react/who/react-with-addons-0.8.0.min.js"]
                                    :externs ["react/who/externs/react.js"]
+                                   :closure-warnings {:non-standard-jsdoc :off}}}
+                       {:id "dev"
+                        :source-paths ["test" "target/classes" "target/test-classes"]
+                        :compiler {:output-to "target/dev/react-who.js"
+                                   :output-dir "target/dev"
+                                   :optimizations :none
+                                   :pretty-print true
+                                   :source-map true
+                                   :externs ["react/who/externs/react.js"]
                                    :closure-warnings {:non-standard-jsdoc :off}}}]
-              :test-commands {"phantom" ["phantomjs" :runner "test-resources/phantomjs-shims.js" "target/testable.js"]}}
+              :test-commands {"phantom" ["phantomjs" :runner "test-resources/phantomjs-shims.js" "target/test/react-who.js"]}}
   :test-paths ["test" "target/test-classes"])
