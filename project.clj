@@ -29,9 +29,10 @@
                    :rules :cljs}]}
   :cljsbuild {:builds [{:source-paths ["test" "target/classes" "target/test-classes"]
                         :compiler {:output-to "target/testable.js"
-                                   :optimizations :simple
+                                   :optimizations :advanced
                                    :pretty-print true
-                                   :foreign-libs [{:file "http://fb.me/react-0.8.0.js" :provides ["React"]}]
+                                   :preamble ["react/who/react-with-addons-0.8.0.min.js"]
+                                   :externs ["react/who/externs/react.js"]
                                    :closure-warnings {:non-standard-jsdoc :off}}}]
               :test-commands {"phantom" ["phantomjs" :runner "test-resources/phantomjs-shims.js" "target/testable.js"]}}
   :test-paths ["test" "target/test-classes"])

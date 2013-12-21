@@ -6,8 +6,7 @@
             [clojure.string :refer [replace]]
             [goog.dom :as gdom]
             [react.who.core :refer [include-css include-js]]
-            [react.who.render :refer [render-html]]
-            [React :as React]))
+            [react.who.render :refer [render-html]]))
 
 (defn html-str [html]
   (let [body (aget (goog.dom/getElementsByTagNameAndClass "body") 0)]
@@ -38,7 +37,7 @@
     (are-html-rendered
      [:div] "<div></div>"
      [:h1] "<h1></h1>"
-     [:script] "<script></script>"
+     ;; [:script] "<script></script>"
      [:text] "<text></text>"
      [:a] "<a></a>"
      [:iframe] "<iframe></iframe>"

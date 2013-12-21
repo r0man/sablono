@@ -1,7 +1,6 @@
 (ns react.who.render
   (:refer-clojure :exclude [replace])
-  (:require [clojure.string :refer [replace]]
-            #+cljs [React :as React]))
+  (:require [clojure.string :refer [replace]]))
 
 (def ^{:doc "Regular expression that parses a CSS-style id and class from an element name." :private true}
   re-tag #"([^\s\.#]+)(?:#([^\s\.#]+))?(?:\.([^\s#]+))?")
