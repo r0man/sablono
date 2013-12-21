@@ -5,6 +5,7 @@
   (:require [cemerick.cljs.test :as t]
             [clojure.string :refer [replace]]
             [goog.dom :as gdom]
+            [react.who.core :refer [include-css include-js]]
             [react.who.render :refer [render-html]]
             [React :as React]))
 
@@ -138,6 +139,20 @@
 ;;   (testing "laziness and binding scope"
 ;;     (is (= (html {:mode :sgml} [:html [:link] (list [:link])])
 ;;            "<html><link><link></html>"))))
+
+(deftest include-js-test
+  (is (= (include-js "foo.js")
+         (list [:script {:type "text/javascript", :src "foo.js"}])))
+  (is (= (include-js "foo.js" "bar.js")
+         (list [:script {:type "text/javascript", :src "foo.js"}]
+               [:script {:type "text/javascript", :src "bar.js"}]))))
+
+(deftest include-css-test
+  (is (= (include-css "foo.css")
+         (list [:link {:type "text/css", :href "foo.css", :rel "stylesheet"}])))
+  (is (= (include-css "foo.css" "bar.css")
+         (list [:link {:type "text/css", :href "foo.css", :rel "stylesheet"}]
+               [:link {:type "text/css", :href "bar.css", :rel "stylesheet"}]))))
 
 
 (comment (run-tests))

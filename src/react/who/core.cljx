@@ -14,3 +14,15 @@
   "Returns the expanded HTML generation forms."
   [& forms]
   `(macroexpand `(html ~~@forms)))
+
+(defn include-js
+  "Include a list of external javascript files."
+  [& scripts]
+  (for [script scripts]
+    [:script {:type "text/javascript", :src (str script)}]))
+
+(defn include-css
+  "Include a list of external stylesheet files."
+  [& styles]
+  (for [style styles]
+    [:link {:type "text/css", :href (str style), :rel "stylesheet"}]))
