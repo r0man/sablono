@@ -13,7 +13,7 @@ FIXME
 
 ## Thanks
 
-This libraray is based on James Reeves [Hiccup](https://github.com/weavejester/hiccup) library.
+This library is based on James Reeves [Hiccup](https://github.com/weavejester/hiccup) library.
 
 ## License
 
