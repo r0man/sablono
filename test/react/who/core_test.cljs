@@ -1,21 +1,13 @@
 (ns react.who.core-test
   (:refer-clojure :exclude [replace])
   (:require-macros [cemerick.cljs.test :refer [are is deftest run-tests testing]]
-                   [react.who.test :refer [are-html-rendered html]])
+                   [react.who.core :refer [html render-dom]]
+                   [react.who.test :refer [are-html-rendered]])
   (:require [cemerick.cljs.test :as t]
             [clojure.string :refer [replace]]
             [goog.dom :as gdom]
             [react.who.core :refer [include-css include-js]]
             [react.who.render :refer [render-html]]))
-
-(defn html-str [html]
-  (let [body (aget (goog.dom/getElementsByTagNameAndClass "body") 0)]
-    (goog.dom/removeChildren body)
-    (js/React.renderComponent html body)
-    (replace (.-innerHTML body) #"\s+data-reactid=\"[^\"]+\"" "")))
-
-(deftest test-render-html
-  (is (= "<div></div>" (html-str (render-html [:div])))))
 
 (deftest tag-names
   (testing "basic tags"
@@ -152,6 +144,7 @@
   (is (= (include-css "foo.css" "bar.css")
          (list [:link {:type "text/css", :href "foo.css", :rel "stylesheet"}]
                [:link {:type "text/css", :href "bar.css", :rel "stylesheet"}]))))
+
 
 
 (comment (run-tests))

@@ -6,6 +6,11 @@ A Clojure library designed to ... well, that part is up to you.
 
 FIXME
 
+## Piggieback Browser REPL
+
+	(require 'cljs.repl.browser)
+	(cemerick.piggieback/cljs-repl :repl-env (cljs.repl.browser/repl-env :port 9000))
+
 ## Thanks
 
 This libraray is based on James Reeves [Hiccup](https://github.com/weavejester/hiccup) library.

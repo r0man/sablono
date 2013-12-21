@@ -136,4 +136,4 @@
 (defn compile-html
   "Pre-compile data structures into HTML where possible."
   [& content]
-  (first (compile-seq content)))
+  `(~'into-array ~(vec (compile-seq content))))
