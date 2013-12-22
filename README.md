@@ -11,7 +11,7 @@ Via Clojars: https://clojars.org/sablono
 ## Usage
 
 Most functions from [Hiccup](https://github.com/weavejester/hiccup)
-are provided in the `sablono.core` namespace. The library can be use
+are provided in the `sablono.core` namespace. The library can be used
 with [Om](https://github.com/swannodette/om) like this:
 
 	(ns example
