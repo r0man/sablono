@@ -1,15 +1,15 @@
-(ns react.who.core
+(ns sablono.core
   (:refer-clojure :exclude [replace])
   (:require [clojure.string :refer [replace upper-case]]
             [clojure.walk :refer [postwalk-replace]]
-            [react.who.util :refer [as-str to-uri]]
-            #+clj [react.who.compiler :as compiler])
-  #+cljs (:require-macros [react.who.core :refer [defelem]]))
+            [sablono.util :refer [as-str to-uri]]
+            #+clj [sablono.compiler :as compiler])
+  #+cljs (:require-macros [sablono.core :refer [defelem]]))
 
 (defmacro html
   "Render Clojure data structures via Facebook's React."
   [options & content]
-  (apply react.who.compiler/compile-html options content))
+  (apply sablono.compiler/compile-html options content))
 
 (defmacro html-expand
   "Returns the expanded HTML generation forms."
@@ -31,7 +31,7 @@
   "Sets a base URL that will be prepended onto relative URIs. Note that for this
   to work correctly, it needs to be placed outside the html macro."
   [base-url & body]
-  `(binding [react.who.util/*base-url* ~base-url]
+  `(binding [sablono.util/*base-url* ~base-url]
      ~@body))
 
 (defn wrap-attrs
@@ -57,7 +57,7 @@
   (let [fn-name# (gensym (str name))
         fdecl (postwalk-replace {name fn-name#} fdecl)]
     `(do (defn ~fn-name# ~@fdecl)
-         (def ~name (react.who.core/wrap-attrs ~fn-name#)))))
+         (def ~name (sablono.core/wrap-attrs ~fn-name#)))))
 
 (defn include-js
   "Include a list of external javascript files."
@@ -110,7 +110,7 @@
   "Group together a set of related form fields for use with the Ring
   nested-params middleware."
   [group & body]
-  `(binding [react.who.core/*group* (conj react.who.core/*group* (as-str ~group))]
+  `(binding [sablono.core/*group* (conj sablono.core/*group* (as-str ~group))]
      (list ~@body)))
 
 (defn- make-name

@@ -1,4 +1,4 @@
-(ns react.who.render
+(ns sablono.render
   (:refer-clojure :exclude [replace])
   (:require [clojure.string :refer [replace]]))
 

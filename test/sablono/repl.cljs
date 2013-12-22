@@ -1,4 +1,4 @@
-(ns react.who.repl
+(ns sablono.repl
   (:require [clojure.browser.repl :as repl]))
 
 (defn ^:extern start []

@@ -1,4 +1,4 @@
-(ns react.who.util
+(ns sablono.util
   #+cljs (:import goog.Uri))
 
 (def ^:dynamic *base-url* nil)

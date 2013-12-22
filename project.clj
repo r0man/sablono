@@ -1,6 +1,6 @@
-(defproject react-who "0.1.0-SNAPSHOT"
+(defproject sablono "0.1.0-SNAPSHOT"
   :description "Lisp style templating for Facebook's React."
-  :url "http://github.com/r0man/react-who"
+  :url "http://github.com/r0man/sablono"
   :author "Roman Scherer"
   :min-lein-version "2.0.0"
   :lein-release {:deploy-via :clojars}
@@ -29,21 +29,21 @@
                    :rules :cljs}]}
   :cljsbuild {:builds [{:id "test"
                         :source-paths ["test" "target/classes" "target/test-classes"]
-                        :compiler {:output-to "target/test/react-who.js"
+                        :compiler {:output-to "target/test/sablono.js"
                                    :output-dir "target/test"
                                    :optimizations :advanced
                                    :pretty-print true
-                                   :preamble ["react/who/react-with-addons-0.8.0.min.js"]
-                                   :externs ["react/who/externs/react.js"]
+                                   :preamble ["sablono/react-with-addons-0.8.0.min.js"]
+                                   :externs ["sablono/externs/react.js"]
                                    :closure-warnings {:non-standard-jsdoc :off}}}
                        {:id "dev"
                         :source-paths ["test" "target/classes" "target/test-classes"]
-                        :compiler {:output-to "target/dev/react-who.js"
+                        :compiler {:output-to "target/dev/sablono.js"
                                    :output-dir "target/dev"
                                    :optimizations :none
                                    :pretty-print true
                                    :source-map true
-                                   :externs ["react/who/externs/react.js"]
+                                   :externs ["sablono/externs/react.js"]
                                    :closure-warnings {:non-standard-jsdoc :off}}}]
-              :test-commands {"phantom" ["phantomjs" :runner "test-resources/phantomjs-shims.js" "target/test/react-who.js"]}}
+              :test-commands {"phantom" ["phantomjs" :runner "test-resources/phantomjs-shims.js" "target/test/sablono.js"]}}
   :test-paths ["test" "target/test-classes"])

@@ -1,15 +1,12 @@
-# REACT-WHO [![Build Status](https://travis-ci.org/r0man/react-who.png)](https://travis-ci.org/r0man/react-who)
+# SABLONO [![Build Status](https://travis-ci.org/r0man/sablono.png)](https://travis-ci.org/r0man/sablono)
 
-A Clojure library designed to ... well, that part is up to you.
+Lisp style templating for Facebook's React.
 
-## Usage
+## Installation
 
-FIXME
+Via Clojars: https://clojars.org/sablono
 
-## Piggieback Browser REPL
-
-	(require 'cljs.repl.browser)
-	(cemerick.piggieback/cljs-repl :repl-env (cljs.repl.browser/repl-env :port 9000))
+[![Current Version](https://clojars.org/sablono/latest-version.svg)](https://clojars.org/sablono)
 
 ## Thanks
 

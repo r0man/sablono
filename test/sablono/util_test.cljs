@@ -1,9 +1,9 @@
-(ns react.who.util-test
+(ns sablono.util-test
   (:import goog.Uri)
   (:require-macros [cemerick.cljs.test :refer [are is deftest testing]]
-                   [react.who.core :refer [with-base-url]])
+                   [sablono.core :refer [with-base-url]])
   (:require [cemerick.cljs.test :as t]
-            [react.who.util :refer [as-str to-str to-uri]]))
+            [sablono.util :refer [as-str to-str to-uri]]))
 
 (deftest test-as-str
   (are [args expected]

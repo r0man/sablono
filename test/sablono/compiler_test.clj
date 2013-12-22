@@ -1,6 +1,6 @@
-(ns react.who.compiler-test
+(ns sablono.compiler-test
   (:require [clojure.test :refer :all]
-            [react.who.core :refer [html html-expand]]))
+            [sablono.core :refer [html html-expand]]))
 
 (defmacro are-html-expanded [& body]
   `(are [form# expected#]
@@ -13,7 +13,7 @@
      [:div] '[(js/React.DOM.div (cljs.core/clj->js {}))]
      [:div] '[(js/React.DOM.div (cljs.core/clj->js {}))]
      ["div"] '[(js/React.DOM.div (cljs.core/clj->js {}))]
-     ['div] '[(react.who.render/render-element [div])]))
+     ['div] '[(sablono.render/render-element [div])]))
   (testing "tag syntax sugar"
     (are-html-expanded
      [:div#foo] '[(js/React.DOM.div (cljs.core/clj->js {:id "foo"}))]

@@ -1,7 +1,7 @@
-(ns react.who.compiler
+(ns sablono.compiler
   (:refer-clojure :exclude [replace])
   (:require [clojure.string :refer [replace]]
-            [react.who.render :as render]))
+            [sablono.render :as render]))
 
 (defn- unevaluated?
   "True if the expression has not been evaluated."
@@ -33,7 +33,7 @@
 
 (defmethod compile-form :default
   [expr]
-  `(react.who.render/render-html ~expr))
+  `(sablono.render/render-html ~expr))
 
 (defn- not-hint?
   "True if x is not hinted to be the supplied type."
@@ -114,7 +114,7 @@
 
 (defmethod compile-element :default
   [element]
-  `(react.who.render/render-element
+  `(sablono.render/render-element
     [~(first element)
      ~@(for [x (rest element)]
          (if (vector? x)
@@ -131,7 +131,7 @@
             (hint? expr String) expr
             (hint? expr Number) expr
             (seq? expr) (compile-form expr)
-            :else `(react.who.render/render-html ~expr)))))
+            :else `(sablono.render/render-html ~expr)))))
 
 (defn compile-html
   "Pre-compile data structures into HTML where possible."

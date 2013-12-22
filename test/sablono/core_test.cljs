@@ -1,14 +1,14 @@
-(ns react.who.core-test
+(ns sablono.core-test
   (:refer-clojure :exclude [replace])
   (:require-macros [cemerick.cljs.test :refer [are is deftest run-tests testing]]
-                   [react.who.core :refer [html with-group]]
-                   [react.who.test :refer [are-html-rendered]])
+                   [sablono.core :refer [html with-group]]
+                   [sablono.test :refer [are-html-rendered]])
   (:require [cemerick.cljs.test :as t]
             [clojure.string :refer [replace]]
             [goog.dom :as gdom]
-            [react.who.core :as html]
-            [react.who.util :refer [to-str]]
-            [react.who.test :refer [render-dom]]))
+            [sablono.core :as html]
+            [sablono.util :refer [to-str]]
+            [sablono.test :refer [render-dom]]))
 
 (defn html-str [x]
   (render-dom (html x)))

@@ -1,11 +1,11 @@
-(ns react.who.test
+(ns sablono.test
   (:refer-clojure :exclude [replace])
   (:require [clojure.string :refer [replace]]
-            [react.who.core :as core]))
+            [sablono.core :as core]))
 
 (defmacro are-html-rendered [& body]
   `(cemerick.cljs.test/are [form# expected#]
-     (cemerick.cljs.test/is (= expected# (react.who.test/render-dom (react.who.core/html form#))))
+     (cemerick.cljs.test/is (= expected# (sablono.test/render-dom (sablono.core/html form#))))
      ~@body))
 
 (defn strip-react-attrs
@@ -23,4 +23,4 @@
       (js/React.renderComponent (component) container)
       (let [html (.-innerHTML (goog.dom/getElement (str id)))]
         (goog.dom/removeNode container)
-        (react.who.test/strip-react-attrs html)))))
+        (sablono.test/strip-react-attrs html)))))
