@@ -1,13 +1,14 @@
 (ns react.who.core-test
   (:refer-clojure :exclude [replace])
   (:require-macros [cemerick.cljs.test :refer [are is deftest run-tests testing]]
-                   [react.who.core :refer [html render-dom]]
+                   [react.who.core :refer [html]]
                    [react.who.test :refer [are-html-rendered]])
   (:require [cemerick.cljs.test :as t]
             [clojure.string :refer [replace]]
             [goog.dom :as gdom]
-            [react.who.core :refer [include-css include-js]]
-            [react.who.render :refer [render-html]]))
+            [react.who.core :as who]
+            [react.who.util :refer [to-str]]
+            [react.who.test :refer [render-dom]]))
 
 (deftest tag-names
   (testing "basic tags"
@@ -98,10 +99,10 @@
     (are-html-rendered
      [:img {:src (str "/foo" "/bar")}] "<img src=\"/foo/bar\">"
      [:div {:id (str "a" "b")} (str "foo")] "<div id=\"ab\">foo</div>"))
-  (testing "type hints"
-    (let [string "x"]
-      (are-html-rendered
-       [:span ^String string] "<span>x</span>")))
+  ;; (testing "type hints"
+  ;;   (let [string "x"]
+  ;;     (are-html-rendered
+  ;;      [:span ^String string] "<span>x</span>")))
   (testing "optimized forms"
     (are-html-rendered
      [:ul (for [n (range 3)] [:li n])] "<ul><li>0</li><li>1</li><li>2</li></ul>")
@@ -132,19 +133,48 @@
 ;;            "<html><link><link></html>"))))
 
 (deftest include-js-test
-  (is (= (include-js "foo.js")
+  (is (= (who/include-js "foo.js")
          (list [:script {:type "text/javascript", :src "foo.js"}])))
-  (is (= (include-js "foo.js" "bar.js")
+  (is (= (who/include-js "foo.js" "bar.js")
          (list [:script {:type "text/javascript", :src "foo.js"}]
                [:script {:type "text/javascript", :src "bar.js"}]))))
 
 (deftest include-css-test
-  (is (= (include-css "foo.css")
+  (is (= (who/include-css "foo.css")
          (list [:link {:type "text/css", :href "foo.css", :rel "stylesheet"}])))
-  (is (= (include-css "foo.css" "bar.css")
+  (is (= (who/include-css "foo.css" "bar.css")
          (list [:link {:type "text/css", :href "foo.css", :rel "stylesheet"}]
                [:link {:type "text/css", :href "bar.css", :rel "stylesheet"}]))))
 
+(deftest javascript-tag-test
+  (is (= (who/javascript-tag "alert('hello');")
+         [:script {:type "text/javascript"}
+          "//<![CDATA[\nalert('hello');\n//]]>"])))
 
+(deftest link-to-test
+  (is (= (who/link-to "/")
+         [:a {:href "/"} nil]))
+  (is (= (who/link-to "/" "foo")
+         [:a {:href "/"} (list "foo")]))
+  (is (= (who/link-to "/" "foo" "bar")
+         [:a {:href "/"} (list "foo" "bar")])))
+
+(deftest mail-to-test
+  (is (= (who/mail-to "foo@example.com")
+         [:a {:href "mailto:foo@example.com"} "foo@example.com"]))
+  (is (= (who/mail-to "foo@example.com" "foo")
+         [:a {:href "mailto:foo@example.com"} "foo"])))
+
+(deftest unordered-list-test
+  (is (= (who/unordered-list ["foo" "bar" "baz"])
+         [:ul (list [:li "foo"]
+                    [:li "bar"]
+                    [:li "baz"])])))
+
+(deftest ordered-list-test
+  (is (= (who/ordered-list ["foo" "bar" "baz"])
+         [:ol (list [:li "foo"]
+                    [:li "bar"]
+                    [:li "baz"])])))
 
 (comment (run-tests))
