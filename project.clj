@@ -8,7 +8,9 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.clojure/clojurescript "0.0-2127"]]
-  :profiles {:dev {:dependencies [[com.keminglabs/cljx "0.3.1"]]
+  :profiles {:dev {:dependencies [[com.keminglabs/cljx "0.3.1"]
+                                  [crate "0.2.3" :scope "dev"]
+                                  [prismatic/dommy "0.1.1"]]
                    :plugins [[com.cemerick/austin "0.1.3"]]
                    :repl-options {:nrepl-middleware [cljx.repl-middleware/wrap-cljx]}}}
   :plugins [[com.cemerick/clojurescript.test "0.2.1"]
@@ -31,9 +33,11 @@
                         :source-paths ["test" "target/classes" "target/test-classes"]
                         :compiler {:output-to "target/test/sablono.js"
                                    :output-dir "target/test"
-                                   :optimizations :advanced
+                                   :optimizations :whitespace
                                    :pretty-print true
-                                   :preamble ["sablono/react-with-addons-0.8.0.min.js"]
+                                   :preamble ["jquery.js"
+                                              "phantomjs-shims.js"
+                                              "sablono/react-with-addons-0.8.0.min.js"]
                                    :externs ["sablono/externs/react.js"]
                                    :closure-warnings {:non-standard-jsdoc :off}}}
                        {:id "dev"
@@ -45,5 +49,5 @@
                                    :source-map true
                                    :externs ["sablono/externs/react.js"]
                                    :closure-warnings {:non-standard-jsdoc :off}}}]
-              :test-commands {"phantom" ["phantomjs" :runner "test-resources/phantomjs-shims.js" "target/test/sablono.js"]}}
+              :test-commands {"phantom" ["phantomjs" :runner "target/test/sablono.js"]}}
   :test-paths ["test" "target/test-classes"])
