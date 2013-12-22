@@ -1,6 +1,6 @@
 # SABLONO [![Build Status](https://travis-ci.org/r0man/sablono.png)](https://travis-ci.org/r0man/sablono)
 
-Lisp style templating for Facebook's React.
+Lisp/Hiccup style templating for Facebook's React.
 
 ## Installation
 
