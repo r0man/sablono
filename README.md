@@ -8,6 +8,26 @@ Via Clojars: https://clojars.org/sablono
 
 [![Current Version](https://clojars.org/sablono/latest-version.svg)](https://clojars.org/sablono)
 
+## Usage
+
+Most functions from [Hiccup](https://github.com/weavejester/hiccup)
+are provided in the `sablono.core` namespace. The library can be use
+with [Om](https://github.com/swannodette/om) like this:
+
+	(ns example
+	  (:require [om.core :as om :include-macros true]
+				[om.dom :as dom :include-macros true]
+				[sablono.core :as html :refer [html] :include-macros true]))
+
+	(defn widget [data]
+	  (om/component
+	   (html [:div "Hello world!"
+			  [:ul (for [n (range 1 10)]
+					 [:li n])]
+			  (html/submit-button "React!")])))
+
+	(om/root {} widget js/document.body)
+
 ## Thanks
 
 This library is based on James Reeves [Hiccup](https://github.com/weavejester/hiccup) library.
