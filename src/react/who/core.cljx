@@ -1,6 +1,6 @@
 (ns react.who.core
   (:refer-clojure :exclude [replace])
-  (:require [clojure.string :refer [replace]]
+  (:require [clojure.string :refer [replace upper-case]]
             [clojure.walk :refer [postwalk-replace]]
             [react.who.util :refer [as-str to-uri]]
             #+clj [react.who.compiler :as compiler])
@@ -63,13 +63,13 @@
   "Include a list of external javascript files."
   [& scripts]
   (for [script scripts]
-    [:script {:type "text/javascript", :src (react.who.util/as-str script)}]))
+    [:script {:type "text/javascript", :src (as-str script)}]))
 
 (defn include-css
   "Include a list of external stylesheet files."
   [& styles]
   (for [style styles]
-    [:link {:type "text/css", :href (react.who.util/as-str style), :rel "stylesheet"}]))
+    [:link {:type "text/css", :href (as-str style), :rel "stylesheet"}]))
 
 (defn javascript-tag
   "Wrap the supplied javascript up in script tags and a CDATA section."
@@ -80,7 +80,7 @@
 (defelem link-to
   "Wraps some content in a HTML hyperlink with the supplied URL."
   [url & content]
-  [:a {:href (react.who.util/as-str url)} content])
+  [:a {:href (as-str url)} content])
 
 (defelem mail-to
   "Wraps some content in a HTML hyperlink with the supplied e-mail
@@ -101,8 +101,8 @@
 
 (defelem image
   "Create an image element."
-  ([src] [:img {:src (react.who.util/as-str src)}])
-  ([src alt] [:img {:src (react.who.util/as-str src), :alt alt}]))
+  ([src] [:img {:src (as-str src)}])
+  ([src alt] [:img {:src (as-str src), :alt alt}]))
 
 (def ^:dynamic *group* [])
 
@@ -110,7 +110,7 @@
   "Group together a set of related form fields for use with the Ring
   nested-params middleware."
   [group & body]
-  `(binding [react.who.core/*group* (conj react.who.core/*group* (react.who.util/as-str ~group))]
+  `(binding [react.who.core/*group* (conj react.who.core/*group* (as-str ~group))]
      (list ~@body)))
 
 (defn- make-name
@@ -171,7 +171,7 @@
   ([group checked? value]
      [:input {:type "radio"
               :name (make-name group)
-              :id   (make-id (str (react.who.util/as-str group) "-" (react.who.util/as-str value)))
+              :id   (make-id (str (as-str group) "-" (as-str value)))
               :value value
               :checked checked?}]))
 
@@ -197,7 +197,7 @@
 (defelem text-area
   "Creates a text area element."
   ([name] (text-area name nil))
-  ([name value] [:textarea {:name (make-name name), :id (make-id name)} (react.who.util/as-str value)]))
+  ([name value] [:textarea {:name (make-name name), :id (make-id name)} (as-str value)]))
 
 (defelem file-upload
   "Creates a file upload input."
@@ -224,8 +224,8 @@
   e.g. (form-to [:put \"/post\"]
          ...)"
   [[method action] & body]
-  (let [method-str (clojure.string/upper-case (name method))
-        action-uri (react.who.util/to-uri action)]
+  (let [method-str (upper-case (name method))
+        action-uri (to-uri action)]
     (-> (if (contains? #{:get :post} method)
           [:form {:method method-str, :action action-uri}]
           [:form {:method "POST", :action action-uri}
