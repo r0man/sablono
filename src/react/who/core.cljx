@@ -6,13 +6,11 @@
             #+clj [react.who.compiler :as compiler])
   #+cljs (:require-macros [react.who.core :refer [defelem]]))
 
-#+clj
 (defmacro html
   "Render Clojure data structures via Facebook's React."
   [options & content]
   (apply react.who.compiler/compile-html options content))
 
-#+clj
 (defmacro html-expand
   "Returns the expanded HTML generation forms."
   [& forms]
