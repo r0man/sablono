@@ -3,6 +3,7 @@
   (:require [clojure.string :refer [replace upper-case]]
             [clojure.walk :refer [postwalk-replace]]
             [sablono.util :refer [as-str to-uri]]
+            [sablono.render :as render]
             #+clj [sablono.compiler :as compiler])
   #+cljs (:require-macros [sablono.core :refer [defelem]]))
 
