@@ -136,4 +136,7 @@
 (defn compile-html
   "Pre-compile data structures into HTML where possible."
   [& content]
-  `(~'into-array ~(vec (compile-seq content))))
+  (let [forms (compile-seq content)]
+    (if (> (count forms) 1)
+      `(~'into-array ~(vec (compile-seq content)))
+      (first forms))))
