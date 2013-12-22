@@ -8,16 +8,19 @@
      (cemerick.cljs.test/is (= expected# (sablono.test/render-dom (sablono.core/html form#))))
      ~@body))
 
+#+cljs
+(defn body []
+  (aget (goog.dom/getElementsByTagNameAndClass "body") 0))
+
 (defn strip-react-attrs
   "Strip the React attributes from `s`."
   [s] (replace (str s) #"\s+data-reactid=\"[^\"]+\"" ""))
 
 #+cljs
 (defn render-dom [children]
-  (let [body (aget (goog.dom/getElementsByTagNameAndClass "body") 0)
-        container (goog.dom/createDom "div")
+  (let [container (goog.dom/createDom "div")
         id (gensym)]
-    (goog.dom/append body container)
+    (goog.dom/append (body) container)
     (let [render-fn (fn [] (this-as this (js/React.DOM.div (clj->js {:id id}) children)))
           component (js/React.createClass #js {:render render-fn})]
       (js/React.renderComponent (component) container)
