@@ -1,14 +1,17 @@
 (ns react.who.core-test
   (:refer-clojure :exclude [replace])
   (:require-macros [cemerick.cljs.test :refer [are is deftest run-tests testing]]
-                   [react.who.core :refer [html]]
+                   [react.who.core :refer [html with-group]]
                    [react.who.test :refer [are-html-rendered]])
   (:require [cemerick.cljs.test :as t]
             [clojure.string :refer [replace]]
             [goog.dom :as gdom]
-            [react.who.core :as who]
+            [react.who.core :as html]
             [react.who.util :refer [to-str]]
             [react.who.test :refer [render-dom]]))
+
+(defn html-str [x]
+  (render-dom (html x)))
 
 (deftest tag-names
   (testing "basic tags"
@@ -133,48 +136,222 @@
 ;;            "<html><link><link></html>"))))
 
 (deftest include-js-test
-  (is (= (who/include-js "foo.js")
+  (is (= (html/include-js "foo.js")
          (list [:script {:type "text/javascript", :src "foo.js"}])))
-  (is (= (who/include-js "foo.js" "bar.js")
+  (is (= (html/include-js "foo.js" "bar.js")
          (list [:script {:type "text/javascript", :src "foo.js"}]
                [:script {:type "text/javascript", :src "bar.js"}]))))
 
 (deftest include-css-test
-  (is (= (who/include-css "foo.css")
+  (is (= (html/include-css "foo.css")
          (list [:link {:type "text/css", :href "foo.css", :rel "stylesheet"}])))
-  (is (= (who/include-css "foo.css" "bar.css")
+  (is (= (html/include-css "foo.css" "bar.css")
          (list [:link {:type "text/css", :href "foo.css", :rel "stylesheet"}]
                [:link {:type "text/css", :href "bar.css", :rel "stylesheet"}]))))
 
 (deftest javascript-tag-test
-  (is (= (who/javascript-tag "alert('hello');")
+  (is (= (html/javascript-tag "alert('hello');")
          [:script {:type "text/javascript"}
           "//<![CDATA[\nalert('hello');\n//]]>"])))
 
 (deftest link-to-test
-  (is (= (who/link-to "/")
+  (is (= (html/link-to "/")
          [:a {:href "/"} nil]))
-  (is (= (who/link-to "/" "foo")
+  (is (= (html/link-to "/" "foo")
          [:a {:href "/"} (list "foo")]))
-  (is (= (who/link-to "/" "foo" "bar")
+  (is (= (html/link-to "/" "foo" "bar")
          [:a {:href "/"} (list "foo" "bar")])))
 
 (deftest mail-to-test
-  (is (= (who/mail-to "foo@example.com")
+  (is (= (html/mail-to "foo@example.com")
          [:a {:href "mailto:foo@example.com"} "foo@example.com"]))
-  (is (= (who/mail-to "foo@example.com" "foo")
+  (is (= (html/mail-to "foo@example.com" "foo")
          [:a {:href "mailto:foo@example.com"} "foo"])))
 
 (deftest unordered-list-test
-  (is (= (who/unordered-list ["foo" "bar" "baz"])
+  (is (= (html/unordered-list ["foo" "bar" "baz"])
          [:ul (list [:li "foo"]
                     [:li "bar"]
                     [:li "baz"])])))
 
 (deftest ordered-list-test
-  (is (= (who/ordered-list ["foo" "bar" "baz"])
+  (is (= (html/ordered-list ["foo" "bar" "baz"])
          [:ol (list [:li "foo"]
                     [:li "bar"]
                     [:li "baz"])])))
+
+(deftest test-hidden-field
+  (is (= (html-str (html/hidden-field :foo "bar"))
+         "<input id=\"foo\" type=\"hidden\" name=\"foo\" value=\"bar\">")))
+
+(deftest test-hidden-field-with-extra-atts
+  (is (= (html-str (html/hidden-field {:className "classy"} :foo "bar"))
+         "<input id=\"foo\" class=\"classy\" type=\"hidden\" name=\"foo\" value=\"bar\">")))
+
+(deftest test-text-field
+  (is (= (html-str (html/text-field :foo))
+         "<input id=\"foo\" type=\"text\" name=\"foo\">")))
+
+(deftest test-text-field-with-extra-atts
+  (is (= (html-str (html/text-field {:className "classy"} :foo "bar"))
+         "<input id=\"foo\" class=\"classy\" type=\"text\" name=\"foo\" value=\"bar\">")))
+
+(deftest test-check-box
+  (is (= (html-str (html/check-box :foo true))
+         "<input id=\"foo\" type=\"checkbox\" name=\"foo\" value=\"true\" checked=\"true\">")))
+
+(deftest test-check-box-with-extra-atts
+  (is (= (html-str (html/check-box {:className "classy"} :foo true 1))
+         "<input id=\"foo\" class=\"classy\" type=\"checkbox\" name=\"foo\" value=\"1\" checked=\"true\">")))
+
+(deftest test-password-field
+  (is (= (html-str (html/password-field :foo "bar"))
+         "<input id=\"foo\" type=\"password\" name=\"foo\" value=\"bar\">")))
+
+(deftest test-password-field-with-extra-atts
+  (is (= (html-str (html/password-field {:className "classy"} :foo "bar"))
+         "<input id=\"foo\" class=\"classy\" type=\"password\" name=\"foo\" value=\"bar\">")))
+
+(deftest test-email-field
+  (is (= (html-str (html/email-field :foo "bar"))
+         "<input id=\"foo\" type=\"email\" name=\"foo\" value=\"bar\">")))
+
+(deftest test-email-field-with-extra-atts
+  (is (= (html-str (html/email-field {:className "classy"} :foo "bar"))
+         "<input id=\"foo\" class=\"classy\" type=\"email\" name=\"foo\" value=\"bar\">")))
+
+(deftest test-radio-button
+  (is (= (html-str (html/radio-button :foo true 1))
+         "<input id=\"foo-1\" type=\"radio\" name=\"foo\" value=\"1\" checked=\"true\">")))
+
+(deftest test-radio-button-with-extra-atts
+  (is (= (html-str (html/radio-button {:className "classy"} :foo true 1))
+         "<input id=\"foo-1\" class=\"classy\" type=\"radio\" name=\"foo\" value=\"1\" checked=\"true\">")))
+
+;; (deftest test-select-options
+;;   (are [x y] (= (html-str x) y)
+;;        (select-options ["foo" "bar" "baz"])
+;;        "<option>foo</option><option>bar</option><option>baz</option>"
+;;        (select-options ["foo" "bar"] "bar")
+;;        "<option>foo</option><option selected=\"selected\">bar</option>"
+;;        (select-options [["Foo" 1] ["Bar" 2]])
+;;        "<option value=\"1\">Foo</option><option value=\"2\">Bar</option>"
+;;        (select-options [["Foo" [1 2]] ["Bar" [3 4]]])
+;;        (str "<optgroup label=\"Foo\"><option>1</option><option>2</option></optgroup>"
+;;             "<optgroup label=\"Bar\"><option>3</option><option>4</option></optgroup>")
+;;        (select-options [["Foo" [["bar" 1] ["baz" 2]]]])
+;;        (str "<optgroup label=\"Foo\"><option value=\"1\">bar</option>"
+;;             "<option value=\"2\">baz</option></optgroup>")
+;;        (select-options [["Foo" [1 2]]] 2)
+;;        (str "<optgroup label=\"Foo\"><option>1</option>"
+;;             "<option selected=\"selected\">2</option></optgroup>")))
+
+;; (deftest test-drop-down
+;;   (let [options ["op1" "op2"]
+;;         selected "op1"
+;;         select-options (html-str (select-options options selected))]
+;;     (is (= (html-str (drop-down :foo options selected))
+;;            (str "<select id=\"foo\" name=\"foo\">" select-options "</select>")))))
+
+;; (deftest test-drop-down-with-extra-atts
+;;   (let [options ["op1" "op2"]
+;;         selected "op1"
+;;         select-options (html-str (select-options options selected))]
+;;     (is (= (html-str (drop-down {:className "classy"} :foo options selected))
+;;            (str "<select class=\"classy\" id=\"foo\" name=\"foo\">"
+;;                 select-options "</select>")))))
+
+(deftest test-text-area
+  (is (= (html-str (html/text-area :foo "bar"))
+         "<textarea id=\"foo\" name=\"foo\" value=\"bar\">bar</textarea>")))
+
+(deftest test-text-area-field-with-extra-atts
+  (is (= (html-str (html/text-area {:className "classy"} :foo "bar"))
+         "<textarea id=\"foo\" class=\"classy\" name=\"foo\" value=\"bar\">bar</textarea>")))
+
+(deftest test-text-area-escapes
+  (is (= (html-str (html/text-area :foo "bar</textarea>"))
+         "<textarea id=\"foo\" name=\"foo\" value=\"bar&lt;/textarea&gt;\">bar&lt;/textarea&gt;</textarea>")))
+
+(deftest test-file-field
+  (is (= (html-str (html/file-upload :foo))
+         "<input id=\"foo\" type=\"file\" name=\"foo\">")))
+
+(deftest test-file-field-with-extra-atts
+  (is (= (html-str (html/file-upload {:className "classy"} :foo))
+         "<input id=\"foo\" class=\"classy\" type=\"file\" name=\"foo\">")))
+
+(deftest test-label
+  (is (= (html-str (html/label :foo "bar"))
+         "<label for=\"foo\"><span>bar</span></label>")))
+
+(deftest test-label-with-extra-atts
+  (is (= (html-str (html/label {:className "classy"} :foo "bar"))
+         "<label class=\"classy\" for=\"foo\"><span>bar</span></label>")))
+
+(deftest test-submit
+  (is (= (html-str (html/submit-button "bar"))
+         "<input type=\"submit\" value=\"bar\">")))
+
+(deftest test-submit-button-with-extra-atts
+  (is (= (html-str (html/submit-button {:className "classy"} "bar"))
+         "<input class=\"classy\" type=\"submit\" value=\"bar\">")))
+
+(deftest test-reset-button
+  (is (= (html-str (html/reset-button "bar"))
+         "<input type=\"reset\" value=\"bar\">")))
+
+(deftest test-reset-button-with-extra-atts
+  (is (= (html-str (html/reset-button {:className "classy"} "bar"))
+         "<input class=\"classy\" type=\"reset\" value=\"bar\">")))
+
+(deftest test-form-to
+  (is (= (html-str (html/form-to [:post "/path"] "foo" "bar"))
+         "<form method=\"POST\" action=\"/path\"><span>foo</span><span>bar</span></form>")))
+
+(deftest test-form-to-with-hidden-method
+  (is (= (html-str (html/form-to [:put "/path"] "foo" "bar"))
+         (str "<form method=\"POST\" action=\"/path\">"
+              "<input id=\"_method\" type=\"hidden\" name=\"_method\" value=\"PUT\">"
+              "<span>foo</span><span>bar</span></form>"))))
+
+(deftest test-form-to-with-extr-atts
+  (is (= (html-str (html/form-to {:className "classy"} [:post "/path"] "foo" "bar"))
+         "<form class=\"classy\" method=\"POST\" action=\"/path\"><span>foo</span><span>bar</span></form>")))
+
+(deftest test-with-group
+  (testing "hidden-field"
+    (is (= (html-str (with-group :foo (html/hidden-field :bar "val")))
+           "<input id=\"foo-bar\" type=\"hidden\" name=\"foo[bar]\" value=\"val\">")))
+  (testing "text-field"
+    (is (= (html-str (with-group :foo (html/text-field :bar)))
+           "<input id=\"foo-bar\" type=\"text\" name=\"foo[bar]\">")))
+  (testing "checkbox"
+    (is (= (html-str (with-group :foo (html/check-box :bar)))
+           "<input id=\"foo-bar\" type=\"checkbox\" name=\"foo[bar]\" value=\"true\">")))
+  (testing "password-field"
+    (is (= (html-str (with-group :foo (html/password-field :bar)))
+           "<input id=\"foo-bar\" type=\"password\" name=\"foo[bar]\">")))
+  (testing "radio-button"
+    (is (= (html-str (with-group :foo (html/radio-button :bar false "val")))
+           "<input id=\"foo-bar-val\" type=\"radio\" name=\"foo[bar]\" value=\"val\">")))
+  ;; (testing "drop-down"
+  ;;   (is (= (html-str (with-group :foo (html/drop-down :bar [])))
+  ;;          (str "<select id=\"foo-bar\" name=\"foo[bar]\"></select>"))))
+  (testing "text-area"
+    (is (= (html-str (with-group :foo (html/text-area :bar)))
+           "<textarea id=\"foo-bar\" name=\"foo[bar]\" value=\"\"></textarea>")))
+  (testing "file-upload"
+    (is (= (html-str (with-group :foo (html/file-upload :bar)))
+           "<input id=\"foo-bar\" type=\"file\" name=\"foo[bar]\">")))
+  (testing "label"
+    (is (= (html-str (with-group :foo (html/label :bar "Bar")))
+           "<label for=\"foo-bar\"><span>Bar</span></label>")))
+  (testing "multiple with-groups"
+    (is (= (html-str (with-group :foo (with-group :bar (html/text-field :baz))))
+           "<input id=\"foo-bar-baz\" type=\"text\" name=\"foo[bar][baz]\">")))
+  (testing "multiple elements"
+    (is (= (html-str (with-group :foo (html/label :bar "Bar") (html/text-field :var)))
+           "<label for=\"foo-bar\"><span>Bar</span></label><input id=\"foo-var\" type=\"text\" name=\"foo[var]\">"))))
 
 (comment (run-tests))
