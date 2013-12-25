@@ -12,7 +12,8 @@
                                   [crate "0.2.3" :scope "dev"]
                                   [prismatic/dommy "0.1.1"]]
                    :plugins [[com.cemerick/austin "0.1.3"]]
-                   :repl-options {:nrepl-middleware [cljx.repl-middleware/wrap-cljx]}}}
+                   :repl-options {:nrepl-middleware [cljx.repl-middleware/wrap-cljx]}
+                   :resource-paths ["test-resources"]}}
   :plugins [[com.cemerick/clojurescript.test "0.2.1"]
             [com.keminglabs/cljx "0.3.1"]
             [lein-cljsbuild "1.0.1"]]

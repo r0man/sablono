@@ -38,8 +38,8 @@
   [element]
   (let [[tag attrs content] (normalize-element element)]
     (if content
-      `(~(react-symbol tag) (cljs.core/clj->js ~attrs) ~@(render-html content))
-      `(~(react-symbol tag) (cljs.core/clj->js ~attrs)))))
+      `(~(react-symbol tag) '~(symbol "#js") ~attrs ~@(render-html content))
+      `(~(react-symbol tag) '~(symbol "#js") ~attrs))))
 
 #+cljs
 (defn render-element

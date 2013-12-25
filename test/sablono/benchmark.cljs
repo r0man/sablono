@@ -54,7 +54,8 @@
           (.getTime now)) 1000)))
 
 (defn gen-data []
-  (for [i (range 1e4)]
+  (for [i ;(range 1e4)
+        (range 100)]
     {:key (rand-int 1e6)
      :name (str "product" i)}))
 
