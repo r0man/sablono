@@ -41,5 +41,6 @@
                                                     :closure-warnings {:non-standard-jsdoc :off}}}]
                                :test-commands {"phantom" ["phantomjs" :runner "target/test/sablono.js"]}}
                    :repl-options {:nrepl-middleware [cljx.repl-middleware/wrap-cljx]}
+                   :resource-paths ["test-resources"]
                    :source-paths ["target/classes"]
                    :test-paths ["test" "target/test-classes"]}})
