@@ -1,16 +1,14 @@
 (ns sablono.core-test
   (:refer-clojure :exclude [replace])
   (:require-macros [cemerick.cljs.test :refer [are is deftest run-tests testing]]
-                   [sablono.core :refer [html with-group]])
+                   [sablono.core :refer [html with-group]]
+                   [sablono.test :refer [html-str]])
   (:require [cemerick.cljs.test :as t]
             [clojure.string :refer [replace]]
             [goog.dom :as gdom]
             [sablono.core :as html :include-macros true]
             [sablono.util :refer [to-str]]
             [sablono.test :refer [render-dom]]))
-
-(defn html-str [x]
-  (render-dom (html/html x)))
 
 (deftest tag-names
   (testing "basic tags"

@@ -1,6 +1,7 @@
 (ns sablono.render
   (:refer-clojure :exclude [replace])
-  (:require [clojure.string :refer [replace]]))
+  (:require [clojure.string :refer [replace]])
+  #+clj (:import cljs.tagged_literals.JSValue))
 
 (def ^{:doc "Regular expression that parses a CSS-style id and class from an element name." :private true}
   re-tag #"([^\s\.#]+)(?:#([^\s\.#]+))?(?:\.([^\s#]+))?")
@@ -38,8 +39,8 @@
   [element]
   (let [[tag attrs content] (normalize-element element)]
     (if content
-      `(~(react-symbol tag) '~(symbol "#js") ~attrs ~@(render-html content))
-      `(~(react-symbol tag) '~(symbol "#js") ~attrs))))
+      `(~(react-symbol tag) ~(JSValue. attrs) ~@(render-html content))
+      `(~(react-symbol tag) ~(JSValue. attrs)))))
 
 #+cljs
 (defn render-element

@@ -8,6 +8,9 @@
      (cemerick.cljs.test/is (= expected# (sablono.test/render-dom (sablono.core/html form#))))
      ~@body))
 
+(defmacro html-str [& contents]
+  `(sablono.test/render-dom (sablono.core/html ~@contents)))
+
 #+cljs
 (defn body []
   (aget (goog.dom/getElementsByTagNameAndClass "body") 0))

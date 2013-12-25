@@ -1,7 +1,8 @@
 (ns sablono.compiler
   (:refer-clojure :exclude [replace])
   (:require [clojure.string :refer [replace]]
-            [sablono.render :as render]))
+            [sablono.render :as render])
+  (:import cljs.tagged_literals.JSValue))
 
 (defn- unevaluated?
   "True if the expression has not been evaluated."
@@ -92,8 +93,8 @@
   [[tag attrs & content]]
   (let [[tag attrs _] (render/normalize-element [tag attrs])]
     (if content
-      `(~(render/react-symbol tag) (cljs.core/clj->js ~attrs) ~@(compile-seq content))
-      `(~(render/react-symbol tag) (cljs.core/clj->js ~attrs)))))
+      `(~(render/react-symbol tag) ~(JSValue. attrs) ~@(compile-seq content))
+      `(~(render/react-symbol tag) ~(JSValue. attrs)))))
 
 (defmethod compile-element ::literal-tag-and-no-attributes
   [[tag & content]]
@@ -109,8 +110,8 @@
             `(~(render/react-symbol tag) (cljs.core/clj->js (merge ~tag-attrs ~attrs-sym)) ~@(compile-seq content))
             `(~(render/react-symbol tag) (cljs.core/clj->js (merge ~tag-attrs ~attrs-sym)) nil))
          ~(if attrs
-            `(~(render/react-symbol tag) (cljs.core/clj->js ~tag-attrs) ~@(compile-seq (cons attrs-sym content)))
-            `(~(render/react-symbol tag) (cljs.core/clj->js ~tag-attrs) nil))))))
+            `(~(render/react-symbol tag) ~(JSValue. tag-attrs) ~@(compile-seq (cons attrs-sym content)))
+            `(~(render/react-symbol tag) ~(JSValue. tag-attrs) nil))))))
 
 (defmethod compile-element :default
   [element]
