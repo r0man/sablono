@@ -1,16 +1,28 @@
 (ns sablono.compiler-test
   (:require [clojure.test :refer :all]
-            [sablono.core :refer [html html-expand]]))
+            [clojure.walk :refer [postwalk]]
+            [sablono.core :refer [html html-expand]])
+  (:import cljs.tagged_literals.JSValue))
+
+(defn replace-js-literals [forms]
+  (postwalk
+   (fn [form]
+     (if (instance? JSValue form)
+       (.val form) form))
+   forms))
 
 (defmacro are-html-expanded [& body]
   `(are [form# expected#]
-     (is (= expected# (html-expand form#)))
+     (is (= (replace-js-literals expected#)
+            (replace-js-literals (html-expand form#))))
      ~@body))
 
 (deftest test-multiple-children
-  (is (= '(into-array [(js/React.DOM.div #js {:id "a"})
-                       (js/React.DOM.div #js {:id "b"})])
-         (html-expand [:div#a] [:div#b]))))
+  (is (= (replace-js-literals
+          '(into-array [(js/React.DOM.div #js {:id "a"})
+                        (js/React.DOM.div #js {:id "b"})]))
+         (replace-js-literals
+          (html-expand [:div#a] [:div#b])))))
 
 (deftest tag-names
   (testing "basic tags"
