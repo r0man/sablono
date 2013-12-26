@@ -141,3 +141,9 @@
     (if (> (count forms) 1)
       `(~'into-array ~(vec (compile-seq content)))
       (first forms))))
+
+;; TODO: Remove when landed in ClojureScript.
+(defmethod print-method JSValue
+  [^JSValue v, ^java.io.Writer w]
+  (.write w "#js ")
+  (.write w (pr-str (.val v))))
