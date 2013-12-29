@@ -2,6 +2,8 @@
 
 Lisp/Hiccup style templating for Facebook's React in ClojureScript.
 
+![](http://imgs.xkcd.com/comics/tags.png)
+
 ## Installation
 
 Via Clojars: https://clojars.org/sablono
