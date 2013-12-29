@@ -6,7 +6,8 @@
   :lein-release {:deploy-via :clojars}
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.5.1"]
+  :dependencies [[com.facebook/react "0.8.0.1"]
+                 [org.clojure/clojure "1.5.1"]
                  [org.clojure/clojurescript "0.0-2127"]]
   :cljsbuild {:builds []}
   :profiles {:dev {:dependencies [[crate "0.2.3" :scope "dev"]
@@ -36,8 +37,7 @@
                                                     :pretty-print true
                                                     :preamble ["jquery.js"
                                                                "phantomjs-shims.js"
-                                                               "sablono/react-with-addons-0.8.0.min.js"]
-                                                    :externs ["sablono/externs/react.js"]
+                                                               "react/react.min.js"]
                                                     :closure-warnings {:non-standard-jsdoc :off}}}]
                                :test-commands {"phantom" ["phantomjs" :runner "target/test/sablono.js"]}}
                    :repl-options {:nrepl-middleware [cljx.repl-middleware/wrap-cljx]}
