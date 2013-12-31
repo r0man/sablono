@@ -334,4 +334,8 @@
     (is (= (html-str (with-group :foo (html/label :bar "Bar") (html/text-field :var)))
            "<label for=\"foo-bar\"><span>Bar</span></label><input id=\"foo-var\" type=\"text\" name=\"foo[var]\">"))))
 
+(deftest test-issue-3-recursive-js-value
+  (is (= "<div class=\"interaction-row\" style=\"position:relative;\"></div>"
+         (html-str [:div.interaction-row {:style {:position "relative"}}]))))
+
 (comment (run-tests))

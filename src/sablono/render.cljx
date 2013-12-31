@@ -1,6 +1,7 @@
 (ns sablono.render
   (:refer-clojure :exclude [replace])
-  (:require [clojure.string :refer [replace]])
+  (:require [clojure.string :refer [replace]]
+            [clojure.walk :refer [postwalk]])
   #+clj (:import cljs.tagged_literals.JSValue))
 
 (def ^{:doc "Regular expression that parses a CSS-style id and class from an element name." :private true}
@@ -21,6 +22,15 @@
        m (dissoc m k)))
    m (keys m)))
 
+#+clj
+(defn js-value [attrs]
+  (if attrs
+    (postwalk
+     (fn [form]
+       (if (map? form)
+         (JSValue. form) form))
+     attrs)))
+
 (defn normalize-element
   "Ensure an element vector is of the form [tag-name attrs content]."
   [[tag & content]]
@@ -39,8 +49,8 @@
   [element]
   (let [[tag attrs content] (normalize-element element)]
     (if content
-      `(~(react-symbol tag) ~(JSValue. attrs) ~@(render-html content))
-      `(~(react-symbol tag) ~(JSValue. attrs)))))
+      `(~(react-symbol tag) ~(js-value attrs) ~@(render-html content))
+      `(~(react-symbol tag) ~(js-value attrs)))))
 
 #+cljs
 (defn render-element

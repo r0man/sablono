@@ -1,11 +1,11 @@
 (ns sablono.compiler-test
   (:require [clojure.test :refer :all]
-            [clojure.walk :refer [postwalk]]
+            [clojure.walk :refer [prewalk]]
             [sablono.core :refer [html html-expand]])
   (:import cljs.tagged_literals.JSValue))
 
 (defn replace-js-literals [forms]
-  (postwalk
+  (prewalk
    (fn [form]
      (if (instance? JSValue form)
        (.val form) form))
@@ -152,3 +152,8 @@
        (js/React.DOM.div
         #js {:id "itemkey", :className ["class1" "class2"]}
         (js/React.DOM.span #js {:className "anchor"} "name"))))))
+
+(deftest test-issue-3-recursive-js-value
+  (are-html-expanded
+   [:div.interaction-row {:style {:position "relative"}}]
+   '(js/React.DOM.div #js {:style #js {:position "relative"}, :className "interaction-row"})))
