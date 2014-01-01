@@ -1,11 +1,10 @@
 (ns sablono.core
-  (:refer-clojure :exclude [replace])
-  (:require [clojure.string :refer [replace upper-case]]
+  #+cljs (:require-macros [sablono.core :refer [defelem]])
+  (:require [clojure.string :refer [upper-case]]
             [clojure.walk :refer [postwalk-replace]]
             [sablono.util :refer [as-str to-uri]]
-            [sablono.interpreter :as render]
-            #+clj [sablono.compiler :as compiler])
-  #+cljs (:require-macros [sablono.core :refer [defelem]]))
+            [sablono.interpreter :as interpreter]
+            #+clj [sablono.compiler :as compiler]))
 
 (defmacro html
   "Render Clojure data structures via Facebook's React."
