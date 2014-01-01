@@ -5,7 +5,7 @@
             [sablono.util :refer [normalize-element react-symbol]]))
 
 (defprotocol IRender
-  (interpret [this] "Render a Clojure data structure via Facebook's React."))
+  (interpret [this] "Interpret a Clojure data structure as a React fn call."))
 
 #+cljs
 (defn attributes [attrs]
