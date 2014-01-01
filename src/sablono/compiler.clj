@@ -1,6 +1,5 @@
 (ns sablono.compiler
-  (:require [sablono.interpreter :as render]
-            [sablono.util :refer :all])
+  (:require [sablono.util :refer :all])
   (:import cljs.tagged_literals.JSValue))
 
 (defprotocol ICompile
@@ -22,7 +21,7 @@
             (first classes)
             (and (sequential? classes)
                  (every? string? classes))
-            (join-classes " " classes)
+            (join-classes classes)
             :else `(sablono.util/join-classes ~classes))
            (assoc attrs :className)
            (to-js)))))
