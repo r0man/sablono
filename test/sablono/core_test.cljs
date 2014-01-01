@@ -344,5 +344,4 @@
   (is (= "<div style=\"position:relative;\" class=\"interaction-row\"></div>"
          (html-str [:div.interaction-row {:style {:position "relative"}}]))))
 
-(comment
-  (run-tests))
+(comment (run-tests))

@@ -92,8 +92,8 @@
   [element]
   (let [[tag attrs content] (normalize-element element)]
     (if content
-      `(~(react-symbol tag) (sablono.render/render-attrs ~(js-value attrs)) ~@(render-html content))
-      `(~(react-symbol tag) (sablono.render/render-attrs ~(js-value attrs))))))
+      `(~(react-symbol tag) ~(js-value attrs) ~@(render-html content))
+      `(~(react-symbol tag) ~(js-value attrs)))))
 
 #+cljs
 (defn render-element
