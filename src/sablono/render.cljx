@@ -16,7 +16,7 @@
     attrs))
 
 #+cljs
-(defn render-element
+(defn interpret-element
   "Render an element vector as a HTML element."
   [element]
   (let [[tag attrs content] (normalize-element element)
@@ -25,29 +25,29 @@
       (dom-fn (render-attrs attrs) (interpret content))
       (dom-fn (render-attrs attrs)))))
 
-(defn- render-seq [s]
+(defn- interpret-seq [s]
   (into-array (map interpret s)))
 
 #+cljs
 (extend-protocol IRender
   Cons
   (interpret [this]
-    (render-seq this))
+    (interpret-seq this))
   ChunkedSeq
   (interpret [this]
-    (render-seq this))
+    (interpret-seq this))
   LazySeq
   (interpret [this]
-    (render-seq this))
+    (interpret-seq this))
   List
   (interpret [this]
-    (render-seq this))
+    (interpret-seq this))
   IndexedSeq
   (interpret [this]
-    (render-seq this))
+    (interpret-seq this))
   PersistentVector
   (interpret [this]
-    (render-element this))
+    (interpret-element this))
   default
   (interpret [this]
     this)
