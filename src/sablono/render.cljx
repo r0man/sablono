@@ -2,14 +2,11 @@
   (:refer-clojure :exclude [replace])
   (:require [clojure.string :refer [blank? join replace split]]
             [clojure.walk :refer [postwalk]]
-            [sablono.util :refer [normalize-element]])
+            [sablono.util :refer [normalize-element react-symbol]])
   #+clj (:import cljs.tagged_literals.JSValue))
 
 (defprotocol HtmlRenderer
   (render-html [this] "Render a Clojure data structure via Facebook's React."))
-
-(defn react-symbol [tag]
-  (symbol "js" (str "React.DOM." (name tag))))
 
 (defprotocol IJSValue
   (to-js [x]))

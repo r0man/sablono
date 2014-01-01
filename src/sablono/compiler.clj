@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [replace])
   (:require [clojure.string :refer [replace]]
             [sablono.render :as render]
-            [sablono.util :refer [normalize-element]])
+            [sablono.util :refer [normalize-element react-symbol]])
   (:import cljs.tagged_literals.JSValue))
 
 (defn- unevaluated?
@@ -94,8 +94,8 @@
   [[tag attrs & content]]
   (let [[tag attrs _] (normalize-element [tag attrs])]
     (if content
-      `(~(render/react-symbol tag) ~(render/js-value attrs) ~@(compile-seq content))
-      `(~(render/react-symbol tag) ~(render/js-value attrs)))))
+      `(~(react-symbol tag) ~(render/js-value attrs) ~@(compile-seq content))
+      `(~(react-symbol tag) ~(render/js-value attrs)))))
 
 (defmethod compile-element ::literal-tag-and-no-attributes
   [[tag & content]]
@@ -108,11 +108,11 @@
     `(let [~attrs-sym ~attrs]
        (if (map? ~attrs-sym)
          ~(if content
-            `(~(render/react-symbol tag) (sablono.render/render-attrs (sablono.render/merge-with-class ~tag-attrs ~attrs-sym)) ~@(compile-seq content))
-            `(~(render/react-symbol tag) (sablono.render/render-attrs (sablono.render/merge-with-class ~tag-attrs ~attrs-sym)) nil))
+            `(~(react-symbol tag) (sablono.render/render-attrs (sablono.util/merge-with-class ~tag-attrs ~attrs-sym)) ~@(compile-seq content))
+            `(~(react-symbol tag) (sablono.render/render-attrs (sablono.util/merge-with-class ~tag-attrs ~attrs-sym)) nil))
          ~(if attrs
-            `(~(render/react-symbol tag) ~(render/js-value tag-attrs) ~@(compile-seq (cons attrs-sym content)))
-            `(~(render/react-symbol tag) ~(render/js-value tag-attrs) nil))))))
+            `(~(react-symbol tag) ~(render/js-value tag-attrs) ~@(compile-seq (cons attrs-sym content)))
+            `(~(react-symbol tag) ~(render/js-value tag-attrs) nil))))))
 
 (defmethod compile-element :default
   [element]

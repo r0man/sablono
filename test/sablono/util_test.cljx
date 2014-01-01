@@ -24,6 +24,12 @@
     [:div.a.b] ["div" {:className ["a" "b"]} nil]
     [:div.a.b {:className "c"}] ["div" {:className ["a" "b" "c"]} nil]))
 
+(deftest test-react-symbol
+  (are [tag expected]
+    (is (= expected (u/react-symbol tag)))
+    :div 'js/React.DOM.div
+    "div" 'js/React.DOM.div))
+
 #+cljs
 (deftest test-as-str
   (are [args expected]

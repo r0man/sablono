@@ -52,6 +52,11 @@
       [tag (compact-map (merge-with-class tag-attrs map-attrs)) (next content)]
       [tag (compact-map tag-attrs) content])))
 
+(defn react-symbol
+  "Returns the React function to render `tag` as a symbol."
+  [tag]
+  (symbol "js" (str "React.DOM." (name tag))))
+
 #+cljs
 (extend-protocol ToString
   cljs.core.Keyword
