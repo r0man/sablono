@@ -182,7 +182,7 @@
    '[:div.a.b {:className (if (true? true) ["true"] "false")}]
    '(js/React.DOM.div #js {:className (sablono.util/join-classes ["a" "b" (if (true? true) ["true"] "false")])})))
 
-(deftest test-issue-3-recursive-js-value
+(deftest test-issue-3-recursive-js-literal
   (are-html-expanded
    [:div.interaction-row {:style {:position "relative"}}]
    '(js/React.DOM.div #js {:className "interaction-row", :style #js {:position "relative"}})))

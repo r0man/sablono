@@ -5,7 +5,7 @@
             [sablono.util :refer [normalize-element react-symbol]])
   #+clj (:import cljs.tagged_literals.JSValue))
 
-(defprotocol HtmlRenderer
+(defprotocol IRender
   (render-html [this] "Render a Clojure data structure via Facebook's React."))
 
 #+cljs
@@ -30,7 +30,7 @@
   (into-array (map render-html s)))
 
 #+cljs
-(extend-protocol HtmlRenderer
+(extend-protocol IRender
   Cons
   (render-html [this]
     (render-seq this))
