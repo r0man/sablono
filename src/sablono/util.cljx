@@ -1,6 +1,6 @@
 (ns sablono.util
   #+cljs (:import goog.Uri)
-  (:require [clojure.string :refer [split]]))
+  (:require [clojure.string :refer [join split]]))
 
 (def ^:dynamic *base-url* nil)
 
@@ -51,6 +51,11 @@
     (if (map? map-attrs)
       [tag (compact-map (merge-with-class tag-attrs map-attrs)) (next content)]
       [tag (compact-map tag-attrs) content])))
+
+(defn join-classes
+  "Join the `classes` with a whitespace."
+  [classes]
+  (join " " (flatten classes)))
 
 (defn react-symbol
   "Returns the React function to render `tag` as a symbol."

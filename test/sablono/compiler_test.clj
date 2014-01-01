@@ -156,9 +156,9 @@
 (deftest test-issue-2-merge-classname
   (are-html-expanded
    '[:div.a {:className (if (true? true) "true" "false")}]
-   '(js/React.DOM.div #js {:className (sablono.render/join-classes ["a" (if (true? true) "true" "false")])})
+   '(js/React.DOM.div #js {:className (sablono.util/join-classes ["a" (if (true? true) "true" "false")])})
    '[:div.a.b {:className (if (true? true) ["true"] "false")}]
-   '(js/React.DOM.div #js {:className (sablono.render/join-classes ["a" "b" (if (true? true) ["true"] "false")])})))
+   '(js/React.DOM.div #js {:className (sablono.util/join-classes ["a" "b" (if (true? true) ["true"] "false")])})))
 
 (deftest test-issue-3-recursive-js-value
   (are-html-expanded

@@ -32,11 +32,6 @@
   (to-js [x]
     x))
 
-(defn join-classes
-  "Join the `classes` with a whitespace."
-  [classes]
-  (join " " (flatten classes)))
-
 #+clj
 (defn js-value [attrs]
   (let [classes (:className attrs)]
@@ -52,7 +47,7 @@
             (and (sequential? classes)
                  (every? string? classes))
             (join " " classes)
-            :else `(sablono.render/join-classes ~classes))
+            :else `(sablono.util/join-classes ~classes))
            (assoc attrs :className)
            (to-js)))))
 
