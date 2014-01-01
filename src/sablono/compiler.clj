@@ -93,8 +93,8 @@
   [[tag attrs & content]]
   (let [[tag attrs _] (render/normalize-element [tag attrs])]
     (if content
-      `(~(render/react-symbol tag) ~(render/js-value attrs) ~@(compile-seq content))
-      `(~(render/react-symbol tag) ~(render/js-value attrs)))))
+      `(~(render/react-symbol tag) (sablono.render/render-attrs ~(render/js-value attrs)) ~@(compile-seq content))
+      `(~(render/react-symbol tag) (sablono.render/render-attrs ~(render/js-value attrs))))))
 
 (defmethod compile-element ::literal-tag-and-no-attributes
   [[tag & content]]
@@ -107,11 +107,11 @@
     `(let [~attrs-sym ~attrs]
        (if (map? ~attrs-sym)
          ~(if content
-            `(~(render/react-symbol tag) (cljs.core/clj->js (merge ~tag-attrs ~attrs-sym)) ~@(compile-seq content))
-            `(~(render/react-symbol tag) (cljs.core/clj->js (merge ~tag-attrs ~attrs-sym)) nil))
+            `(~(render/react-symbol tag) (sablono.render/render-attrs (merge ~tag-attrs ~attrs-sym)) ~@(compile-seq content))
+            `(~(render/react-symbol tag) (sablono.render/render-attrs (merge ~tag-attrs ~attrs-sym)) nil))
          ~(if attrs
-            `(~(render/react-symbol tag) ~(render/js-value tag-attrs) ~@(compile-seq (cons attrs-sym content)))
-            `(~(render/react-symbol tag) ~(render/js-value tag-attrs) nil))))))
+            `(~(render/react-symbol tag) (sablono.render/render-attrs ~(render/js-value tag-attrs)) ~@(compile-seq (cons attrs-sym content)))
+            `(~(render/react-symbol tag) (sablono.render/render-attrs ~(render/js-value tag-attrs)) nil))))))
 
 (defmethod compile-element :default
   [element]

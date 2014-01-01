@@ -334,8 +334,15 @@
     (is (= (html-str (with-group :foo (html/label :bar "Bar") (html/text-field :var)))
            "<label for=\"foo-bar\"><span>Bar</span></label><input id=\"foo-var\" type=\"text\" name=\"foo[var]\">"))))
 
+(deftest test-issue-2-merge-classname
+  (is (= "<div class=\"a true\"></div>"
+         (html-str [:div.a {:className (if (true? true) "true" "false")}])))
+  (is (= "<div class=\"a b true\"></div>"
+         (html-str [:div.a.b {:className (if (true? true) ["true"] "false")}]))))
+
 (deftest test-issue-3-recursive-js-value
-  (is (= "<div class=\"interaction-row\" style=\"position:relative;\"></div>"
+  (is (= "<div style=\"position:relative;\" class=\"interaction-row\"></div>"
          (html-str [:div.interaction-row {:style {:position "relative"}}]))))
 
-(comment (run-tests))
+(comment
+  (run-tests))
