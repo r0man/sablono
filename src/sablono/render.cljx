@@ -8,7 +8,7 @@
   (interpret [this] "Render a Clojure data structure via Facebook's React."))
 
 #+cljs
-(defn render-attrs [attrs]
+(defn attributes [attrs]
   (let [attrs (clj->js attrs)
         class (join " " (flatten (seq (.-className attrs))))]
     (if-not (blank? class)
@@ -22,8 +22,8 @@
   (let [[tag attrs content] (normalize-element element)
         dom-fn (aget js/React.DOM (name tag))]
     (if content
-      (dom-fn (render-attrs attrs) (interpret content))
-      (dom-fn (render-attrs attrs)))))
+      (dom-fn (attributes attrs) (interpret content))
+      (dom-fn (attributes attrs)))))
 
 (defn- interpret-seq [s]
   (into-array (map interpret s)))

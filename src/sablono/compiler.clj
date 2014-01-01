@@ -140,8 +140,8 @@
     `(let [~attrs-sym ~attrs]
        (if (map? ~attrs-sym)
          ~(if content
-            `(~(react-symbol tag) (sablono.render/render-attrs (sablono.util/merge-with-class ~tag-attrs ~attrs-sym)) ~@(compile-seq content))
-            `(~(react-symbol tag) (sablono.render/render-attrs (sablono.util/merge-with-class ~tag-attrs ~attrs-sym)) nil))
+            `(~(react-symbol tag) (sablono.render/attributes (sablono.util/merge-with-class ~tag-attrs ~attrs-sym)) ~@(compile-seq content))
+            `(~(react-symbol tag) (sablono.render/attributes (sablono.util/merge-with-class ~tag-attrs ~attrs-sym)) nil))
          ~(if attrs
             `(~(react-symbol tag) ~(compile-attrs tag-attrs) ~@(compile-seq (cons attrs-sym content)))
             `(~(react-symbol tag) ~(compile-attrs tag-attrs) nil))))))
