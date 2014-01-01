@@ -148,19 +148,19 @@
        [:span {:className "anchor"} (:name datum)]]]
      '(js/React.DOM.li
        #js {}
-       (js/React.DOM.a {:href "#show/key"})
+       (js/React.DOM.a #js {:href "#show/key"})
        (js/React.DOM.div
-        {:className ["class1" "class2"], :id "itemkey"}
-        (js/React.DOM.span {:className ["anchor"]} "name"))))))
+        #js {:className "class1 class2", :id "itemkey"}
+        (js/React.DOM.span {:className "anchor"} "name"))))))
 
 (deftest test-issue-2-merge-classname
   (are-html-expanded
    '[:div.a {:className (if (true? true) "true" "false")}]
-   '(js/React.DOM.div (sablono.render/render-attrs #js {:className #js ["a" (if (true? true) "true" "false")]}))
+   '(js/React.DOM.div #js {:className (sablono.render/join-classes ["a" (if (true? true) "true" "false")])})
    '[:div.a.b {:className (if (true? true) ["true"] "false")}]
-   '(js/React.DOM.div (sablono.render/render-attrs #js {:className #js ["a b" (if (true? true) ["true"] "false")]}))))
+   '(js/React.DOM.div #js {:className (sablono.render/join-classes ["a" "b" (if (true? true) ["true"] "false")])})))
 
 (deftest test-issue-3-recursive-js-value
   (are-html-expanded
    [:div.interaction-row {:style {:position "relative"}}]
-   '(js/React.DOM.div #js {:style #js {:position "relative"}, :className #js ["interaction-row"]})))
+   '(js/React.DOM.div #js {:className "interaction-row", :style #js {:position "relative"}})))

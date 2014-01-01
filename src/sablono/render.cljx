@@ -1,6 +1,6 @@
 (ns sablono.render
   (:refer-clojure :exclude [replace])
-  (:require [clojure.string :refer [blank? join replace]]
+  (:require [clojure.string :refer [blank? join replace split]]
             [clojure.walk :refer [postwalk]])
   #+clj (:import cljs.tagged_literals.JSValue))
 
@@ -46,9 +46,27 @@
   (to-js [x]
     x))
 
+(defn join-classes [classes]
+  (join " " (flatten classes)))
+
 #+clj
 (defn js-value [attrs]
-  (to-js attrs))
+  (let [classes (:className attrs)]
+    (if (empty? classes)
+      (to-js attrs)
+      (->> (cond
+            (or (keyword? classes)
+                (string? classes))
+            classes
+            (and (sequential? classes)
+                 (= 1 (count classes)))
+            (first classes)
+            (and (sequential? classes)
+                 (every? string? classes))
+            (join " " classes)
+            :else `(sablono.render/join-classes ~classes))
+           (assoc attrs :className)
+           (to-js)))))
 
 (defn merge-with-class [& maps]
   (let [classes (->> (mapcat #(cond
@@ -67,16 +85,11 @@
   (when (not (or (keyword? tag) (symbol? tag) (string? tag)))
     (throw (ex-info (str tag " is not a valid element name.") {:tag tag :content content})))
   (let [[_ tag id class] (re-matches re-tag (name tag))
-        tag-attrs {:id id :className (if class (replace class "." " "))}
+        tag-attrs {:id id :className (if class (split class #"\."))}
         map-attrs (first content)]
     (if (map? map-attrs)
       [tag (compact-map (merge-with-class tag-attrs map-attrs)) (next content)]
       [tag (compact-map tag-attrs) content])))
-
-#+clj
-(defn render-attrs [attrs]
-  (let [class (join " " (flatten (seq (:className attrs))))]
-    (js-value (assoc attrs :className class))))
 
 #+cljs
 (defn render-attrs [attrs]
