@@ -1,7 +1,7 @@
 (ns sablono.compiler
   (:refer-clojure :exclude [replace])
   (:require [clojure.string :refer [join replace]]
-            [sablono.render :as render]
+            [sablono.interpreter :as render]
             [sablono.util :refer [normalize-element react-symbol]])
   (:import cljs.tagged_literals.JSValue))
 
@@ -67,7 +67,7 @@
 
 (defmethod compile-form :default
   [expr]
-  `(sablono.render/interpret ~expr))
+  `(sablono.interpreter/interpret ~expr))
 
 (defn- not-hint?
   "True if x is not hinted to be the supplied type."
@@ -140,15 +140,15 @@
     `(let [~attrs-sym ~attrs]
        (if (map? ~attrs-sym)
          ~(if content
-            `(~(react-symbol tag) (sablono.render/attributes (sablono.util/merge-with-class ~tag-attrs ~attrs-sym)) ~@(compile-seq content))
-            `(~(react-symbol tag) (sablono.render/attributes (sablono.util/merge-with-class ~tag-attrs ~attrs-sym)) nil))
+            `(~(react-symbol tag) (sablono.interpreter/attributes (sablono.util/merge-with-class ~tag-attrs ~attrs-sym)) ~@(compile-seq content))
+            `(~(react-symbol tag) (sablono.interpreter/attributes (sablono.util/merge-with-class ~tag-attrs ~attrs-sym)) nil))
          ~(if attrs
             `(~(react-symbol tag) ~(compile-attrs tag-attrs) ~@(compile-seq (cons attrs-sym content)))
             `(~(react-symbol tag) ~(compile-attrs tag-attrs) nil))))))
 
 (defmethod compile-element :default
   [element]
-  `(sablono.render/element
+  `(sablono.interpreter/element
     [~(first element)
      ~@(for [x (rest element)]
          (if (vector? x)
@@ -165,7 +165,7 @@
             (hint? expr String) expr
             (hint? expr Number) expr
             (seq? expr) (compile-form expr)
-            :else `(sablono.render/interpret ~expr)))))
+            :else `(sablono.interpreter/interpret ~expr)))))
 
 (defn compile-html
   "Pre-compile data structures into HTML where possible."

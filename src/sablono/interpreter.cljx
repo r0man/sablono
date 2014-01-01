@@ -1,10 +1,10 @@
-(ns sablono.render
+(ns sablono.interpreter
   (:refer-clojure :exclude [replace])
   (:require [clojure.string :refer [blank? join replace split]]
             [clojure.walk :refer [postwalk]]
             [sablono.util :refer [normalize-element react-symbol]]))
 
-(defprotocol IRender
+(defprotocol IInterpreter
   (interpret [this] "Interpret a Clojure data structure as a React fn call."))
 
 #+cljs
@@ -29,7 +29,7 @@
   (into-array (map interpret s)))
 
 #+cljs
-(extend-protocol IRender
+(extend-protocol IInterpreter
   Cons
   (interpret [this]
     (interpret-seq this))
