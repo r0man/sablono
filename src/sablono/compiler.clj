@@ -67,7 +67,7 @@
 
 (defmethod compile-form :default
   [expr]
-  `(sablono.render/render-html ~expr))
+  `(sablono.render/interpret ~expr))
 
 (defn- not-hint?
   "True if x is not hinted to be the supplied type."
@@ -165,7 +165,7 @@
             (hint? expr String) expr
             (hint? expr Number) expr
             (seq? expr) (compile-form expr)
-            :else `(sablono.render/render-html ~expr)))))
+            :else `(sablono.render/interpret ~expr)))))
 
 (defn compile-html
   "Pre-compile data structures into HTML where possible."

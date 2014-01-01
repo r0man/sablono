@@ -2,11 +2,10 @@
   (:refer-clojure :exclude [replace])
   (:require [clojure.string :refer [blank? join replace split]]
             [clojure.walk :refer [postwalk]]
-            [sablono.util :refer [normalize-element react-symbol]])
-  #+clj (:import cljs.tagged_literals.JSValue))
+            [sablono.util :refer [normalize-element react-symbol]]))
 
 (defprotocol IRender
-  (render-html [this] "Render a Clojure data structure via Facebook's React."))
+  (interpret [this] "Render a Clojure data structure via Facebook's React."))
 
 #+cljs
 (defn render-attrs [attrs]
@@ -23,35 +22,35 @@
   (let [[tag attrs content] (normalize-element element)
         dom-fn (aget js/React.DOM (name tag))]
     (if content
-      (dom-fn (render-attrs attrs) (render-html content))
+      (dom-fn (render-attrs attrs) (interpret content))
       (dom-fn (render-attrs attrs)))))
 
 (defn- render-seq [s]
-  (into-array (map render-html s)))
+  (into-array (map interpret s)))
 
 #+cljs
 (extend-protocol IRender
   Cons
-  (render-html [this]
+  (interpret [this]
     (render-seq this))
   ChunkedSeq
-  (render-html [this]
+  (interpret [this]
     (render-seq this))
   LazySeq
-  (render-html [this]
+  (interpret [this]
     (render-seq this))
   List
-  (render-html [this]
+  (interpret [this]
     (render-seq this))
   IndexedSeq
-  (render-html [this]
+  (interpret [this]
     (render-seq this))
   PersistentVector
-  (render-html [this]
+  (interpret [this]
     (render-element this))
   default
-  (render-html [this]
+  (interpret [this]
     this)
   nil
-  (render-html [this]
+  (interpret [this]
     nil))
