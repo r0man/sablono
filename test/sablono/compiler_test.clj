@@ -52,7 +52,7 @@
      [:div] '(js/React.DOM.div #js {})
      [:div] '(js/React.DOM.div #js {})
      ["div"] '(js/React.DOM.div #js {})
-     ['div] '(sablono.render/interpret-element [div])))
+     ['div] '(sablono.render/element [div])))
   (testing "tag syntax sugar"
     (are-html-expanded
      [:div#foo] '(js/React.DOM.div #js {:id "foo"})

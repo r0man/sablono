@@ -16,7 +16,7 @@
     attrs))
 
 #+cljs
-(defn interpret-element
+(defn element
   "Render an element vector as a HTML element."
   [element]
   (let [[tag attrs content] (normalize-element element)
@@ -47,7 +47,7 @@
     (interpret-seq this))
   PersistentVector
   (interpret [this]
-    (interpret-element this))
+    (element this))
   default
   (interpret [this]
     this)

@@ -148,7 +148,7 @@
 
 (defmethod compile-element :default
   [element]
-  `(sablono.render/interpret-element
+  `(sablono.render/element
     [~(first element)
      ~@(for [x (rest element)]
          (if (vector? x)
