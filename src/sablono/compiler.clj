@@ -1,9 +1,77 @@
 (ns sablono.compiler
   (:refer-clojure :exclude [replace])
-  (:require [clojure.string :refer [replace]]
+  (:require [clojure.string :refer [join replace]]
             [sablono.render :as render]
             [sablono.util :refer [normalize-element react-symbol]])
   (:import cljs.tagged_literals.JSValue))
+
+(defprotocol IJSValue
+  (to-js [x]))
+
+(defn- to-js-map [x]
+  (JSValue.
+   (zipmap (map to-js (keys x))
+           (map to-js (vals x)))))
+
+(extend-protocol IJSValue
+  clojure.lang.PersistentArrayMap
+  (to-js [x]
+    (to-js-map x))
+  clojure.lang.PersistentHashMap
+  (to-js [x]
+    (to-js-map x))
+  clojure.lang.PersistentVector
+  (to-js [x]
+    (JSValue. (vec (map to-js x))))
+  Object
+  (to-js [x]
+    x))
+
+(defn js-value [attrs]
+  (let [classes (:className attrs)]
+    (if (empty? classes)
+      (to-js attrs)
+      (->> (cond
+            (or (keyword? classes)
+                (string? classes))
+            classes
+            (and (sequential? classes)
+                 (= 1 (count classes)))
+            (first classes)
+            (and (sequential? classes)
+                 (every? string? classes))
+            (join " " classes)
+            :else `(sablono.util/join-classes ~classes))
+           (assoc attrs :className)
+           (to-js)))))
+
+(defprotocol HtmlRenderer
+  (render-html [this] "Render a Clojure data structure via Facebook's React."))
+
+(defn- render-seq [s]
+  (into-array (map render-html s)))
+
+(defn render-element
+  "Render an element vector as a HTML element."
+  [element]
+  (let [[tag attrs content] (normalize-element element)]
+    (if content
+      `(~(react-symbol tag) ~(js-value attrs) ~@(render-html content))
+      `(~(react-symbol tag) ~(js-value attrs)))))
+
+(extend-protocol HtmlRenderer
+  clojure.lang.IPersistentVector
+  (render-html [this]
+    (render-element this))
+  clojure.lang.ISeq
+  (render-html [this]
+    (map render-html this))
+  Object
+  (render-html [this]
+    this)
+  nil
+  (render-html [this]
+    nil))
 
 (defn- unevaluated?
   "True if the expression has not been evaluated."
@@ -88,14 +156,14 @@
 
 (defmethod compile-element ::all-literal
   [element]
-  (render/render-element (eval element)))
+  (render-element (eval element)))
 
 (defmethod compile-element ::literal-tag-and-attributes
   [[tag attrs & content]]
   (let [[tag attrs _] (normalize-element [tag attrs])]
     (if content
-      `(~(react-symbol tag) ~(render/js-value attrs) ~@(compile-seq content))
-      `(~(react-symbol tag) ~(render/js-value attrs)))))
+      `(~(react-symbol tag) ~(js-value attrs) ~@(compile-seq content))
+      `(~(react-symbol tag) ~(js-value attrs)))))
 
 (defmethod compile-element ::literal-tag-and-no-attributes
   [[tag & content]]
@@ -111,8 +179,8 @@
             `(~(react-symbol tag) (sablono.render/render-attrs (sablono.util/merge-with-class ~tag-attrs ~attrs-sym)) ~@(compile-seq content))
             `(~(react-symbol tag) (sablono.render/render-attrs (sablono.util/merge-with-class ~tag-attrs ~attrs-sym)) nil))
          ~(if attrs
-            `(~(react-symbol tag) ~(render/js-value tag-attrs) ~@(compile-seq (cons attrs-sym content)))
-            `(~(react-symbol tag) ~(render/js-value tag-attrs) nil))))))
+            `(~(react-symbol tag) ~(js-value tag-attrs) ~@(compile-seq (cons attrs-sym content)))
+            `(~(react-symbol tag) ~(js-value tag-attrs) nil))))))
 
 (defmethod compile-element :default
   [element]

@@ -1,7 +1,8 @@
 (ns sablono.compiler-test
   (:require [clojure.test :refer :all]
             [clojure.walk :refer [prewalk]]
-            [sablono.core :refer [html html-expand]])
+            [sablono.core :refer [html html-expand]]
+            [sablono.compiler :refer :all])
   (:import cljs.tagged_literals.JSValue))
 
 (defn replace-js-literals [forms]
@@ -16,6 +17,27 @@
      (is (= (replace-js-literals expected#)
             (replace-js-literals (html-expand form#))))
      ~@body))
+
+(deftest test-to-js
+  (let [v (to-js [])]
+    (is (instance? JSValue v))
+    (is (= [] (.val v))))
+  (let [v (to-js {})]
+    (is (instance? JSValue v))
+    (is (= {} (.val v))))
+  (let [v (to-js [1 [2] {:a 1 :b {:c [2 [3]]}}])]
+    (is (instance? JSValue v))
+    (is (= 1 (first (.val v))))
+    (is (= [2] (.val (second (.val v)))))
+    (let [v (nth (.val v) 2)]
+      (is (instance? JSValue v))
+      (is (= 1 (:a (.val v))))
+      (let [v (:b (.val v))]
+        (is (instance? JSValue v))
+        (let [v (:c (.val v))]
+          (is (instance? JSValue v))
+          (is (= 2 (first (.val v))))
+          (is (= [3] (.val (second (.val v))))))))))
 
 (deftest test-multiple-children
   (is (= (replace-js-literals
