@@ -5,8 +5,8 @@
             [sablono.util :refer [normalize-element react-symbol]])
   (:import cljs.tagged_literals.JSValue))
 
-(defprotocol HtmlRenderer
-  (render-html [this] "Compile a Clojure data structure into a React fn call."))
+(defprotocol ICompile
+  (compile-react [this] "Compile a Clojure data structure into a React fn call."))
 
 (defprotocol IJSValue
   (to-js [x]))
@@ -29,12 +29,12 @@
            (assoc attrs :className)
            (to-js)))))
 
-(defn render-element
+(defn compile-react-element
   "Render an element vector as a HTML element."
   [element]
   (let [[tag attrs content] (normalize-element element)]
     (if content
-      `(~(react-symbol tag) ~(compile-attrs attrs) ~@(render-html content))
+      `(~(react-symbol tag) ~(compile-attrs attrs) ~@(compile-react content))
       `(~(react-symbol tag) ~(compile-attrs attrs)))))
 
 (defn- unevaluated?
@@ -120,7 +120,7 @@
 
 (defmethod compile-element ::all-literal
   [element]
-  (render-element (eval element)))
+  (compile-react-element (eval element)))
 
 (defmethod compile-element ::literal-tag-and-attributes
   [[tag attrs & content]]
@@ -181,21 +181,18 @@
   (.write w "#js ")
   (.write w (pr-str (.val v))))
 
-(defn- render-seq [s]
-  (into-array (map render-html s)))
-
-(extend-protocol HtmlRenderer
+(extend-protocol ICompile
   clojure.lang.IPersistentVector
-  (render-html [this]
-    (render-element this))
+  (compile-react [this]
+    (compile-react-element this))
   clojure.lang.ISeq
-  (render-html [this]
-    (map render-html this))
+  (compile-react [this]
+    (map compile-react this))
   Object
-  (render-html [this]
+  (compile-react [this]
     this)
   nil
-  (render-html [this]
+  (compile-react [this]
     nil))
 
 (defn- to-js-map [x]
