@@ -1,26 +1,15 @@
 (ns sablono.render
   (:refer-clojure :exclude [replace])
   (:require [clojure.string :refer [blank? join replace split]]
-            [clojure.walk :refer [postwalk]])
+            [clojure.walk :refer [postwalk]]
+            [sablono.util :refer [normalize-element]])
   #+clj (:import cljs.tagged_literals.JSValue))
-
-(def ^{:doc "Regular expression that parses a CSS-style id and class from an element name." :private true}
-  re-tag #"([^\s\.#]+)(?:#([^\s\.#]+))?(?:\.([^\s#]+))?")
 
 (defprotocol HtmlRenderer
   (render-html [this] "Render a Clojure data structure via Facebook's React."))
 
 (defn react-symbol [tag]
   (symbol "js" (str "React.DOM." (name tag))))
-
-(defn- compact-map
-  "Removes all map entries where value is nil."
-  [m]
-  (reduce
-   (fn [m k]
-     (if-let [v (get m k)]
-       m (dissoc m k)))
-   m (keys m)))
 
 (defprotocol IJSValue
   (to-js [x]))
@@ -46,7 +35,9 @@
   (to-js [x]
     x))
 
-(defn join-classes [classes]
+(defn join-classes
+  "Join the `classes` with a whitespace."
+  [classes]
   (join " " (flatten classes)))
 
 #+clj
@@ -67,29 +58,6 @@
             :else `(sablono.render/join-classes ~classes))
            (assoc attrs :className)
            (to-js)))))
-
-(defn merge-with-class [& maps]
-  (let [classes (->> (mapcat #(cond
-                               (list? %1) [%1]
-                               (vector? %1) %1
-                               :else [%1])
-                             (map :className maps))
-                     (remove nil?) vec)
-        maps (apply merge maps)]
-    (if (empty? classes)
-      maps (assoc maps :className classes))))
-
-(defn normalize-element
-  "Ensure an element vector is of the form [tag-name attrs content]."
-  [[tag & content]]
-  (when (not (or (keyword? tag) (symbol? tag) (string? tag)))
-    (throw (ex-info (str tag " is not a valid element name.") {:tag tag :content content})))
-  (let [[_ tag id class] (re-matches re-tag (name tag))
-        tag-attrs {:id id :className (if class (split class #"\."))}
-        map-attrs (first content)]
-    (if (map? map-attrs)
-      [tag (compact-map (merge-with-class tag-attrs map-attrs)) (next content)]
-      [tag (compact-map tag-attrs) content])))
 
 #+cljs
 (defn render-attrs [attrs]

@@ -26,11 +26,3 @@
           (is (instance? JSValue v))
           (is (= 2 (first (.val v))))
           (is (= [3] (.val (second (.val v))))))))))
-
-(deftest test-merge-with-class
-  (is (= {:a 1 :b 2} (r/merge-with-class {:a 1} {:b 2})))
-  (is (= {:a 1 :b 2 :c 3 :className [:a "b" "c"]}
-         (r/merge-with-class
-          {:a 1 :className :a}
-          {:b 2 :className "b"}
-          {:c 3 :className ["c"]}))))
