@@ -344,4 +344,8 @@
   (is (= "<div style=\"position:relative;\" class=\"interaction-row\"></div>"
          (html-str [:div.interaction-row {:style {:position "relative"}}]))))
 
+(deftest test-merge-attributes-let
+  (let [classes (merge {:id "a"} {:className "b"})]
+    (is (= "<div id=\"a\" class=\"b\">content</div>" (html-str [:div classes "content"])))))
+
 (comment (run-tests))
