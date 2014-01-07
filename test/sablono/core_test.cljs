@@ -12,83 +12,83 @@
 
 (deftest tag-names
   (testing "basic tags"
-    (is (= (html-str [:div])) "<div></div>")
-    (is (= (html-str ["div"])) "<div></div>")
-    (is (= (html-str ['div])) "<div></div>"))
+    (is (= (html-str [:div]) "<div></div>"))
+    (is (= (html-str ["div"]) "<div></div>"))
+    (is (= (html-str ['div]) "<div></div>")))
   (testing "tag syntax sugar"
-    (is (= (html-str [:div#foo])) "<div id=\"foo\"></div>")
-    (is (= (html-str [:div.foo])) "<div class=\"foo\"></div>")
-    (is (= (html-str [:div.foo (str "bar" "baz")])) "<div class=\"foo\">barbaz</div>")
-    (is (= (html-str [:div.a.b])) "<div class=\"a b\"></div>")
-    (is (= (html-str [:div.a.b.c])) "<div class=\"a b c\"></div>")
-    (is (= (html-str [:div#foo.bar.baz])) "<div id=\"foo\" class=\"bar baz\"></div>")))
+    (is (= (html-str [:div#foo]) "<div id=\"foo\"></div>"))
+    (is (= (html-str [:div.foo]) "<div class=\"foo\"></div>"))
+    (is (= (html-str [:div.foo (str "bar" "baz")]) "<div class=\"foo\">barbaz</div>"))
+    (is (= (html-str [:div.a.b]) "<div class=\"a b\"></div>"))
+    (is (= (html-str [:div.a.b.c]) "<div class=\"a b c\"></div>"))
+    (is (= (html-str [:div#foo.bar.baz]) "<div class=\"bar baz\" id=\"foo\"></div>"))))
 
 (deftest tag-contents
   (testing "empty tags"
-    (is (= (html-str [:div])) "<div></div>")
-    (is (= (html-str [:h1])) "<h1></h1>")
+    (is (= (html-str [:div]) "<div></div>"))
+    (is (= (html-str [:h1]) "<h1></h1>"))
     ;; [:script] "<script></script>"
-    (is (= (html-str [:text])) "<text></text>")
-    (is (= (html-str [:a])) "<a></a>")
-    (is (= (html-str [:iframe])) "<iframe></iframe>")
-    (is (= (html-str [:title])) "<title></title>")
-    (is (= (html-str [:section])) "<section></section>"))
+    (is (= (html-str [:text]) "<text></text>"))
+    (is (= (html-str [:a]) "<a></a>"))
+    (is (= (html-str [:iframe]) "<iframe></iframe>"))
+    (is (= (html-str [:title]) "<title></title>"))
+    (is (= (html-str [:section]) "<section></section>")))
   (testing "tags containing text"
-    (is (= (html-str [:text "Lorem Ipsum"])) "<text>Lorem Ipsum</text>"))
+    (is (= (html-str [:text "Lorem Ipsum"]) "<text>Lorem Ipsum</text>")))
   (testing "contents are concatenated"
-    (is (= (html-str [:div "foo" "bar"])) "<div><span>foo</span><span>bar</span></div>")
-    (is (= (html-str [:div [:p] [:br]])) "<div><p></p><br></div>"))
+    (is (= (html-str [:div "foo" "bar"]) "<div><span>foo</span><span>bar</span></div>"))
+    (is (= (html-str [:div [:p] [:br]]) "<div><p></p><br></div>")))
   (testing "seqs are expanded"
-    (is (= (html-str [:div (list "foo" "bar")])) "<div><span>foo</span><span>bar</span></div>")
+    (is (= (html-str [:div (list "foo" "bar")]) "<div><span>foo</span><span>bar</span></div>"))
     ;; (is (= (html (list [:p "a"] [:p "b"])) "<p>a</p><p>b</p>"))
     )
   (testing "vecs don't expand - error if vec doesn't have tag name"
     (is (thrown? js/Error (html (vector [:p "a"] [:p "b"])))))
   (testing "tags can contain tags"
-    (is (= (html-str [:div [:p]])) "<div><p></p></div>")
-    (is (= (html-str [:div [:b]])) "<div><b></b></div>")
-    (is (= (html-str [:p [:span [:a "foo"]]])) "<p><span><a>foo</a></span></p>")))
+    (is (= (html-str [:div [:p]]) "<div><p></p></div>"))
+    (is (= (html-str [:div [:b]]) "<div><b></b></div>"))
+    (is (= (html-str [:p [:span [:a "foo"]]]) "<p><span><a>foo</a></span></p>"))))
 
 (deftest tag-attributes
   (testing "tag with blank attribute map"
-    (is (= (html-str [:div {}])) "<div></div>"))
+    (is (= (html-str [:div {}]) "<div></div>")))
   (testing "tag with populated attribute map"
-    (is (= (html-str [:div {:min "1", :max "2"}])) "<div max=\"2\" min=\"1\"></div>")
-    (is (= (html-str [:img {"id" "foo"}])) "<img id=\"foo\">")
-    (is (= (html-str [:img {:id "foo"}])) "<img id=\"foo\">")
+    (is (= (html-str [:div {:min "1", :max "2"}]) "<div min=\"1\" max=\"2\"></div>"))
+    (is (= (html-str [:img {"id" "foo"}]) "<img id=\"foo\">"))
+    (is (= (html-str [:img {:id "foo"}]) "<img id=\"foo\">"))
     ;; (is (= (html [:img {'id "foo"}]) "<img id=\"foo\">"))
     ;; (is (= (html [:div {:a "1", 'b "2", "c" "3"}])
     ;;        "<div a=\"1\" b=\"2\" c=\"3\" />"))
     )
   (testing "attribute values are escaped"
-    (is (= (html-str [:div {:id "\""}])) "<div id=\"&quot;\"></div>"))
+    (is (= (html-str [:div {:id "\""}]) "<div id=\"&quot;\"></div>")))
   (testing "boolean attributes"
-    (is (= (html-str [:input {:type "checkbox" :checked true}])) "<input checked=\"true\" type=\"checkbox\">")
-    (is (= (html-str [:input {:type "checkbox" :checked false}])) "<input type=\"checkbox\">"))
+    (is (= (html-str [:input {:type "checkbox" :checked true}]) "<input type=\"checkbox\" checked=\"true\">"))
+    (is (= (html-str [:input {:type "checkbox" :checked false}]) "<input type=\"checkbox\">")))
   (testing "nil attributes"
-    (is (= (html-str [:span {:class nil} "foo"])) "<span>foo</span>")))
+    (is (= (html-str [:span {:class nil} "foo"]) "<span>foo</span>"))))
 
 (deftest compiled-tags
   (testing "tag content can be vars"
     (let [x "foo"]
-      (is (= (html-str [:span x])) "<span>foo</span>")))
+      (is (= (html-str [:span x]) "<span>foo</span>"))))
   (testing "tag content can be forms"
-    (is (= (html-str [:span (str (+ 1 1))])) "<span>2</span>")
-    (is (= (html-str [:span ({:foo "bar"} :foo)])) "<span>bar</span>"))
+    (is (= (html-str [:span (str (+ 1 1))]) "<span>2</span>"))
+    (is (= (html-str [:span ({:foo "bar"} :foo)]) "<span>bar</span>")))
   (testing "attributes can contain vars"
     (let [id "id"]
-      (is (= (html-str [:div {:id id}])) "<div id=\"id\"></div>")
-      (is (= (html-str [:div {id "id"}])) "<div id=\"id\"></div>")
-      (is (= (html-str [:div {:id id} "bar"])) "<div id=\"id\">bar</div>")))
+      (is (= (html-str [:div {:id id}]) "<div id=\"id\"></div>"))
+      (is (= (html-str [:div {id "id"}]) "<div id=\"id\"></div>"))
+      (is (= (html-str [:div {:id id} "bar"]) "<div id=\"id\">bar</div>"))))
   (testing "attributes are evaluated"
-    (is (= (html-str [:img {:src (str "/foo" "/bar")}])) "<img src=\"/foo/bar\">")
-    (is (= (html-str [:div {:id (str "a" "b")} (str "foo")])) "<div id=\"ab\">foo</div>"))
+    (is (= (html-str [:img {:src (str "/foo" "/bar")}]) "<img src=\"/foo/bar\">"))
+    (is (= (html-str [:div {:id (str "a" "b")} (str "foo")]) "<div id=\"ab\">foo</div>")))
   ;; (testing "type hints"
   ;;   (let [string "x"]
   ;;     (are-html-rendered
   ;;      [:span ^String string] "<span>x</span>")))
   (testing "optimized forms"
-    (is (= (html-str [:ul (for [n (range 3)] [:li n])])) "<ul><li>0</li><li>1</li><li>2</li></ul>")
+    (is (= (html-str [:ul (for [n (range 3)] [:li n])]) "<ul><li>0</li><li>1</li><li>2</li></ul>"))
     ;; (is (= (html [:div (if true
     ;;                      [:span "foo"]
     ;;                      [:span "bar"])])
