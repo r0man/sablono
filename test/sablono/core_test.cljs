@@ -334,6 +334,10 @@
     (is (= (html-str (with-group :foo (html/label :bar "Bar") (html/text-field :var)))
            "<label for=\"foo-bar\"><span>Bar</span></label><input id=\"foo-var\" type=\"text\" name=\"foo[var]\">"))))
 
+(deftest test-merge-attributes-let
+  (let [classes (merge {:id "a"} {:className "b"})]
+    (is (= "<div id=\"a\" class=\"b\">content</div>" (html-str [:div classes "content"])))))
+
 (deftest test-issue-2-merge-classname
   (is (= "<div class=\"a true\"></div>"
          (html-str [:div.a {:className (if (true? true) "true" "false")}])))
@@ -341,11 +345,17 @@
          (html-str [:div.a.b {:className (if (true? true) ["true"] "false")}]))))
 
 (deftest test-issue-3-recursive-js-value
-  (is (= "<div style=\"position:relative;\" class=\"interaction-row\"></div>"
-         (html-str [:div.interaction-row {:style {:position "relative"}}]))))
-
-(deftest test-merge-attributes-let
-  (let [classes (merge {:id "a"} {:className "b"})]
-    (is (= "<div id=\"a\" class=\"b\">content</div>" (html-str [:div classes "content"])))))
+  (is (= "<div class=\"interaction-row\" style=\"position:relative;\"></div>"
+         (html-str [:div.interaction-row {:style {:position "relative"}}])))
+  (let [username "foo", hidden #(if %1 {:display "none"} {:display "block"})]
+    (is (= (str "<ul class=\"nav navbar-nav navbar-right pull-right\">"
+                "<li class=\"dropdown\" style=\"display:block;\">"
+                "<a class=\"dropdown-toggle\" role=\"button\" href=\"#\"><span>Welcome, foo</span><span class=\"caret\"></span></a>"
+                "<ul class=\"dropdown-menu\" role=\"menu\" style=\"left:0;\"></ul></li></ul>")
+           (html-str [:ul.nav.navbar-nav.navbar-right.pull-right
+                      [:li.dropdown {:style (hidden (nil? username))}
+                       [:a.dropdown-toggle {:role "button" :href "#"} (str "Welcome, " username)
+                        [:span.caret]]
+                       [:ul.dropdown-menu {:role "menu" :style {:left 0}}]]])))))
 
 (comment (run-tests))

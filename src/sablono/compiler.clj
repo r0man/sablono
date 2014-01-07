@@ -8,23 +8,44 @@
 (defprotocol IJSValue
   (to-js [x]))
 
-(defn compile-attrs [attrs]
-  (let [classes (:className attrs)]
-    (if (empty? classes)
-      (to-js attrs)
-      (->> (cond
-            (or (keyword? classes)
-                (string? classes))
-            classes
-            (and (sequential? classes)
-                 (= 1 (count classes)))
-            (first classes)
-            (and (sequential? classes)
-                 (every? string? classes))
-            (join-classes classes)
-            :else `(sablono.util/join-classes ~classes))
-           (assoc attrs :className)
-           (to-js)))))
+(defn compile-map-attr [name value]
+  {name
+   (if (map? value)
+     (to-js value)
+     `(~'clj->js ~value))})
+
+(defn compile-string-attr [name value]
+  {name value})
+
+(defmulti compile-attr (fn [name value] name))
+
+(defmethod compile-attr :className [name value]
+  {:className
+   (cond
+    (or (keyword? value)
+        (string? value))
+    value
+    (and (sequential? value)
+         (= 1 (count value)))
+    (first value)
+    (and (sequential? value)
+         (every? string? value))
+    (join-classes value)
+    :else `(sablono.util/join-classes ~value))})
+
+(defmethod compile-attr :style [name value]
+  (compile-map-attr name value))
+
+(defmethod compile-attr :default [name value]
+  (compile-string-attr name value))
+
+(defn compile-attrs
+  "Compile a HTML attribute map."
+  [attrs]
+  (->> (seq attrs)
+       (map #(apply compile-attr %1))
+       (apply merge)
+       (to-js)))
 
 (defn compile-react-element
   "Render an element vector as a HTML element."
@@ -209,4 +230,7 @@
     (JSValue. (vec (map to-js x))))
   Object
   (to-js [x]
-    x))
+    x)
+  nil
+  (to-js [_]
+    nil))
