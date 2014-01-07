@@ -90,9 +90,9 @@
      '(js/React.DOM.div nil "foo" "bar")
      [:div [:p] [:br]]
      '(js/React.DOM.div
-       nil
-       (js/React.DOM.p nil)
-       (js/React.DOM.br nil))))
+          nil
+          (js/React.DOM.p nil)
+          (js/React.DOM.br nil))))
   (testing "seqs are expanded"
     ;; (is (= (html [:div (list "foo" "bar")]) "<div><span>foo</span><span>bar</span></div>"))
     ;; (is (= (html (list [:p "a"] [:p "b"])) "<p>a</p><p>b</p>"))
@@ -177,11 +177,11 @@
              :className ["class1" "class2"]}
        [:span {:className "anchor"} (:name datum)]]]
      '(js/React.DOM.li
-       nil
-       (js/React.DOM.a #js {:href "#show/key"})
-       (js/React.DOM.div
-        #js {:className "class1 class2", :id "itemkey"}
-        (js/React.DOM.span {:className "anchor"} "name"))))))
+          nil
+          (js/React.DOM.a #js {:href "#show/key"})
+          (js/React.DOM.div
+              #js {:className "class1 class2", :id "itemkey"}
+              (js/React.DOM.span {:className "anchor"} "name"))))))
 
 (deftest test-issue-2-merge-classname
   (are-html-expanded
@@ -202,11 +202,11 @@
          [:span.caret]]
         [:ul.dropdown-menu {:role "menu" :style {:left 0}}]]]
      '(js/React.DOM.ul
-       #js {:className "nav navbar-nav navbar-right pull-right"}
-       (js/React.DOM.li
-        #js {:style (clj->js (sablono.compiler-test/hidden (clojure.core/nil? "foo"))), :className "dropdown"}
-        (js/React.DOM.a
-         #js {:role "button", :href "#", :className "dropdown-toggle"}
-         (sablono.interpreter/interpret (clojure.core/str "Welcome, " "foo"))
-         (js/React.DOM.span #js {:className "caret"}))
-        (js/React.DOM.ul #js {:role "menu", :style #js {:left 0}, :className "dropdown-menu"}))))))
+          #js {:className "nav navbar-nav navbar-right pull-right"}
+          (js/React.DOM.li
+              #js {:style (clj->js (sablono.compiler-test/hidden (clojure.core/nil? "foo"))), :className "dropdown"}
+              (js/React.DOM.a
+                  #js {:role "button", :href "#", :className "dropdown-toggle"}
+                  (sablono.interpreter/interpret (clojure.core/str "Welcome, " "foo"))
+                  (js/React.DOM.span #js {:className "caret"}))
+              (js/React.DOM.ul #js {:role "menu", :style #js {:left 0}, :className "dropdown-menu"}))))))
