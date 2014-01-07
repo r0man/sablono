@@ -77,7 +77,7 @@
 
 (defmethod compile-form "for"
   [[_ bindings body]]
-  `(cljs.core/into-array (for ~bindings ~(compile-html body))))
+  `(~'into-array (for ~bindings ~(compile-html body))))
 
 (defmethod compile-form "if"
   [[_ condition & body]]
