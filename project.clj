@@ -29,7 +29,15 @@
                                    {:source-paths ["test"]
                                     :output-path "target/test-classes"
                                     :rules :cljs}]}
-                   :cljsbuild {:builds [{:id "test"
+                   :cljsbuild {:builds [{:id "dev"
+                                         :source-paths ["test" "target/classes" "target/test-classes"]
+                                         :compiler {:output-to "target/dev/sablono.js"
+                                                    :output-dir "target/dev"
+                                                    :optimizations :none
+                                                    :pretty-print true
+                                                    :source-map true
+                                                    :closure-warnings {:non-standard-jsdoc :off}}}
+                                        {:id "test"
                                          :source-paths ["test" "target/classes" "target/test-classes"]
                                          :compiler {:output-to "target/test/sablono.js"
                                                     :output-dir "target/test"
