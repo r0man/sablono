@@ -1,6 +1,8 @@
 # ŜABLONO [![Build Status](https://travis-ci.org/r0man/sablono.png)](https://travis-ci.org/r0man/sablono)
 
-Lisp/Hiccup style templating for Facebook's React in ClojureScript.
+Lisp/Hiccup style templating for Facebook's
+[React](http://facebook.github.io/react) in
+[ClojureScript](https://github.com/clojure/clojurescript).
 
 ![](http://imgs.xkcd.com/comics/tags.png)
 
