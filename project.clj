@@ -8,10 +8,10 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[com.facebook/react "0.8.0.1"]
                  [org.clojure/clojure "1.5.1"]
-                 [org.clojure/clojurescript "0.0-2127"]]
+                 [org.clojure/clojurescript "0.0-2138"]]
   :cljsbuild {:builds []}
-  :profiles {:dev {:dependencies [[crate "0.2.3" :scope "dev"]
-                                  [prismatic/dommy "0.1.1"]]
+  :profiles {:dev {:dependencies [[crate "0.2.5" :scope "dev"]
+                                  [prismatic/dommy "0.1.2"]]
                    :plugins [[com.keminglabs/cljx "0.3.2"] ;; Must be before Austin: https://github.com/cemerick/austin/issues/37
                              [com.cemerick/austin "0.1.3"]
                              [com.cemerick/clojurescript.test "0.2.1"]
