@@ -35,8 +35,7 @@
                                                     :output-dir "target/dev"
                                                     :optimizations :none
                                                     :pretty-print true
-                                                    :source-map true
-                                                    :closure-warnings {:non-standard-jsdoc :off}}}
+                                                    :source-map true}}
                                         {:id "test"
                                          :source-paths ["test" "target/classes" "target/test-classes"]
                                          :compiler {:output-to "target/test/sablono.js"
@@ -47,8 +46,7 @@
                                                                "phantomjs-shims.js"
                                                                "react/react.min.js"]
                                                     :externs ["react/externs/react.js"
-                                                              "externs/jquery-1.9.js"]
-                                                    :closure-warnings {:non-standard-jsdoc :off}}}]
+                                                              "externs/jquery-1.9.js"]}}]
                                :test-commands {"phantom" ["phantomjs" :runner "target/test/sablono.js"]}}
                    :repl-options {:nrepl-middleware [cljx.repl-middleware/wrap-cljx]}
                    :resource-paths ["test-resources"]
