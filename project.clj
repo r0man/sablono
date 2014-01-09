@@ -41,11 +41,13 @@
                                          :source-paths ["test" "target/classes" "target/test-classes"]
                                          :compiler {:output-to "target/test/sablono.js"
                                                     :output-dir "target/test"
-                                                    :optimizations :whitespace
+                                                    :optimizations :advanced
                                                     :pretty-print true
                                                     :preamble ["jquery.js"
                                                                "phantomjs-shims.js"
                                                                "react/react.min.js"]
+                                                    :externs ["react/externs/react.js"
+                                                              "externs/jquery-1.9.js"]
                                                     :closure-warnings {:non-standard-jsdoc :off}}}]
                                :test-commands {"phantom" ["phantomjs" :runner "target/test/sablono.js"]}}
                    :repl-options {:nrepl-middleware [cljx.repl-middleware/wrap-cljx]}
