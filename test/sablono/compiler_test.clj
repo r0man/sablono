@@ -5,11 +5,21 @@
             [sablono.compiler :refer :all])
   (:import cljs.tagged_literals.JSValue))
 
-(defn replace-js-literals [forms]
+(deftype JSValueWrapper [val]
+  Object
+  (equals [this other]
+    (and (instance? JSValueWrapper other)
+         (= (.val this) (.val other))))
+  (hashCode [this]
+    (.hashCode (.val this)))
+  (toString [this]
+    (.toString (.val this))))
+
+(defn wrap-js-value [forms]
   (prewalk
    (fn [form]
      (if (instance? JSValue form)
-       (.val form) form))
+       (JSValueWrapper. (wrap-js-value (.val form))) form))
    forms))
 
 (defn replace-gensyms [forms]
@@ -22,8 +32,8 @@
 
 (defmacro are-html-expanded [& body]
   `(are [form# expected#]
-     (is (= (replace-js-literals expected#)
-            (replace-gensyms (replace-js-literals (html-expand form#)))))
+     (is (= (wrap-js-value expected#)
+            (wrap-js-value (replace-gensyms (html-expand form#)))))
      ~@body))
 
 (deftest test-to-js
@@ -48,11 +58,10 @@
           (is (= [3] (.val (second (.val v))))))))))
 
 (deftest test-multiple-children
-  (is (= (replace-js-literals
+  (is (= (wrap-js-value
           '(into-array [(js/React.DOM.div #js {:id "a"})
                         (js/React.DOM.div #js {:id "b"})]))
-         (replace-js-literals
-          (html-expand [:div#a] [:div#b])))))
+         (wrap-js-value (html-expand [:div#a] [:div#b])))))
 
 (deftest tag-names
   (testing "basic tags"
@@ -69,7 +78,7 @@
      '(let* [attrs (str "bar" "baz")]
             (if (clojure.core/map? attrs)
               (js/React.DOM.div (sablono.interpreter/attributes (sablono.util/merge-with-class {:className ["foo"]} attrs)) nil)
-              (js/React.DOM.div {:className "foo"} (sablono.interpreter/interpret attrs))))
+              (js/React.DOM.div #js {:className "foo"} (sablono.interpreter/interpret attrs))))
      '[:div.a.b] '(js/React.DOM.div #js {:className "a b"})
      '[:div.a.b.c] '(js/React.DOM.div #js {:className "a b c"})
      '[:div#foo.bar.baz] '(js/React.DOM.div #js {:id "foo", :className "bar baz"}))))
@@ -209,7 +218,7 @@
       #js {:href (str "#show/" (:key datum))})
      (js/React.DOM.div
       #js {:id (str "item" (:key datum)), :className "class1 class2"}
-      (js/React.DOM.span {:className "anchor"} (sablono.interpreter/interpret (:name datum)))))))
+      (js/React.DOM.span #js {:className "anchor"} (sablono.interpreter/interpret (:name datum)))))))
 
 (deftest test-issue-2-merge-classname
   (are-html-expanded
@@ -239,4 +248,4 @@
          (js/React.DOM.span
           #js {:className "caret"}))
         (js/React.DOM.ul
-         #js {:role "menu", :style {:left 0}, :className "dropdown-menu"}))))))
+         #js {:role "menu", :style #js {:left 0}, :className "dropdown-menu"}))))))
