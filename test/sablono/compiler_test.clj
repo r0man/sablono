@@ -102,7 +102,7 @@
      '[:div (list "foo" "bar")]
      '(let* [attrs (list "foo" "bar")]
             (if (clojure.core/map? attrs)
-              (js/React.DOM.div (sablono.interpreter/attributes (sablono.util/merge-with-class {} attrs)) nil)
+              (js/React.DOM.div (sablono.interpreter/attributes attrs) nil)
               (js/React.DOM.div nil (sablono.interpreter/interpret attrs))))
      '(list [:p "a"] [:p "b"])
      '(sablono.interpreter/interpret (list [:p "a"] [:p "b"]))))
@@ -137,7 +137,10 @@
      '(js/React.DOM.input #js {:type "checkbox"})))
   (testing "nil attributes"
     (are-html-expanded
-     '[:span {:class nil} "foo"] '(js/React.DOM.span nil "foo"))))
+     '[:span {:class nil} "foo"] '(js/React.DOM.span nil "foo")))
+  (testing "empty attributes"
+    (are-html-expanded
+     '[:span {} "foo"] '(js/React.DOM.span nil "foo"))))
 
 (deftest compiled-tags
   (testing "tag content can be vars"
@@ -146,14 +149,14 @@
        '[:span x]
        '(let* [attrs x]
               (if (clojure.core/map? attrs)
-                (js/React.DOM.span (sablono.interpreter/attributes (sablono.util/merge-with-class {} attrs)) nil)
+                (js/React.DOM.span (sablono.interpreter/attributes attrs) nil)
                 (js/React.DOM.span nil (sablono.interpreter/interpret attrs)))))))
   (testing "tag content can be forms"
     (are-html-expanded
      '[:span (str (+ 1 1))]
      '(let* [attrs (str (+ 1 1))]
             (if (clojure.core/map? attrs)
-              (js/React.DOM.span (sablono.interpreter/attributes (sablono.util/merge-with-class {} attrs)) nil)
+              (js/React.DOM.span (sablono.interpreter/attributes attrs) nil)
               (js/React.DOM.span nil (sablono.interpreter/interpret attrs))))
      [:span ({:foo "bar"} :foo)] '(js/React.DOM.span nil "bar")))
   (testing "attributes can contain vars"
@@ -180,12 +183,12 @@
                      (clojure.core/let [attrs n]
                        (if (clojure.core/map? attrs)
                          (js/React.DOM.li
-                          (sablono.interpreter/attributes (sablono.util/merge-with-class {} attrs)) nil)
+                          (sablono.interpreter/attributes attrs) nil)
                          (js/React.DOM.li nil (sablono.interpreter/interpret attrs)))))))
      '[:div (if true [:span "foo"] [:span "bar"])]
      '(let* [attrs (if true [:span "foo"] [:span "bar"])]
             (if (clojure.core/map? attrs)
-              (js/React.DOM.div (sablono.interpreter/attributes (sablono.util/merge-with-class {} attrs)) nil)
+              (js/React.DOM.div (sablono.interpreter/attributes attrs) nil)
               (js/React.DOM.div nil (sablono.interpreter/interpret attrs))))))
   (testing "values are evaluated only once"
     (let [times-called (atom 0)

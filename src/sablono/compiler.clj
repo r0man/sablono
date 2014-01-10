@@ -47,6 +47,22 @@
        (apply merge)
        (to-js)))
 
+(defn compile-merge-attrs [attrs-1 attrs-2]
+  (let [empty-attrs? #(or (nil? %1) (and (map? %1) (empty? %1)))]
+    (cond
+     (and (empty-attrs? attrs-1)
+          (empty-attrs? attrs-2))
+     nil
+     (empty-attrs? attrs-1)
+     `(sablono.interpreter/attributes ~attrs-2)
+     (empty-attrs? attrs-2)
+     `(sablono.interpreter/attributes ~attrs-1)
+     (and (map? attrs-1)
+          (map? attrs-2))
+     (merge-with-class attrs-1 attrs-2)
+     :else `(sablono.interpreter/attributes
+             (sablono.util/merge-with-class ~attrs-1 ~attrs-2)))))
+
 (defn compile-react-element
   "Render an element vector as a HTML element."
   [element]
@@ -158,8 +174,8 @@
     `(let [~attrs-sym ~attrs]
        (if (map? ~attrs-sym)
          ~(if content
-            `(~(react-symbol tag) (sablono.interpreter/attributes (sablono.util/merge-with-class ~tag-attrs ~attrs-sym)) ~@(compile-seq content))
-            `(~(react-symbol tag) (sablono.interpreter/attributes (sablono.util/merge-with-class ~tag-attrs ~attrs-sym)) nil))
+            `(~(react-symbol tag) ~(compile-merge-attrs tag-attrs attrs-sym) ~@(compile-seq content))
+            `(~(react-symbol tag) ~(compile-merge-attrs tag-attrs attrs-sym) nil))
          ~(if attrs
             `(~(react-symbol tag) ~(compile-attrs tag-attrs) ~@(compile-seq (cons attrs-sym content)))
             `(~(react-symbol tag) ~(compile-attrs tag-attrs) nil))))))
