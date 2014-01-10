@@ -172,8 +172,15 @@
        '[:span ^String string] '(js/React.DOM.span nil string))))
   (testing "optimized forms"
     (are-html-expanded
-     ;; [:ul (for [n (range 3)] [:li n])]
-     ;; "<ul><li>0</li><li>1</li><li>2</li></ul>"
+     '[:ul (for [n (range 3)] [:li n])]
+     '(js/React.DOM.ul
+       nil
+       (into-array (clojure.core/for [n (range 3)]
+                     (clojure.core/let [attrs n]
+                       (if (clojure.core/map? attrs)
+                         (js/React.DOM.li
+                          (sablono.interpreter/attributes (sablono.util/merge-with-class {} attrs)) nil)
+                         (js/React.DOM.li nil (sablono.interpreter/interpret attrs)))))))
      '[:div (if true [:span "foo"] [:span "bar"])]
      '(let* [attrs (if true [:span "foo"] [:span "bar"])]
             (if (clojure.core/map? attrs)
