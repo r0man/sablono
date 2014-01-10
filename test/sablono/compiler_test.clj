@@ -98,9 +98,14 @@
        (js/React.DOM.p nil)
        (js/React.DOM.br nil))))
   (testing "seqs are expanded"
-    ;; (is (= (html [:div (list "foo" "bar")]) "<div><span>foo</span><span>bar</span></div>"))
-    ;; (is (= (html (list [:p "a"] [:p "b"])) "<p>a</p><p>b</p>"))
-    )
+    (are-html-expanded
+     '[:div (list "foo" "bar")]
+     '(let* [attrs (list "foo" "bar")]
+            (if (clojure.core/map? attrs)
+              (js/React.DOM.div (sablono.interpreter/attributes (sablono.util/merge-with-class {} attrs)) nil)
+              (js/React.DOM.div nil (sablono.interpreter/interpret attrs))))
+     '(list [:p "a"] [:p "b"])
+     '(sablono.interpreter/interpret (list [:p "a"] [:p "b"]))))
   (testing "vecs don't expand - error if vec doesn't have tag name"
     (is (thrown? Exception (html (vector [:p "a"] [:p "b"])))))
   (testing "tags can contain tags"
