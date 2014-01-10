@@ -57,42 +57,46 @@
 (deftest tag-names
   (testing "basic tags"
     (are-html-expanded
-     [:div] '(js/React.DOM.div nil)
-     [:div] '(js/React.DOM.div nil)
-     ["div"] '(js/React.DOM.div nil)
-     ['div] '(sablono.interpreter/interpret [div])))
+     '[:div] '(js/React.DOM.div nil)
+     '[:div] '(js/React.DOM.div nil)
+     '["div"] '(js/React.DOM.div nil)
+     '['div] '(js/React.DOM.div nil)))
   (testing "tag syntax sugar"
     (are-html-expanded
-     [:div#foo] '(js/React.DOM.div #js {:id "foo"})
-     [:div.foo] '(js/React.DOM.div #js {:className "foo"})
-     [:div.foo (str "bar" "baz")] '(js/React.DOM.div #js {:className "foo"} "barbaz")
-     [:div.a.b] '(js/React.DOM.div #js {:className "a b"})
-     [:div.a.b.c] '(js/React.DOM.div #js {:className "a b c"})
-     [:div#foo.bar.baz] '(js/React.DOM.div #js {:id "foo", :className "bar baz"}))))
+     '[:div#foo] '(js/React.DOM.div #js {:id "foo"})
+     '[:div.foo] '(js/React.DOM.div #js {:className "foo"})
+     '[:div.foo (str "bar" "baz")]
+     '(let* [attrs (str "bar" "baz")]
+            (if (clojure.core/map? attrs)
+              (js/React.DOM.div (sablono.interpreter/attributes (sablono.util/merge-with-class {:className ["foo"]} attrs)) nil)
+              (js/React.DOM.div {:className "foo"} (sablono.interpreter/interpret attrs))))
+     '[:div.a.b] '(js/React.DOM.div #js {:className "a b"})
+     '[:div.a.b.c] '(js/React.DOM.div #js {:className "a b c"})
+     '[:div#foo.bar.baz] '(js/React.DOM.div #js {:id "foo", :className "bar baz"}))))
 
 (deftest tag-contents
   (testing "empty tags"
     (are-html-expanded
-     [:div] '(js/React.DOM.div nil)
-     [:h1] '(js/React.DOM.h1 nil)
-     [:script] '(js/React.DOM.script nil)
-     [:text] '(js/React.DOM.text nil)
-     [:a] '(js/React.DOM.a nil)
-     [:iframe] '(js/React.DOM.iframe nil)
-     [:title] '(js/React.DOM.title nil)
-     [:section] '(js/React.DOM.section nil)))
+     '[:div] '(js/React.DOM.div nil)
+     '[:h1] '(js/React.DOM.h1 nil)
+     '[:script] '(js/React.DOM.script nil)
+     '[:text] '(js/React.DOM.text nil)
+     '[:a] '(js/React.DOM.a nil)
+     '[:iframe] '(js/React.DOM.iframe nil)
+     '[:title] '(js/React.DOM.title nil)
+     '[:section] '(js/React.DOM.section nil)))
   (testing "tags containing text"
     (are-html-expanded
-     [:text "Lorem Ipsum"] '(js/React.DOM.text nil "Lorem Ipsum")))
+     '[:text "Lorem Ipsum"] '(js/React.DOM.text nil "Lorem Ipsum")))
   (testing "contents are concatenated"
     (are-html-expanded
-     [:div "foo" "bar"]
+     '[:div "foo" "bar"]
      '(js/React.DOM.div nil "foo" "bar")
-     [:div [:p] [:br]]
+     '[:div [:p] [:br]]
      '(js/React.DOM.div
-          nil
-          (js/React.DOM.p nil)
-          (js/React.DOM.br nil))))
+       nil
+       (js/React.DOM.p nil)
+       (js/React.DOM.br nil))))
   (testing "seqs are expanded"
     ;; (is (= (html [:div (list "foo" "bar")]) "<div><span>foo</span><span>bar</span></div>"))
     ;; (is (= (html (list [:p "a"] [:p "b"])) "<p>a</p><p>b</p>"))
@@ -101,67 +105,80 @@
     (is (thrown? Exception (html (vector [:p "a"] [:p "b"])))))
   (testing "tags can contain tags"
     (are-html-expanded
-     [:div [:p]]
+     '[:div [:p]]
      '(js/React.DOM.div nil (js/React.DOM.p nil))
-     [:div [:b]]
+     '[:div [:b]]
      '(js/React.DOM.div nil (js/React.DOM.b nil))
-     [:p [:span [:a "foo"]]]
+     '[:p [:span [:a "foo"]]]
      '(js/React.DOM.p nil (js/React.DOM.span nil (js/React.DOM.a nil "foo"))))))
 
 (deftest tag-attributes
   (testing "tag with blank attribute map"
     (are-html-expanded
-     [:div {}] '(js/React.DOM.div nil)))
+     '[:div {}] '(js/React.DOM.div nil)))
   (testing "tag with populated attribute map"
     (are-html-expanded
-     [:div {:min "1", :max "2"}] '(js/React.DOM.div #js {:min "1", :max "2"})
-     [:img {"id" "foo"}] '(js/React.DOM.img #js {"id" "foo"})
-     [:img {:id "foo"}] '(js/React.DOM.img #js {:id "foo"})
+     '[:div {:min "1", :max "2"}] '(js/React.DOM.div #js {:min "1", :max "2"})
+     '[:img {"id" "foo"}] '(js/React.DOM.img #js {"id" "foo"})
+     '[:img {:id "foo"}] '(js/React.DOM.img #js {:id "foo"})
      ;; [:img {'id "foo"}] '(js/React.DOM.img #js {id "foo"})
      ;; [:div {:a "1", 'b "2", "c" "3"}] '(js/React.DOM.div #js {b "2", :a "1", "c" "3"})
      ))
   (testing "attribute values are escaped"
     (are-html-expanded
-     [:div {:id "\""}] '(js/React.DOM.div #js {:id "\""})))
+     '[:div {:id "\""}] '(js/React.DOM.div #js {:id "\""})))
   (testing "boolean attributes"
     (are-html-expanded
-     [:input {:type "checkbox" :checked true}]
+     '[:input {:type "checkbox" :checked true}]
      '(js/React.DOM.input #js {:checked true, :type "checkbox"})
-     [:input {:type "checkbox" :checked false}]
+     '[:input {:type "checkbox" :checked false}]
      '(js/React.DOM.input #js {:type "checkbox"})))
   (testing "nil attributes"
     (are-html-expanded
-     [:span {:class nil} "foo"] '(js/React.DOM.span nil "foo"))))
+     '[:span {:class nil} "foo"] '(js/React.DOM.span nil "foo"))))
 
 (deftest compiled-tags
   (testing "tag content can be vars"
     (let [x "foo"]
       (are-html-expanded
-       [:span x] '(js/React.DOM.span nil "foo"))))
+       '[:span x]
+       '(let* [attrs x]
+              (if (clojure.core/map? attrs)
+                (js/React.DOM.span (sablono.interpreter/attributes (sablono.util/merge-with-class {} attrs)) nil)
+                (js/React.DOM.span nil (sablono.interpreter/interpret attrs)))))))
   (testing "tag content can be forms"
     (are-html-expanded
-     [:span (str (+ 1 1))] '(js/React.DOM.span nil "2")
+     '[:span (str (+ 1 1))]
+     '(let* [attrs (str (+ 1 1))]
+            (if (clojure.core/map? attrs)
+              (js/React.DOM.span (sablono.interpreter/attributes (sablono.util/merge-with-class {} attrs)) nil)
+              (js/React.DOM.span nil (sablono.interpreter/interpret attrs))))
      [:span ({:foo "bar"} :foo)] '(js/React.DOM.span nil "bar")))
   (testing "attributes can contain vars"
     (let [id "id"]
       (are-html-expanded
-       [:div {:id id}] '(js/React.DOM.div #js {:id "id"})
-       [:div {id "id"}] '(js/React.DOM.div #js {"id" "id"})
-       [:div {:id id} "bar"] '(js/React.DOM.div #js {:id "id"} "bar"))))
+       '[:div {:id id}] '(js/React.DOM.div #js {:id id})
+       ;; '[:div {id "id"}] '(js/React.DOM.div #js {id "id"})
+       '[:div {:id id} "bar"] '(js/React.DOM.div #js {:id id} "bar"))))
   (testing "attributes are evaluated"
     (are-html-expanded
-     [:img {:src (str "/foo" "/bar")}] '(js/React.DOM.img #js {:src "/foo/bar"})
-     [:div {:id (str "a" "b")} (str "foo")] '(js/React.DOM.div #js {:id "ab"} "foo")))
+     '[:img {:src (str "/foo" "/bar")}]
+     '(js/React.DOM.img #js {:src (str "/foo" "/bar")})
+     '[:div {:id (str "a" "b")} (str "foo")]
+     '(js/React.DOM.div #js {:id (str "a" "b")} (sablono.interpreter/interpret (str "foo")))))
   (testing "type hints"
     (let [string "x"]
       (are-html-expanded
-       [:span ^String string] '(js/React.DOM.span nil "x"))))
+       '[:span ^String string] '(js/React.DOM.span nil string))))
   (testing "optimized forms"
     (are-html-expanded
      ;; [:ul (for [n (range 3)] [:li n])]
      ;; "<ul><li>0</li><li>1</li><li>2</li></ul>"
-     [:div (if true [:span "foo"] [:span "bar"])]
-     '(js/React.DOM.div nil (js/React.DOM.span nil "foo"))))
+     '[:div (if true [:span "foo"] [:span "bar"])]
+     '(let* [attrs (if true [:span "foo"] [:span "bar"])]
+            (if (clojure.core/map? attrs)
+              (js/React.DOM.div (sablono.interpreter/attributes (sablono.util/merge-with-class {} attrs)) nil)
+              (js/React.DOM.div nil (sablono.interpreter/interpret attrs))))))
   (testing "values are evaluated only once"
     (let [times-called (atom 0)
           foo #(swap! times-called inc)]
@@ -169,19 +186,19 @@
       (is (= @times-called 1)))))
 
 (deftest test-benchmark-template
-  (let [datum {:key "key" :name "name"}]
-    (are-html-expanded
-     [:li
-      [:a {:href (str "#show/" (:key datum))}]
-      [:div {:id (str "item" (:key datum))
-             :className ["class1" "class2"]}
-       [:span {:className "anchor"} (:name datum)]]]
-     '(js/React.DOM.li
-          nil
-          (js/React.DOM.a #js {:href "#show/key"})
-          (js/React.DOM.div
-              #js {:className "class1 class2", :id "itemkey"}
-              (js/React.DOM.span {:className "anchor"} "name"))))))
+  (are-html-expanded
+   '[:li
+     [:a {:href (str "#show/" (:key datum))}]
+     [:div {:id (str "item" (:key datum))
+            :className ["class1" "class2"]}
+      [:span {:className "anchor"} (:name datum)]]]
+   '(js/React.DOM.li
+     nil
+     (js/React.DOM.a
+      #js {:href (str "#show/" (:key datum))})
+     (js/React.DOM.div
+      #js {:id (str "item" (:key datum)), :className "class1 class2"}
+      (js/React.DOM.span {:className "anchor"} (sablono.interpreter/interpret (:name datum)))))))
 
 (deftest test-issue-2-merge-classname
   (are-html-expanded
@@ -192,21 +209,23 @@
 
 (deftest test-issue-3-recursive-js-literal
   (are-html-expanded
-   [:div.interaction-row {:style {:position "relative"}}]
+   '[:div.interaction-row {:style {:position "relative"}}]
    '(js/React.DOM.div #js {:className "interaction-row", :style #js {:position "relative"}}))
   (let [username "foo", hidden #(if %1 {:display "none"} {:display "block"})]
     (are-html-expanded
-     `[:ul.nav.navbar-nav.navbar-right.pull-right
-       [:li.dropdown {:style (hidden (nil? ~username))}
-        [:a.dropdown-toggle {:role "button" :href "#"} (str "Welcome, " ~username)
+     '[:ul.nav.navbar-nav.navbar-right.pull-right
+       [:li.dropdown {:style (hidden (nil? username))}
+        [:a.dropdown-toggle {:role "button" :href "#"} (str "Welcome, " username)
          [:span.caret]]
         [:ul.dropdown-menu {:role "menu" :style {:left 0}}]]]
      '(js/React.DOM.ul
-          #js {:className "nav navbar-nav navbar-right pull-right"}
-          (js/React.DOM.li
-              #js {:style (clj->js (sablono.compiler-test/hidden (clojure.core/nil? "foo"))), :className "dropdown"}
-              (js/React.DOM.a
-                  #js {:role "button", :href "#", :className "dropdown-toggle"}
-                  (sablono.interpreter/interpret (clojure.core/str "Welcome, " "foo"))
-                  (js/React.DOM.span #js {:className "caret"}))
-              (js/React.DOM.ul #js {:role "menu", :style #js {:left 0}, :className "dropdown-menu"}))))))
+       #js {:className "nav navbar-nav navbar-right pull-right"}
+       (js/React.DOM.li
+        #js {:style (clj->js (hidden (nil? username))), :className "dropdown"}
+        (js/React.DOM.a
+         #js {:href "#", :role "button", :className "dropdown-toggle"}
+         (sablono.interpreter/interpret (str "Welcome, " username))
+         (js/React.DOM.span
+          #js {:className "caret"}))
+        (js/React.DOM.ul
+         #js {:role "menu", :style {:left 0}, :className "dropdown-menu"}))))))
