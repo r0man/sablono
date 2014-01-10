@@ -125,10 +125,7 @@
     (are-html-expanded
      '[:div {:min "1", :max "2"}] '(js/React.DOM.div #js {:min "1", :max "2"})
      '[:img {"id" "foo"}] '(js/React.DOM.img #js {"id" "foo"})
-     '[:img {:id "foo"}] '(js/React.DOM.img #js {:id "foo"})
-     ;; [:img {'id "foo"}] '(js/React.DOM.img #js {id "foo"})
-     ;; [:div {:a "1", 'b "2", "c" "3"}] '(js/React.DOM.div #js {b "2", :a "1", "c" "3"})
-     ))
+     '[:img {:id "foo"}] '(js/React.DOM.img #js {:id "foo"})))
   (testing "attribute values are escaped"
     (are-html-expanded
      '[:div {:id "\""}] '(js/React.DOM.div #js {:id "\""})))
@@ -163,7 +160,6 @@
     (let [id "id"]
       (are-html-expanded
        '[:div {:id id}] '(js/React.DOM.div #js {:id id})
-       ;; '[:div {id "id"}] '(js/React.DOM.div #js {id "id"})
        '[:div {:id id} "bar"] '(js/React.DOM.div #js {:id id} "bar"))))
   (testing "attributes are evaluated"
     (are-html-expanded
