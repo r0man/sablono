@@ -87,4 +87,6 @@
     "" :data-reactid ""
     "<div></div>" :data-reactid "<div></div>"
     "<div data-reactid=\"1\"></div>" :data-reactid "<div></div>"
-    "<div data-reactid='1'></div>" :data-reactid "<div></div>"))
+    "<div data-reactid='1'></div>" :data-reactid "<div></div>"
+    "<div data-reactid=\"1\" data-checksum=\"2\"></div>" :data-reactid "<div data-checksum=\"2\"></div>"
+    "<div data-reactid='1' data-checksum='2'></div>" :data-reactid "<div data-checksum='2'></div>"))
