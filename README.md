@@ -31,6 +31,26 @@ with [Om](https://github.com/swannodette/om) like this:
 
 	(om/root {} widget js/document.body)
 
+## HTML Attributes
+
+HTML attributes in
+[React](http://facebook.github.io/react/docs/tags-and-attributes.html#html-attributes)
+are camel-cased and the `class` and `for` attributes are treated
+special. *Ŝablono* renames attributes with dashes in their name to the
+camel-cased version and handles the `class` and `for` special
+case. This is more consistent with
+[Hiccup](https://github.com/weavejester/hiccup) and naming conventions
+used in Clojure.
+
+An `input` element with event listeners attached to it would look like
+this in *Ŝablono*:
+
+	(html [:input
+		   {:auto-complete "off"
+            :class "autocomplete"
+            :on-change #(on-change %1)
+            :on-key-down #(on-key-down %1)}])
+
 ## Thanks
 
 This library is based on James Reeves [Hiccup](https://github.com/weavejester/hiccup) library.
