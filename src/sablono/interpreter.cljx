@@ -7,8 +7,8 @@
 
 #+cljs
 (defn attributes [attrs]
-  (let [attrs (clj->js attrs)
-        class (join " " (flatten (seq (.-className attrs))))]
+  (let [class (join " " (flatten (seq (:class attrs))))
+        attrs (clj->js (dissoc attrs :class))]
     (if-not (blank? class)
       (set! (.-className attrs) class))
     attrs))

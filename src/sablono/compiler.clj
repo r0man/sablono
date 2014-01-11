@@ -1,5 +1,7 @@
 (ns sablono.compiler
-  (:require [sablono.util :refer :all])
+  (:require [clojure.set :refer [rename-keys]]
+            [clojure.string :refer [capitalize join split]]
+            [sablono.util :refer :all])
   (:import cljs.tagged_literals.JSValue))
 
 (defprotocol ICompile
@@ -7,6 +9,24 @@
 
 (defprotocol IJSValue
   (to-js [x]))
+
+(defn- camelcase-key
+  "Returns camelcased version of the key, e.g. :http-equiv becomes :httpEquiv."
+  [k]
+  (let [[first-word & words] (split (name k) #"-")]
+    (if (empty? words)
+      k
+      (-> (map capitalize words)
+          (conj first-word)
+          join
+          keyword))))
+
+(defn html-to-dom-attrs
+  "Converts all HTML attributes to their DOM equivalents."
+  [attrs]
+  (let [dom-attrs (merge (zipmap (keys attrs) (map camelcase-key (keys attrs)))
+                         {:class :className :for :htmlFor})]
+    (rename-keys attrs dom-attrs)))
 
 (defn compile-map-attr [name value]
   {name
@@ -19,8 +39,8 @@
 
 (defmulti compile-attr (fn [name value] name))
 
-(defmethod compile-attr :className [name value]
-  {:className
+(defmethod compile-attr :class [name value]
+  {:class
    (cond
     (or (keyword? value)
         (string? value))
@@ -45,6 +65,7 @@
   (->> (seq attrs)
        (map #(apply compile-attr %1))
        (apply merge)
+       (html-to-dom-attrs)
        (to-js)))
 
 (defn compile-merge-attrs [attrs-1 attrs-2]

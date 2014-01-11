@@ -28,17 +28,17 @@
    m (keys m)))
 
 (defn merge-with-class
-  "Like clojure.core/merge but concat :className entries."
+  "Like clojure.core/merge but concat :class entries."
   [& maps]
   (let [classes (->> (mapcat #(cond
                                (list? %1) [%1]
                                (vector? %1) %1
                                :else [%1])
-                             (map :className maps))
+                             (map :class maps))
                      (remove nil?) vec)
         maps (apply merge maps)]
     (if (empty? classes)
-      maps (assoc maps :className classes))))
+      maps (assoc maps :class classes))))
 
 (defn normalize-element
   "Ensure an element vector is of the form [tag-name attrs content]."
@@ -46,7 +46,7 @@
   (when (not (or (keyword? tag) (symbol? tag) (string? tag)))
     (throw (ex-info (str tag " is not a valid element name.") {:tag tag :content content})))
   (let [[_ tag id class] (re-matches re-tag (name tag))
-        tag-attrs {:id id :className (if class (split class #"\."))}
+        tag-attrs {:id id :class (if class (split class #"\."))}
         map-attrs (first content)]
     (if (map? map-attrs)
       [tag (compact-map (merge-with-class tag-attrs map-attrs)) (next content)]
