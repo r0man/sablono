@@ -66,7 +66,11 @@
     (is (= (html-str [:input {:type "checkbox" :checked true}]) "<input type=\"checkbox\" checked=\"true\">"))
     (is (= (html-str [:input {:type "checkbox" :checked false}]) "<input type=\"checkbox\">")))
   (testing "nil attributes"
-    (is (= (html-str [:span {:class nil} "foo"]) "<span>foo</span>"))))
+    (is (= (html-str [:span {:class nil} "foo"]) "<span>foo</span>")))
+  (testing "interpreted attributes"
+    (let [attr-fn (constantly {:id "a" :class "b" :http-equiv "refresh"})]
+      (is (= (html-str [:span (attr-fn) "foo"])
+             "<span id=\"a\" class=\"b\" httpequiv=\"refresh\">foo</span>")))))
 
 (deftest compiled-tags
   (testing "tag content can be vars"
