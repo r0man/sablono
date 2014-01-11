@@ -79,3 +79,12 @@
         "bar" "bar"
         "../bar" "../bar"
         "//example.com/bar" "//example.com/bar"))))
+
+(deftest test-strip-attr
+  (are [html attr expected]
+    (is (= expected (u/strip-attr html attr)))
+    nil :data-reactid nil
+    "" :data-reactid ""
+    "<div></div>" :data-reactid "<div></div>"
+    "<div data-reactid=\"1\"></div>" :data-reactid "<div></div>"
+    "<div data-reactid='1'></div>" :data-reactid "<div></div>"))

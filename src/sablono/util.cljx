@@ -1,7 +1,8 @@
 (ns sablono.util
   #+cljs (:import goog.Uri)
+  (:refer-clojure :exclude [replace])
   (:require [clojure.set :refer [rename-keys]]
-            [clojure.string :refer [capitalize join split]]))
+            [clojure.string :refer [capitalize join split replace]]))
 
 (def ^:dynamic *base-url* nil)
 
@@ -80,6 +81,17 @@
   "Returns the React function to render `tag` as a symbol."
   [tag]
   (symbol "js" (str "React.DOM." (name tag))))
+
+(defn attr-pattern
+  "Returns a regular expression that matches the HTML attribute `attr`
+  and it's value."
+  [attr]
+  (re-pattern (str "\\s+" (name attr) "\\s*=\\s*['\"][^\"]+['\"]")))
+
+(defn strip-attr
+  "Strip the HTML attribute `attr` and it's value from the string `s`."
+  [s attr]
+  (if s (replace s (attr-pattern attr) "")))
 
 #+cljs
 (extend-protocol ToString

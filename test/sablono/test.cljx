@@ -15,10 +15,6 @@
 (defn body []
   (aget (goog.dom/getElementsByTagNameAndClass "body") 0))
 
-(defn strip-react-attrs
-  "Strip the React attributes from `s`."
-  [s] (replace (str s) #"\s+data-reactid=\"[^\"]+\"" ""))
-
 #+cljs
 (defn render-dom [children]
   (let [container (goog.dom/createDom "div")
@@ -29,4 +25,4 @@
       (js/React.renderComponent (component) container)
       (let [html (.-innerHTML (goog.dom/getElement (str id)))]
         (goog.dom/removeNode container)
-        (sablono.test/strip-react-attrs html)))))
+        (sablono.util/strip-attr html :data-reactid)))))
