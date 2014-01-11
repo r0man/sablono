@@ -77,7 +77,7 @@
      '[:div.foo (str "bar" "baz")]
      '(let* [attrs (str "bar" "baz")]
             (if (clojure.core/map? attrs)
-              (js/React.DOM.div (sablono.interpreter/attributes (sablono.util/merge-with-class {:className ["foo"]} attrs)) nil)
+              (js/React.DOM.div (sablono.interpreter/attributes (sablono.util/merge-with-class {:class ["foo"]} attrs)) nil)
               (js/React.DOM.div #js {:className "foo"} (sablono.interpreter/interpret attrs))))
      '[:div.a.b] '(js/React.DOM.div #js {:className "a b"})
      '[:div.a.b.c] '(js/React.DOM.div #js {:className "a b c"})
@@ -138,6 +138,11 @@
   (testing "attribute values are escaped"
     (are-html-expanded
      '[:div {:id "\""}] '(js/React.DOM.div #js {:id "\""})))
+  (testing "attributes are converted to their DOM equivalents"
+    (are-html-expanded
+     '[:div {:class "classy"}] '(js/React.DOM.div #js {:className "classy"})
+     '[:div {:data-foo-bar "baz"}] '(js/React.DOM.div #js {:dataFooBar "baz"})
+     '[:label {:for "foo"}] '(js/React.DOM.label #js {:htmlFor "foo"})))
   (testing "boolean attributes"
     (are-html-expanded
      '[:input {:type "checkbox" :checked true}]
@@ -210,8 +215,8 @@
    '[:li
      [:a {:href (str "#show/" (:key datum))}]
      [:div {:id (str "item" (:key datum))
-            :className ["class1" "class2"]}
-      [:span {:className "anchor"} (:name datum)]]]
+            :class ["class1" "class2"]}
+      [:span {:class "anchor"} (:name datum)]]]
    '(js/React.DOM.li
      nil
      (js/React.DOM.a
@@ -220,11 +225,11 @@
       #js {:id (str "item" (:key datum)), :className "class1 class2"}
       (js/React.DOM.span #js {:className "anchor"} (sablono.interpreter/interpret (:name datum)))))))
 
-(deftest test-issue-2-merge-classname
+(deftest test-issue-2-merge-class
   (are-html-expanded
-   '[:div.a {:className (if (true? true) "true" "false")}]
+   '[:div.a {:class (if (true? true) "true" "false")}]
    '(js/React.DOM.div #js {:className (sablono.util/join-classes ["a" (if (true? true) "true" "false")])})
-   '[:div.a.b {:className (if (true? true) ["true"] "false")}]
+   '[:div.a.b {:class (if (true? true) ["true"] "false")}]
    '(js/React.DOM.div #js {:className (sablono.util/join-classes ["a" "b" (if (true? true) ["true"] "false")])})))
 
 (deftest test-issue-3-recursive-js-literal

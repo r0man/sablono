@@ -12,17 +12,17 @@
     [] nil
     [{:a 1} {:b 2}]
     {:a 1 :b 2}
-    [{:a 1 :className :a} {:b 2 :className "b"} {:c 3 :className ["c"]}]
-    {:a 1 :b 2 :c 3 :className [:a "b" "c"]}))
+    [{:a 1 :class :a} {:b 2 :class "b"} {:c 3 :class ["c"]}]
+    {:a 1 :b 2 :c 3 :class [:a "b" "c"]}))
 
 (deftest test-normalize-element
   (are [element expected]
     (is (= expected (u/normalize-element element)))
     [:div] ["div" {} nil]
     [:div#foo] ["div" {:id "foo"} nil]
-    [:div.foo] ["div" {:className ["foo"]} nil]
-    [:div.a.b] ["div" {:className ["a" "b"]} nil]
-    [:div.a.b {:className "c"}] ["div" {:className ["a" "b" "c"]} nil]))
+    [:div.foo] ["div" {:class ["foo"]} nil]
+    [:div.a.b] ["div" {:class ["a" "b"]} nil]
+    [:div.a.b {:class "c"}] ["div" {:class ["a" "b" "c"]} nil]))
 
 (deftest test-react-symbol
   (are [tag expected]

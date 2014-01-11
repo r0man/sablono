@@ -165,48 +165,48 @@
          "<input id=\"foo\" type=\"hidden\" name=\"foo\" value=\"bar\">")))
 
 (deftest test-hidden-field-with-extra-atts
-  (is (= (html-str (html/hidden-field {:className "classy"} :foo "bar"))
-         "<input id=\"foo\" class=\"classy\" type=\"hidden\" name=\"foo\" value=\"bar\">")))
+  (is (= (html-str (html/hidden-field {:class "classy"} :foo "bar"))
+         "<input id=\"foo\" type=\"hidden\" name=\"foo\" value=\"bar\" class=\"classy\">")))
 
 (deftest test-text-field
   (is (= (html-str (html/text-field :foo))
          "<input id=\"foo\" type=\"text\" name=\"foo\">")))
 
 (deftest test-text-field-with-extra-atts
-  (is (= (html-str (html/text-field {:className "classy"} :foo "bar"))
-         "<input id=\"foo\" class=\"classy\" type=\"text\" name=\"foo\" value=\"bar\">")))
+  (is (= (html-str (html/text-field {:class "classy"} :foo "bar"))
+         "<input id=\"foo\" type=\"text\" name=\"foo\" value=\"bar\" class=\"classy\">")))
 
 (deftest test-check-box
   (is (= (html-str (html/check-box :foo true))
          "<input id=\"foo\" type=\"checkbox\" name=\"foo\" value=\"true\" checked=\"true\">")))
 
 (deftest test-check-box-with-extra-atts
-  (is (= (html-str (html/check-box {:className "classy"} :foo true 1))
-         "<input id=\"foo\" class=\"classy\" type=\"checkbox\" name=\"foo\" value=\"1\" checked=\"true\">")))
+  (is (= (html-str (html/check-box {:class "classy"} :foo true 1))
+         "<input id=\"foo\" type=\"checkbox\" name=\"foo\" value=\"1\" checked=\"true\" class=\"classy\">")))
 
 (deftest test-password-field
   (is (= (html-str (html/password-field :foo "bar"))
          "<input id=\"foo\" type=\"password\" name=\"foo\" value=\"bar\">")))
 
 (deftest test-password-field-with-extra-atts
-  (is (= (html-str (html/password-field {:className "classy"} :foo "bar"))
-         "<input id=\"foo\" class=\"classy\" type=\"password\" name=\"foo\" value=\"bar\">")))
+  (is (= (html-str (html/password-field {:class "classy"} :foo "bar"))
+         "<input id=\"foo\" type=\"password\" name=\"foo\" value=\"bar\" class=\"classy\">")))
 
 (deftest test-email-field
   (is (= (html-str (html/email-field :foo "bar"))
          "<input id=\"foo\" type=\"email\" name=\"foo\" value=\"bar\">")))
 
 (deftest test-email-field-with-extra-atts
-  (is (= (html-str (html/email-field {:className "classy"} :foo "bar"))
-         "<input id=\"foo\" class=\"classy\" type=\"email\" name=\"foo\" value=\"bar\">")))
+  (is (= (html-str (html/email-field {:class "classy"} :foo "bar"))
+         "<input id=\"foo\" type=\"email\" name=\"foo\" value=\"bar\" class=\"classy\">")))
 
 (deftest test-radio-button
   (is (= (html-str (html/radio-button :foo true 1))
          "<input id=\"foo-1\" type=\"radio\" name=\"foo\" value=\"1\" checked=\"true\">")))
 
 (deftest test-radio-button-with-extra-atts
-  (is (= (html-str (html/radio-button {:className "classy"} :foo true 1))
-         "<input id=\"foo-1\" class=\"classy\" type=\"radio\" name=\"foo\" value=\"1\" checked=\"true\">")))
+  (is (= (html-str (html/radio-button {:class "classy"} :foo true 1))
+         "<input id=\"foo-1\" type=\"radio\" name=\"foo\" value=\"1\" checked=\"true\" class=\"classy\">")))
 
 ;; (deftest test-select-options
 ;;   (are [x y] (= (html-str x) y)
@@ -237,8 +237,8 @@
 ;;   (let [options ["op1" "op2"]
 ;;         selected "op1"
 ;;         select-options (html-str (select-options options selected))]
-;;     (is (= (html-str (drop-down {:className "classy"} :foo options selected))
-;;            (str "<select class=\"classy\" id=\"foo\" name=\"foo\">"
+;;     (is (= (html-str (drop-down {:class "classy"} :foo options selected))
+;;            (str "<select id=\"foo\" name=\"foo\" class=\"classy\">"
 ;;                 select-options "</select>")))))
 
 (deftest test-text-area
@@ -246,8 +246,8 @@
          "<textarea id=\"foo\" name=\"foo\" value=\"bar\">bar</textarea>")))
 
 (deftest test-text-area-field-with-extra-atts
-  (is (= (html-str (html/text-area {:className "classy"} :foo "bar"))
-         "<textarea id=\"foo\" class=\"classy\" name=\"foo\" value=\"bar\">bar</textarea>")))
+  (is (= (html-str (html/text-area {:class "classy"} :foo "bar"))
+         "<textarea id=\"foo\" name=\"foo\" class=\"classy\" value=\"bar\">bar</textarea>")))
 
 (deftest test-text-area-escapes
   (is (= (html-str (html/text-area :foo "bar</textarea>"))
@@ -258,32 +258,32 @@
          "<input id=\"foo\" type=\"file\" name=\"foo\">")))
 
 (deftest test-file-field-with-extra-atts
-  (is (= (html-str (html/file-upload {:className "classy"} :foo))
-         "<input id=\"foo\" class=\"classy\" type=\"file\" name=\"foo\">")))
+  (is (= (html-str (html/file-upload {:class "classy"} :foo))
+         "<input id=\"foo\" type=\"file\" name=\"foo\" class=\"classy\">")))
 
 (deftest test-label
   (is (= (html-str (html/label :foo "bar"))
          "<label for=\"foo\"><span>bar</span></label>")))
 
 (deftest test-label-with-extra-atts
-  (is (= (html-str (html/label {:className "classy"} :foo "bar"))
-         "<label class=\"classy\" for=\"foo\"><span>bar</span></label>")))
+  (is (= (html-str (html/label {:class "classy"} :foo "bar"))
+         "<label for=\"foo\" class=\"classy\"><span>bar</span></label>")))
 
 (deftest test-submit
   (is (= (html-str (html/submit-button "bar"))
          "<input type=\"submit\" value=\"bar\">")))
 
 (deftest test-submit-button-with-extra-atts
-  (is (= (html-str (html/submit-button {:className "classy"} "bar"))
-         "<input class=\"classy\" type=\"submit\" value=\"bar\">")))
+  (is (= (html-str (html/submit-button {:class "classy"} "bar"))
+         "<input type=\"submit\" value=\"bar\" class=\"classy\">")))
 
 (deftest test-reset-button
   (is (= (html-str (html/reset-button "bar"))
          "<input type=\"reset\" value=\"bar\">")))
 
 (deftest test-reset-button-with-extra-atts
-  (is (= (html-str (html/reset-button {:className "classy"} "bar"))
-         "<input class=\"classy\" type=\"reset\" value=\"bar\">")))
+  (is (= (html-str (html/reset-button {:class "classy"} "bar"))
+         "<input type=\"reset\" value=\"bar\" class=\"classy\">")))
 
 (deftest test-form-to
   (is (= (html-str (html/form-to [:post "/path"] "foo" "bar"))
@@ -296,8 +296,8 @@
               "<span>foo</span><span>bar</span></form>"))))
 
 (deftest test-form-to-with-extr-atts
-  (is (= (html-str (html/form-to {:className "classy"} [:post "/path"] "foo" "bar"))
-         "<form class=\"classy\" method=\"POST\" action=\"/path\"><span>foo</span><span>bar</span></form>")))
+  (is (= (html-str (html/form-to {:class "classy"} [:post "/path"] "foo" "bar"))
+         "<form method=\"POST\" action=\"/path\" class=\"classy\"><span>foo</span><span>bar</span></form>")))
 
 (deftest test-with-group
   (testing "hidden-field"
@@ -335,14 +335,14 @@
            "<label for=\"foo-bar\"><span>Bar</span></label><input id=\"foo-var\" type=\"text\" name=\"foo[var]\">"))))
 
 (deftest test-merge-attributes-let
-  (let [classes (merge {:id "a"} {:className "b"})]
+  (let [classes (merge {:id "a"} {:class "b"})]
     (is (= "<div id=\"a\" class=\"b\">content</div>" (html-str [:div classes "content"])))))
 
-(deftest test-issue-2-merge-classname
+(deftest test-issue-2-merge-class
   (is (= "<div class=\"a true\"></div>"
-         (html-str [:div.a {:className (if (true? true) "true" "false")}])))
+         (html-str [:div.a {:class (if (true? true) "true" "false")}])))
   (is (= "<div class=\"a b true\"></div>"
-         (html-str [:div.a.b {:className (if (true? true) ["true"] "false")}]))))
+         (html-str [:div.a.b {:class (if (true? true) ["true"] "false")}]))))
 
 (deftest test-issue-3-recursive-js-value
   (is (= "<div class=\"interaction-row\" style=\"position:relative;\"></div>"
