@@ -93,6 +93,13 @@
   [s attr]
   (if s (replace s (attr-pattern attr) "")))
 
+(defn strip-outer
+  "Strip the outer HTML tag from the string `s`."
+  [s]
+  (if s
+    (-> (replace s #"^\s*<[^>]+>\s*" "")
+        (replace #"\s*</[^>]+>\s*$" ""))))
+
 #+cljs
 (extend-protocol ToString
   cljs.core.Keyword
