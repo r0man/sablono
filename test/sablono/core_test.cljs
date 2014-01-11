@@ -10,6 +10,10 @@
             [sablono.util :refer [to-str]]
             [sablono.test :refer [render-dom]]))
 
+(deftest test-render
+  (is (re-matches #"<div class=\"b\" id=\"a\" data-reactid=\".*\" data-react-checksum=\".*\">c</div>"
+                  (html/render (html [:div#a.b "c"])))))
+
 (deftest tag-names
   (testing "basic tags"
     (is (= (html-str [:div]) "<div></div>"))

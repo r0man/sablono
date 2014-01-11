@@ -59,6 +59,14 @@
     `(do (defn ~fn-name# ~@fdecl)
          (def ~name (sablono.core/wrap-attrs ~fn-name#)))))
 
+#+cljs
+(defn render
+  "Render the React `component` as an HTML string."
+  [component]
+  (let [html (atom nil)]
+    (.renderComponentToString js/React component #(reset! html %))
+    (deref html)))
+
 (defn include-js
   "Include a list of external javascript files."
   [& scripts]
