@@ -45,11 +45,12 @@ used in Clojure.
 An `input` element with event listeners attached to it would look like
 this in *Ŝablono*:
 
-	(html [:input
-		   {:auto-complete "off"
+    (html [:input
+           {:auto-complete "off"
             :class "autocomplete"
             :on-change #(on-change %1)
-            :on-key-down #(on-key-down %1)}])
+            :on-key-down #(on-key-down %1)
+			:type "text"}])
 
 ## Thanks
 
