@@ -10,7 +10,8 @@
                  [org.clojure/clojure "1.5.1"]
                  [org.clojure/clojurescript "0.0-2138"]]
   :cljsbuild {:builds []}
-  :profiles {:dev {:dependencies [[crate "0.2.5" :scope "dev"]
+  :profiles {:dev {:dependencies [[cloact "0.1.0"]
+                                  [crate "0.2.5" :scope "dev"]
                                   [prismatic/dommy "0.1.2"]]
                    :plugins [[com.keminglabs/cljx "0.3.2"] ;; Must be before Austin: https://github.com/cemerick/austin/issues/37
                              [com.cemerick/austin "0.1.3"]
