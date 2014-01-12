@@ -96,9 +96,8 @@
 (defn strip-outer
   "Strip the outer HTML tag from the string `s`."
   [s]
-  (if s
-    (-> (replace s #"^\s*<[^>]+>\s*" "")
-        (replace #"\s*</[^>]+>\s*$" ""))))
+  (if s (-> (replace s #"^\s*<[^>]+>\s*" "")
+            (replace #"\s*</[^>]+>\s*$" ""))))
 
 #+cljs
 (extend-protocol ToString
