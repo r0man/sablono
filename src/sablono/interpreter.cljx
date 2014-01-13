@@ -17,16 +17,20 @@
 (defn element
   "Render an element vector as a HTML element."
   [element]
-  (let [[tag attrs content] (normalize-element element)
-        dom-fn (aget js/React.DOM (name tag))]
-    (cond
-     (and (sequential? content)
-          (= 1 (count content))
-          (string? (first content)))
-     (dom-fn (attributes attrs) (interpret (first content)))
-     content
-     (dom-fn (attributes attrs) (interpret content))
-     :else (dom-fn (attributes attrs)))))
+  (let [[tag attrs content] (normalize-element element)]
+    (if-let [dom-fn (aget js/React.DOM (name tag))]
+      (dom-fn
+       (attributes attrs)
+       (cond
+        (and (sequential? content)
+             (string? (first content))
+             (empty? (rest content)))
+        (interpret (first content))
+        content
+        (interpret content)
+        :else nil))
+      (throw (ex-info (str "Can't interpret unsupported HTML tag: " (name tag))
+                      {:tag tag :attrs attrs :content content})))))
 
 
 (defn- interpret-seq [s]
