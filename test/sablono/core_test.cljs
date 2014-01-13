@@ -294,9 +294,9 @@
   (testing "radio-button"
     (is (= (html-str (with-group :foo (html/radio-button :bar false "val")))
            "<input id=\"foo-bar-val\" type=\"radio\" name=\"foo[bar]\" value=\"val\">")))
-  ;; (testing "drop-down"
-  ;;   (is (= (html-str (with-group :foo (html/drop-down :bar [])))
-  ;;          (str "<select id=\"foo-bar\" name=\"foo[bar]\"></select>"))))
+  (testing "drop-down"
+    (is (= (html-str (with-group :foo (html/drop-down :bar [])))
+           (str "<select id=\"foo-bar\" name=\"foo[bar]\"></select>"))))
   (testing "text-area"
     (is (= (html-str (with-group :foo (html/text-area :bar)))
            "<textarea id=\"foo-bar\" name=\"foo[bar]\" value=\"\"></textarea>")))
