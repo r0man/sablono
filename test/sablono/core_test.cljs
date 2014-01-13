@@ -123,12 +123,12 @@
 ;; ;;     (is (= (html {:mode :sgml} [:html [:link] (list [:link])])
 ;; ;;            "<html><link><link></html>"))))
 
-(deftest include-js-test
-  (is (= (html/include-js "foo.js")
-         (list [:script {:type "text/javascript", :src "foo.js"}])))
-  (is (= (html/include-js "foo.js" "bar.js")
-         (list [:script {:type "text/javascript", :src "foo.js"}]
-               [:script {:type "text/javascript", :src "bar.js"}]))))
+;; (deftest include-js-test
+;;   (is (= (html/include-js "foo.js")
+;;          (list [:script {:type "text/javascript", :src "foo.js"}])))
+;;   (is (= (html/include-js "foo.js" "bar.js")
+;;          (list [:script {:type "text/javascript", :src "foo.js"}]
+;;                [:script {:type "text/javascript", :src "bar.js"}]))))
 
 (deftest include-css-test
   (is (= (html/include-css "foo.css")
@@ -137,10 +137,10 @@
          (list [:link {:type "text/css", :href "foo.css", :rel "stylesheet"}]
                [:link {:type "text/css", :href "bar.css", :rel "stylesheet"}]))))
 
-(deftest javascript-tag-test
-  (is (= (html/javascript-tag "alert('hello');")
-         [:script {:type "text/javascript"}
-          "//<![CDATA[\nalert('hello');\n//]]>"])))
+;; (deftest javascript-tag-test
+;;   (is (= (html/javascript-tag "alert('hello');")
+;;          [:script {:type "text/javascript"}
+;;           "//<![CDATA[\nalert('hello');\n//]]>"])))
 
 (deftest link-to-test
   (is (= (html/link-to "/")
