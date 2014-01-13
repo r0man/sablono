@@ -29,9 +29,7 @@
         content
         (interpret content)
         :else nil))
-      (throw (ex-info (str "Can't interpret unsupported HTML tag: " (name tag))
-                      {:tag tag :attrs attrs :content content})))))
-
+      (throw (ex-info "Unsupported HTML tag" {:tag tag :attrs attrs :content content})))))
 
 (defn- interpret-seq [s]
   (into-array (map interpret s)))
