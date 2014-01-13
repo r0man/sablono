@@ -31,7 +31,6 @@
   (testing "empty tags"
     (is (= (html-str [:div]) "<div></div>"))
     (is (= (html-str [:h1]) "<h1></h1>"))
-    ;; [:script] "<script></script>"
     (is (= (html-str [:text]) "<text></text>"))
     (is (= (html-str [:a]) "<a></a>"))
     (is (= (html-str [:iframe]) "<iframe></iframe>"))
