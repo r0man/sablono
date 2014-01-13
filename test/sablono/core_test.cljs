@@ -97,11 +97,10 @@
   ;;      [:span ^String string] "<span>x</span>")))
   (testing "optimized forms"
     (is (= (html-str [:ul (for [n (range 3)] [:li n])]) "<ul><li>0</li><li>1</li><li>2</li></ul>"))
-    ;; (is (= (html [:div (if true
-    ;;                      [:span "foo"]
-    ;;                      [:span "bar"])])
-    ;;        "<div><span>foo</span></div>"))
-    )
+    (is (= (html-str [:div (if true
+                             [:span "foo"]
+                             [:span "bar"])])
+           "<div><span>foo</span></div>")))
   (testing "values are evaluated only once"
     (let [times-called (atom 0)
           foo #(swap! times-called inc)]
