@@ -19,9 +19,15 @@
   [element]
   (let [[tag attrs content] (normalize-element element)
         dom-fn (aget js/React.DOM (name tag))]
-    (if content
-      (dom-fn (attributes attrs) (interpret content))
-      (dom-fn (attributes attrs)))))
+    (cond
+     (and (sequential? content)
+          (= 1 (count content))
+          (string? (first content)))
+     (dom-fn (attributes attrs) (interpret (first content)))
+     content
+     (dom-fn (attributes attrs) (interpret content))
+     :else (dom-fn (attributes attrs)))))
+
 
 (defn- interpret-seq [s]
   (into-array (map interpret s)))

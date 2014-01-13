@@ -216,38 +216,37 @@
   (is (= (html-str (html/radio-button {:class "classy"} :foo true 1))
          "<input id=\"foo-1\" type=\"radio\" name=\"foo\" value=\"1\" checked=\"true\" class=\"classy\">")))
 
-;; (deftest test-select-options
-;;   (are [x y] (= (html-str x) y)
-;;        (select-options ["foo" "bar" "baz"])
-;;        "<option>foo</option><option>bar</option><option>baz</option>"
-;;        (select-options ["foo" "bar"] "bar")
-;;        "<option>foo</option><option selected=\"selected\">bar</option>"
-;;        (select-options [["Foo" 1] ["Bar" 2]])
-;;        "<option value=\"1\">Foo</option><option value=\"2\">Bar</option>"
-;;        (select-options [["Foo" [1 2]] ["Bar" [3 4]]])
-;;        (str "<optgroup label=\"Foo\"><option>1</option><option>2</option></optgroup>"
-;;             "<optgroup label=\"Bar\"><option>3</option><option>4</option></optgroup>")
-;;        (select-options [["Foo" [["bar" 1] ["baz" 2]]]])
-;;        (str "<optgroup label=\"Foo\"><option value=\"1\">bar</option>"
-;;             "<option value=\"2\">baz</option></optgroup>")
-;;        (select-options [["Foo" [1 2]]] 2)
-;;        (str "<optgroup label=\"Foo\"><option>1</option>"
-;;             "<option selected=\"selected\">2</option></optgroup>")))
+(deftest test-select-options
+  (are [x y] (= x y)
+       (html-str (html/select-options ["foo" "bar" "baz"]))
+       "<option>foo</option><option>bar</option><option>baz</option>"
+       (html-str (html/select-options ["foo" "bar"] "bar"))
+       "<option>foo</option><option selected=\"true\">bar</option>"
+       (html-str (html/select-options [["Foo" 1] ["Bar" 2]]))
+       "<option value=\"1\">Foo</option><option value=\"2\">Bar</option>"
+       ;; (html-str (html/select-options [["Foo" [1 2]] ["Bar" [3 4]]]))
+       ;; (str "<optgroup label=\"Foo\"><option>1</option><option>2</option></optgroup>"
+       ;;      "<optgroup label=\"Bar\"><option>3</option><option>4</option></optgroup>")
+       ;; (html-str (html/select-options [["Foo" [["bar" 1] ["baz" 2]]]]))
+       ;; (str "<optgroup label=\"Foo\"><option value=\"1\">bar</option>"
+       ;;      "<option value=\"2\">baz</option></optgroup>")
+       ;; (html-str (html/select-options [["Foo" [1 2]]] 2))
+       ;; (str "<optgroup label=\"Foo\"><option>1</option>"
+       ;;      "<option selected=\"true\">2</option></optgroup>")
+       ))
 
-;; (deftest test-drop-down
-;;   (let [options ["op1" "op2"]
-;;         selected "op1"
-;;         select-options (html-str (select-options options selected))]
-;;     (is (= (html-str (drop-down :foo options selected))
-;;            (str "<select id=\"foo\" name=\"foo\">" select-options "</select>")))))
+(deftest test-drop-down
+  (let [options ["op1" "op2"], selected "op1"
+        select-options (html-str (html/select-options options selected))]
+    (is (= (html-str (html/drop-down :foo options selected))
+           (str "<select id=\"foo\" name=\"foo\">" select-options "</select>")))))
 
-;; (deftest test-drop-down-with-extra-atts
-;;   (let [options ["op1" "op2"]
-;;         selected "op1"
-;;         select-options (html-str (select-options options selected))]
-;;     (is (= (html-str (drop-down {:class "classy"} :foo options selected))
-;;            (str "<select id=\"foo\" name=\"foo\" class=\"classy\">"
-;;                 select-options "</select>")))))
+(deftest test-drop-down-with-extra-atts
+  (let [options ["op1" "op2"], selected "op1"
+        select-options (html-str (html/select-options options selected))]
+    (is (= (html-str (html/drop-down {:class "classy"} :foo options selected))
+           (str "<select id=\"foo\" name=\"foo\" class=\"classy\">"
+                select-options "</select>")))))
 
 (deftest test-text-area
   (is (= (html-str (html/text-area :foo "bar"))
@@ -271,11 +270,11 @@
 
 (deftest test-label
   (is (= (html-str (html/label :foo "bar"))
-         "<label for=\"foo\"><span>bar</span></label>")))
+         "<label for=\"foo\">bar</label>")))
 
 (deftest test-label-with-extra-atts
   (is (= (html-str (html/label {:class "classy"} :foo "bar"))
-         "<label for=\"foo\" class=\"classy\"><span>bar</span></label>")))
+         "<label for=\"foo\" class=\"classy\">bar</label>")))
 
 (deftest test-submit
   (is (= (html-str (html/submit-button "bar"))
@@ -334,13 +333,13 @@
            "<input id=\"foo-bar\" type=\"file\" name=\"foo[bar]\">")))
   (testing "label"
     (is (= (html-str (with-group :foo (html/label :bar "Bar")))
-           "<label for=\"foo-bar\"><span>Bar</span></label>")))
+           "<label for=\"foo-bar\">Bar</label>")))
   (testing "multiple with-groups"
     (is (= (html-str (with-group :foo (with-group :bar (html/text-field :baz))))
            "<input id=\"foo-bar-baz\" type=\"text\" name=\"foo[bar][baz]\">")))
   (testing "multiple elements"
     (is (= (html-str (with-group :foo (html/label :bar "Bar") (html/text-field :var)))
-           "<label for=\"foo-bar\"><span>Bar</span></label><input id=\"foo-var\" type=\"text\" name=\"foo[var]\">"))))
+           "<label for=\"foo-bar\">Bar</label><input id=\"foo-var\" type=\"text\" name=\"foo[var]\">"))))
 
 (deftest test-merge-attributes-let
   (let [classes (merge {:id "a"} {:class "b"})]
