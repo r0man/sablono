@@ -115,11 +115,6 @@
          (list [:link {:type "text/css", :href "foo.css", :rel "stylesheet"}]
                [:link {:type "text/css", :href "bar.css", :rel "stylesheet"}]))))
 
-;; (deftest javascript-tag-test
-;;   (is (= (html/javascript-tag "alert('hello');")
-;;          [:script {:type "text/javascript"}
-;;           "//<![CDATA[\nalert('hello');\n//]]>"])))
-
 (deftest link-to-test
   (is (= (html/link-to "/")
          [:a {:href "/"} nil]))

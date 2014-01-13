@@ -73,12 +73,6 @@
   (for [style styles]
     [:link {:type "text/css", :href (as-str style), :rel "stylesheet"}]))
 
-;; (defn javascript-tag
-;;   "Wrap the supplied javascript up in script tags and a CDATA section."
-;;   [script]
-;;   [:script {:type "text/javascript"}
-;;    (str "//<![CDATA[\n" script "\n//]]>")])
-
 (defelem link-to
   "Wraps some content in a HTML hyperlink with the supplied URL."
   [url & content]
