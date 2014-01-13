@@ -67,12 +67,6 @@
     (.renderComponentToString js/React component #(reset! html %))
     (deref html)))
 
-;; (defn include-js
-;;   "Include a list of external javascript files."
-;;   [& scripts]
-;;   (for [script scripts]
-;;     [:script {:type "text/javascript", :src (as-str script)}]))
-
 (defn include-css
   "Include a list of external stylesheet files."
   [& styles]
