@@ -108,21 +108,6 @@
       (html [:div (foo)])
       (is (= @times-called 1)))))
 
-;; ;; (deftest render-modes
-;; ;;   (testing "closed tag"
-;; ;;     (is (= (html [:br]) "<br />"))
-;; ;;     (is (= (html {:mode :xml} [:br]) "<br />"))
-;; ;;     (is (= (html {:mode :sgml} [:br]) "<br>"))
-;; ;;     (is (= (html {:mode :html} [:br]) "<br>")))
-;; ;;   (testing "boolean attributes"
-;; ;;     (is (= (html {:mode :xml} [:input {:type "checkbox" :checked true}])
-;; ;;            "<input checked=\"checked\" type=\"checkbox\" />"))
-;; ;;     (is (= (html {:mode :sgml} [:input {:type "checkbox" :checked true}])
-;; ;;            "<input checked type=\"checkbox\">")))
-;; ;;   (testing "laziness and binding scope"
-;; ;;     (is (= (html {:mode :sgml} [:html [:link] (list [:link])])
-;; ;;            "<html><link><link></html>"))))
-
 ;; (deftest include-js-test
 ;;   (is (= (html/include-js "foo.js")
 ;;          (list [:script {:type "text/javascript", :src "foo.js"}])))
