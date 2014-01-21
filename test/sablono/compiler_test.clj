@@ -141,7 +141,7 @@
   (testing "attributes are converted to their DOM equivalents"
     (are-html-expanded
      '[:div {:class "classy"}] '(js/React.DOM.div #js {:className "classy"})
-     '[:div {:data-foo-bar "baz"}] '(js/React.DOM.div #js {:dataFooBar "baz"})
+     '[:div {:data-foo-bar "baz"}] '(js/React.DOM.div #js {:data-foo-bar "baz"})
      '[:label {:for "foo"}] '(js/React.DOM.label #js {:htmlFor "foo"})))
   (testing "boolean attributes"
     (are-html-expanded
@@ -154,7 +154,11 @@
      '[:span {:class nil} "foo"] '(js/React.DOM.span nil "foo")))
   (testing "empty attributes"
     (are-html-expanded
-     '[:span {} "foo"] '(js/React.DOM.span nil "foo"))))
+     '[:span {} "foo"] '(js/React.DOM.span nil "foo")))
+  (testing "tag with data attributes"
+    (are-html-expanded
+     [:div {:data-toggle "modal" :data-target "#modal"}]
+     '(js/React.DOM.div #js {:data-toggle "modal", :data-target "#modal"}))))
 
 (deftest compiled-tags
   (testing "tag content can be vars"

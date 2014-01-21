@@ -41,6 +41,15 @@
     [(Uri. "/foo")] "/foo"
     [(Uri. "localhost:3000/foo")] "localhost:3000/foo"))
 
+(deftest test-camelcase-key
+  (are [attr expected]
+    (is (= expected (u/camelcase-key attr)))
+    nil nil
+    "" ""
+    :data :data
+    :data-toggle :data-toggle
+    :http-equiv :httpEquiv))
+
 #+cljs
 (deftest test-to-uri
   (testing "with no base URL"

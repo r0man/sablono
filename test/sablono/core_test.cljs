@@ -73,7 +73,10 @@
   (testing "interpreted attributes"
     (let [attr-fn (constantly {:id "a" :class "b" :http-equiv "refresh"})]
       (is (= (html-str [:span (attr-fn) "foo"])
-             "<span id=\"a\" class=\"b\" httpequiv=\"refresh\">foo</span>")))))
+             "<span id=\"a\" class=\"b\" httpequiv=\"refresh\">foo</span>"))))
+  (testing "tag with data attributes"
+    (is (= (html-str [:div {:data-toggle "modal" :data-target "#modal"}])
+           "<div data-toggle=\"modal\" data-target=\"#modal\"></div>"))))
 
 (deftest compiled-tags
   (testing "tag content can be vars"

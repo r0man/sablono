@@ -2,7 +2,7 @@
   #+cljs (:import goog.Uri)
   (:refer-clojure :exclude [replace])
   (:require [clojure.set :refer [rename-keys]]
-            [clojure.string :refer [capitalize join split replace]]))
+            [clojure.string :refer [blank? capitalize join split replace]]))
 
 (def ^:dynamic *base-url* nil)
 
@@ -23,13 +23,13 @@
 (defn camelcase-key
   "Returns camelcased version of the key, e.g. :http-equiv becomes :httpEquiv."
   [k]
-  (let [[first-word & words] (split (name k) #"-")]
-    (if (empty? words)
-      k
-      (-> (map capitalize words)
-          (conj first-word)
-          join
-          keyword))))
+  (if k
+    (let [[first-word & words] (split (name k) #"-")]
+      (if (or (empty? words) (= "data" first-word))
+        k (-> (map capitalize words)
+              (conj first-word)
+              join
+              keyword)))))
 
 (defn html-to-dom-attrs
   "Converts all HTML attributes to their DOM equivalents."
