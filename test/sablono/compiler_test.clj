@@ -141,7 +141,8 @@
   (testing "attributes are converted to their DOM equivalents"
     (are-html-expanded
      '[:div {:class "classy"}] '(js/React.DOM.div #js {:className "classy"})
-     '[:div {:data-foo-bar "baz"}] '(js/React.DOM.div #js {:dataFooBar "baz"})
+     '[:div {:data-foo-bar "baz"}] '(js/React.DOM.div #js {:data-foo-bar "baz"})
+     '[:div {:content-editable "baz"}] '(js/React.DOM.div #js {:contentEditable "baz"})
      '[:label {:for "foo"}] '(js/React.DOM.label #js {:htmlFor "foo"})))
   (testing "boolean attributes"
     (are-html-expanded

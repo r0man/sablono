@@ -99,3 +99,10 @@
     "<div>x</div>" "x"
     "<div><div>x</div></div>" "<div>x</div>"
     " <div id=\"a\">\n<div>x</div></div> " "<div>x</div>"))
+
+(deftest test-camelcase
+  (are [attr expected]
+    (is (= expected (u/camelcase-key attr)))
+    :foo-bar :fooBar
+    :data-stuff :data-stuff
+    ))

@@ -24,7 +24,7 @@
   "Returns camelcased version of the key, e.g. :http-equiv becomes :httpEquiv."
   [k]
   (let [[first-word & words] (split (name k) #"-")]
-    (if (empty? words)
+    (if (or (empty? words) (= first-word "data"))
       k
       (-> (map capitalize words)
           (conj first-word)
