@@ -74,6 +74,9 @@
     (let [attr-fn (constantly {:id "a" :class "b" :http-equiv "refresh"})]
       (is (= (html-str [:span (attr-fn) "foo"])
              "<span id=\"a\" class=\"b\" httpequiv=\"refresh\">foo</span>"))))
+  (testing "tag with aria attributes"
+    (is (= (html-str [:div {:aria-disabled true}])
+           "<div aria-disabled=\"true\"></div>")))
   (testing "tag with data attributes"
     (is (= (html-str [:div {:data-toggle "modal" :data-target "#modal"}])
            "<div data-toggle=\"modal\" data-target=\"#modal\"></div>"))))

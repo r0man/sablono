@@ -155,6 +155,10 @@
   (testing "empty attributes"
     (are-html-expanded
      '[:span {} "foo"] '(js/React.DOM.span nil "foo")))
+  (testing "tag with aria attributes"
+    (are-html-expanded
+     [:div {:aria-disabled true}]
+     '(js/React.DOM.div #js {:aria-disabled true})))
   (testing "tag with data attributes"
     (are-html-expanded
      [:div {:data-toggle "modal" :data-target "#modal"}]

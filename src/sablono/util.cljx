@@ -25,7 +25,9 @@
   [k]
   (if k
     (let [[first-word & words] (split (name k) #"-")]
-      (if (or (empty? words) (= "data" first-word))
+      (if (or (empty? words)
+              (= "aria" first-word)
+              (= "data" first-word))
         k (-> (map capitalize words)
               (conj first-word)
               join

@@ -48,7 +48,8 @@
     "" ""
     :data :data
     :data-toggle :data-toggle
-    :http-equiv :httpEquiv))
+    :http-equiv :httpEquiv
+    :aria-checked :aria-checked))
 
 #+cljs
 (deftest test-to-uri
