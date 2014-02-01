@@ -4,7 +4,8 @@
             [clojure.walk :refer [postwalk-replace]]
             [sablono.util :refer [as-str to-uri]]
             [sablono.interpreter :as interpreter]
-            #+clj [sablono.compiler :as compiler]))
+            #+clj [sablono.compiler :as compiler]
+            #+cljs [goog.dom :as dom]))
 
 (defmacro html
   "Render Clojure data structures via Facebook's React."
@@ -72,6 +73,19 @@
   [& styles]
   (for [style styles]
     [:link {:type "text/css", :href (as-str style), :rel "stylesheet"}]))
+
+#+cljs
+(defn include-js
+  "Include the JavaScript library at `src`."
+  [src]
+  (dom/appendChild
+   (.-body (dom/getDocument))
+   (dom/createDom "script" #js {:src src})))
+
+#+cljs
+(defn include-react
+  "Include Facebook's React JavaScript library."
+  [] (include-js "http://fb.me/react-0.8.0.js"))
 
 (defelem link-to
   "Wraps some content in a HTML hyperlink with the supplied URL."
