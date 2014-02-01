@@ -146,9 +146,9 @@
   (testing "boolean attributes"
     (are-html-expanded
      '[:input {:type "checkbox" :checked true}]
-     '(js/React.DOM.input #js {:checked true, :type "checkbox"})
+     '(sablono.interpreter/input #js {:checked true, :type "checkbox"})
      '[:input {:type "checkbox" :checked false}]
-     '(js/React.DOM.input #js {:type "checkbox"})))
+     '(sablono.interpreter/input #js {:type "checkbox"})))
   (testing "nil attributes"
     (are-html-expanded
      '[:span {:class nil} "foo"] '(js/React.DOM.span nil "foo")))

@@ -81,8 +81,15 @@
 
 (defn react-symbol
   "Returns the React function to render `tag` as a symbol."
+  [tag] (symbol "js" (str "React.DOM." (name tag))))
+
+(defn react-fn
+  "Same as `react-symbol` but wrap input and text elements."
   [tag]
-  (symbol "js" (str "React.DOM." (name tag))))
+  (let [dom-fn (react-symbol tag)]
+    (if (contains? #{:input :textarea} (keyword tag))
+      (symbol "sablono.interpreter" (name tag))
+      dom-fn)))
 
 (defn attr-pattern
   "Returns a regular expression that matches the HTML attribute `attr`

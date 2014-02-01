@@ -69,8 +69,8 @@
   [element]
   (let [[tag attrs content] (normalize-element element)]
     (if content
-      `(~(react-symbol tag) ~(compile-attrs attrs) ~@(compile-react content))
-      `(~(react-symbol tag) ~(compile-attrs attrs)))))
+      `(~(react-fn tag) ~(compile-attrs attrs) ~@(compile-react content))
+      `(~(react-fn tag) ~(compile-attrs attrs)))))
 
 (defn- unevaluated?
   "True if the expression has not been evaluated."
@@ -161,8 +161,8 @@
   [[tag attrs & content]]
   (let [[tag attrs _] (normalize-element [tag attrs])]
     (if content
-      `(~(react-symbol tag) ~(compile-attrs attrs) ~@(compile-seq content))
-      `(~(react-symbol tag) ~(compile-attrs attrs)))))
+      `(~(react-fn tag) ~(compile-attrs attrs) ~@(compile-seq content))
+      `(~(react-fn tag) ~(compile-attrs attrs)))))
 
 (defmethod compile-element ::literal-tag-and-no-attributes
   [[tag & content]]
@@ -175,11 +175,11 @@
     `(let [~attrs-sym ~attrs]
        (if (map? ~attrs-sym)
          ~(if content
-            `(~(react-symbol tag) ~(compile-merge-attrs tag-attrs attrs-sym) ~@(compile-seq content))
-            `(~(react-symbol tag) ~(compile-merge-attrs tag-attrs attrs-sym) nil))
+            `(~(react-fn tag) ~(compile-merge-attrs tag-attrs attrs-sym) ~@(compile-seq content))
+            `(~(react-fn tag) ~(compile-merge-attrs tag-attrs attrs-sym) nil))
          ~(if attrs
-            `(~(react-symbol tag) ~(compile-attrs tag-attrs) ~@(compile-seq (cons attrs-sym content)))
-            `(~(react-symbol tag) ~(compile-attrs tag-attrs) nil))))))
+            `(~(react-fn tag) ~(compile-attrs tag-attrs) ~@(compile-seq (cons attrs-sym content)))
+            `(~(react-fn tag) ~(compile-attrs tag-attrs) nil))))))
 
 (defmethod compile-element :default
   [element]

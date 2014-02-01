@@ -5,6 +5,50 @@
 (defprotocol IInterpreter
   (interpret [this] "Interpret a Clojure data structure as a React fn call."))
 
+;; Taken from om, to hack around form elements.
+
+#+cljs
+(defn wrap-form-element [ctor]
+  (js/React.createClass
+   #js
+   {:getInitialState
+    (fn []
+      (this-as this #js {:value (aget (.-props this) "value")}))
+    :onChange
+    (fn [e]
+      (this-as
+       this
+       (let [handler (aget (.-props this) "onChange")]
+         (when-not (nil? handler)
+           (handler e)
+           (.setState this #js {:value (.. e -target -value)})))))
+    :componentWillReceiveProps
+    (fn [new-props]
+      (this-as this (.setState this #js {:value (aget new-props "value")})))
+    :render
+    (fn []
+      (this-as
+       this
+       (.transferPropsTo
+        this
+        (ctor #js {:value (str (aget (.-state this) "value"))
+                   :onChange (aget this "onChange")
+                   :children (aget (.-props this) "children")}))))}))
+
+#+cljs
+(def input (wrap-form-element js/React.DOM.input))
+
+#+cljs
+(def textarea (wrap-form-element js/React.DOM.textarea))
+
+#+cljs
+(defn dom-fn [tag]
+  (if-let [dom-fn (aget js/React.DOM (name tag))]
+    (get {:input sablono.interpreter/input
+          :textarea sablono.interpreter/textarea}
+         (keyword tag) dom-fn)
+    (throw (ex-info (str "Unsupported HTML tag: " (name tag)) {:tag tag}))))
+
 #+cljs
 (defn attributes [attrs]
   (let [attrs (clj->js (html-to-dom-attrs attrs))
@@ -18,18 +62,16 @@
   "Render an element vector as a HTML element."
   [element]
   (let [[tag attrs content] (normalize-element element)]
-    (if-let [dom-fn (aget js/React.DOM (name tag))]
-      (dom-fn
-       (attributes attrs)
-       (cond
-        (and (sequential? content)
-             (string? (first content))
-             (empty? (rest content)))
-        (interpret (first content))
-        content
-        (interpret content)
-        :else nil))
-      (throw (ex-info "Unsupported HTML tag" {:tag tag :attrs attrs :content content})))))
+    ((dom-fn tag)
+     (attributes attrs)
+     (cond
+      (and (sequential? content)
+           (string? (first content))
+           (empty? (rest content)))
+      (interpret (first content))
+      content
+      (interpret content)
+      :else nil))))
 
 (defn- interpret-seq [s]
   (into-array (map interpret s)))
