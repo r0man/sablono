@@ -2,13 +2,13 @@
   (:require-macros [cemerick.cljs.test :refer [is deftest testing]]
                    [dommy.macros :refer [node]]
                    [sablono.core :refer [html]])
-  (:require [cloact.core :as cloact]
+  (:require [reagent.core :as reagent]
             [crate.core :as crate]
             [dommy.template :as template]
             [goog.dom :as gdom]
             [sablono.test :refer [body]]))
 
-(defn cloact-template [datum]
+(defn reagent-template [datum]
   [:li [:a {:href (str "#show/" (:key datum))}]
    [:div {:id (str "item" (:key datum))
           :className ["class1" "class2"]}
@@ -76,8 +76,8 @@
       (goog.dom/append ul child))
     (goog.dom/append root ul)))
 
-(defn render-cloact [root children]
-  (cloact/render-component [:ul children] root))
+(defn render-reagent [root children]
+  (reagent/render-component [:ul children] root))
 
 (defn render-react [root children]
   (let [render-fn #(this-as this (html [:ul children]))
@@ -87,7 +87,7 @@
 (defn time-test [data]
   (for [[key li-fn render-fn]
         (shuffle
-         [[:cloact cloact-template render-cloact]
+         [[:reagent reagent-template render-reagent]
           [:crate crate-template render-append]
           [:dommy dommy-template render-append]
           [:dommy-compiled dommy-compiled render-append]
