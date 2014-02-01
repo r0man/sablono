@@ -11,8 +11,9 @@
                  [org.clojure/clojurescript "0.0-2156"]]
   :cljsbuild {:builds []}
   :profiles {:dev {:dependencies [[reagent "0.2.1"]
-                                  [crate "0.2.5" :scope "dev"]
-                                  [prismatic/dommy "0.1.2"]]
+                                  [crate "0.2.5"]
+                                  [prismatic/dommy "0.1.2"]
+                                  [om "0.3.1"]]
                    :plugins [[com.keminglabs/cljx "0.3.2"] ;; Must be before Austin: https://github.com/cemerick/austin/issues/37
                              [com.cemerick/austin "0.1.3"]
                              [com.cemerick/clojurescript.test "0.2.2"]
