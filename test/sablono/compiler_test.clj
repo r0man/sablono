@@ -127,7 +127,7 @@
      '(js/React.DOM.p nil (js/React.DOM.span nil (js/React.DOM.a nil "foo"))))))
 
 (deftest tag-attributes
-  (testing "tag with blank attribute map"
+  (testing "tag with empty attribute map"
     (are-html-expanded
      '[:div {}] '(js/React.DOM.div nil)))
   (testing "tag with populated attribute map"
@@ -148,10 +148,10 @@
      '[:input {:type "checkbox" :checked true}]
      '(sablono.interpreter/input #js {:checked true, :type "checkbox"})
      '[:input {:type "checkbox" :checked false}]
-     '(sablono.interpreter/input #js {:type "checkbox"})))
+     '(sablono.interpreter/input #js {:checked false, :type "checkbox"})))
   (testing "nil attributes"
     (are-html-expanded
-     '[:span {:class nil} "foo"] '(js/React.DOM.span nil "foo")))
+     '[:span {:class nil} "foo"] '(js/React.DOM.span #js {:className nil} "foo")))
   (testing "empty attributes"
     (are-html-expanded
      '[:span {} "foo"] '(js/React.DOM.span nil "foo")))

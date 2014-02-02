@@ -19,10 +19,12 @@
   (are [element expected]
     (is (= expected (u/normalize-element element)))
     [:div] ["div" {} nil]
+    [:div {:class nil}] ["div" {:class nil} nil]
     [:div#foo] ["div" {:id "foo"} nil]
     [:div.foo] ["div" {:class ["foo"]} nil]
     [:div.a.b] ["div" {:class ["a" "b"]} nil]
-    [:div.a.b {:class "c"}] ["div" {:class ["a" "b" "c"]} nil]))
+    [:div.a.b {:class "c"}] ["div" {:class ["a" "b" "c"]} nil]
+    [:div.a.b {:class nil}] ["div" {:class ["a" "b"]} nil]))
 
 (deftest test-react-symbol
   (are [tag expected]

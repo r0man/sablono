@@ -22,6 +22,8 @@
 (defmethod compile-attr :class [name value]
   {:class
    (cond
+    (nil? value)
+    nil
     (or (keyword? value)
         (string? value))
     value

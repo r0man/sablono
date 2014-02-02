@@ -68,11 +68,11 @@
   (when (not (or (keyword? tag) (symbol? tag) (string? tag)))
     (throw (ex-info (str tag " is not a valid element name.") {:tag tag :content content})))
   (let [[_ tag id class] (re-matches re-tag (name tag))
-        tag-attrs {:id id :class (if class (split class #"\."))}
+        tag-attrs (compact-map {:id id :class (if class (split class #"\."))})
         map-attrs (first content)]
     (if (map? map-attrs)
-      [tag (compact-map (merge-with-class tag-attrs map-attrs)) (next content)]
-      [tag (compact-map tag-attrs) content])))
+      [tag (merge-with-class tag-attrs map-attrs) (next content)]
+      [tag tag-attrs content])))
 
 (defn join-classes
   "Join the `classes` with a whitespace."
