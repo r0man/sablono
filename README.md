@@ -20,7 +20,7 @@ with [Om](https://github.com/swannodette/om) like this:
 
 	(ns example
 	  (:require [om.core :as om :include-macros true]
-				[sablono.core :as html :refer [html] :include-macros true]))
+				[sablono.core :as html :refer-macros [html]]))
 
 	(defn widget [data]
 	  (om/component
