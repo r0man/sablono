@@ -138,9 +138,9 @@
 (defn- input-field
   "Creates a new <input> element."
   [type name value]
-  [:input {:type  type
-           :name  (make-name name)
-           :id    (make-id name)
+  [:input {:type type
+           :name (make-name name)
+           :id (make-id name)
            :value value}])
 
 (defelem hidden-field
