@@ -211,8 +211,7 @@
      [:textarea
       {:name (make-name name)
        :id (make-id name)
-       :value (as-str value)}
-      (as-str value)]))
+       :value value}]))
 
 (defelem file-upload
   "Creates a file upload input."

@@ -31,7 +31,7 @@
        this
        (.transferPropsTo
         this
-        (ctor #js {:value (str (aget (.-state this) "value"))
+        (ctor #js {:value (aget (.-state this) "value")
                    :onChange (aget this "onChange")
                    :children (aget (.-props this) "children")}))))}))
 
