@@ -31,6 +31,14 @@ with [Om](https://github.com/swannodette/om) like this:
 
 	(om/root {} widget js/document.body)
 
+## HTML Tags
+
+*Ŝablono* only supports tags and attributes that can be handled by
+React. This means you can't have your own custom tags and attributes
+at the moment. For more details take a look at the
+[Tags and Attributes](http://facebook.github.io/react/docs/tags-and-attributes.html)
+section in the React documentation.
+
 ## HTML Attributes
 
 HTML attributes in
