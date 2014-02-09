@@ -81,7 +81,8 @@
               (js/React.DOM.div #js {:className "foo"} (sablono.interpreter/interpret attrs))))
      '[:div.a.b] '(js/React.DOM.div #js {:className "a b"})
      '[:div.a.b.c] '(js/React.DOM.div #js {:className "a b c"})
-     '[:div#foo.bar.baz] '(js/React.DOM.div #js {:id "foo", :className "bar baz"}))))
+     '[:div#foo.bar.baz] '(js/React.DOM.div #js {:id "foo", :className "bar baz"})
+     '[:div.jumbotron] '(js/React.DOM.div #js {:className "jumbotron"}))))
 
 (deftest tag-contents
   (testing "empty tags"

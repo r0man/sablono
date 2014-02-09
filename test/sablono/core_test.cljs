@@ -25,7 +25,8 @@
     (is (= (html-str [:div.foo (str "bar" "baz")]) "<div class=\"foo\">barbaz</div>"))
     (is (= (html-str [:div.a.b]) "<div class=\"a b\"></div>"))
     (is (= (html-str [:div.a.b.c]) "<div class=\"a b c\"></div>"))
-    (is (= (html-str [:div#foo.bar.baz]) "<div class=\"bar baz\" id=\"foo\"></div>"))))
+    (is (= (html-str [:div#foo.bar.baz]) "<div class=\"bar baz\" id=\"foo\"></div>"))
+    (is (= (html-str [:div.jumbotron]) "<div class=\"jumbotron\"></div>"))))
 
 (deftest tag-contents
   (testing "empty tags"
