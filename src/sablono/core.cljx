@@ -64,9 +64,7 @@
 (defn render
   "Render the React `component` as an HTML string."
   [component]
-  (let [html (atom nil)]
-    (.renderComponentToString js/React component #(reset! html %))
-    (deref html)))
+  (.renderComponentToString js/React component))
 
 (defn include-css
   "Include a list of external stylesheet files."
