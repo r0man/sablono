@@ -153,29 +153,28 @@
        ([name# value#] (sablono.core/input-field* (str '~input-type) name# value#)))))
 
 (defmacro gen-input-fields
-  "Generates the input fields for HTML5 inputs"
+  "Generates the input fields."
   []
-  (let [fields '[search email url tel number range date month week time datetime datetime-local color]]
+  (let [fields '[color
+                 date
+                 datetime
+                 datetime-local
+                 email
+                 hidden
+                 month
+                 number
+                 password
+                 range
+                 search
+                 tel
+                 text
+                 time
+                 url
+                 week]]
     `(do
        ~@(map gen-input-field fields))))
 
 (gen-input-fields)
-
-(defelem hidden-field
-  "Creates a hidden input field."
-  ([name] (hidden-field name nil))
-  ([name value] (input-field* "hidden" name value)))
-
-(defelem text-field
-  "Creates a new text input field."
-  ([name] (text-field name nil))
-  ([name value] (input-field* "text" name value)))
-
-(defelem password-field
-  "Creates a new password field."
-  ([name] (password-field name nil))
-  ([name value] (input-field* "password" name value)))
-
 
 (defelem check-box
   "Creates a check box."
