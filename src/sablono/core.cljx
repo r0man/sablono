@@ -160,6 +160,7 @@
                  datetime
                  datetime-local
                  email
+                 file
                  hidden
                  month
                  number
@@ -175,6 +176,8 @@
        ~@(map gen-input-field fields))))
 
 (gen-input-fields)
+
+(def file-upload file-field)
 
 (defelem check-box
   "Creates a check box."
@@ -225,11 +228,6 @@
       {:name (make-name name)
        :id (make-id name)
        :value value}]))
-
-(defelem file-upload
-  "Creates a file upload input."
-  [name]
-  (input-field* "file" name nil))
 
 (defelem label
   "Creates a label for an input field with the supplied name."
