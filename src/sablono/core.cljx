@@ -1,5 +1,5 @@
 (ns sablono.core
-  #+cljs (:require-macros [sablono.core :refer [defelem]])
+  #+cljs (:require-macros [sablono.core :refer [defelem gen-input-fields]])
   (:require [clojure.string :refer [upper-case]]
             [clojure.walk :refer [postwalk-replace]]
             [sablono.util :refer [as-str to-uri]]
@@ -135,7 +135,7 @@
   (reduce #(str %1 "-" %2)
           (conj *group* (as-str name))))
 
-(defn- input-field
+(defn- input-field*
   "Creates a new <input> element."
   [type name value]
   [:input {:type type
@@ -143,25 +143,41 @@
            :id (make-id name)
            :value value}])
 
-(defelem hidden-field
-  "Creates a hidden input field."
-  ([name] (hidden-field name nil))
-  ([name value] (input-field "hidden" name value)))
+#+clj
+(defn gen-input-field [input-type]
+  (let [fn-name (symbol (str input-type "-field"))
+        docstring (str "Creates a " input-type " input field.")]
+    `(defelem ~fn-name
+       ~docstring
+       ([name#] (~fn-name name# nil))
+       ([name# value#] (sablono.core/input-field* (str '~input-type) name# value#)))))
 
-(defelem text-field
-  "Creates a new text input field."
-  ([name] (text-field name nil))
-  ([name value] (input-field "text" name value)))
+(defmacro gen-input-fields
+  "Generates the input fields."
+  []
+  (let [fields '[color
+                 date
+                 datetime
+                 datetime-local
+                 email
+                 file
+                 hidden
+                 month
+                 number
+                 password
+                 range
+                 search
+                 tel
+                 text
+                 time
+                 url
+                 week]]
+    `(do
+       ~@(map gen-input-field fields))))
 
-(defelem password-field
-  "Creates a new password field."
-  ([name] (password-field name nil))
-  ([name value] (input-field "password" name value)))
+(gen-input-fields)
 
-(defelem email-field
-  "Creates a new email input field."
-  ([name] (email-field name nil))
-  ([name value] (input-field "email" name value)))
+(def file-upload file-field)
 
 (defelem check-box
   "Creates a check box."
@@ -212,11 +228,6 @@
       {:name (make-name name)
        :id (make-id name)
        :value value}]))
-
-(defelem file-upload
-  "Creates a file upload input."
-  [name]
-  (input-field "file" name nil))
 
 (defelem label
   "Creates a label for an input field with the supplied name."

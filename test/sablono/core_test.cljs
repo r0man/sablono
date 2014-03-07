@@ -186,6 +186,55 @@
   (is (= (html-str (html/email-field :foo "bar"))
          "<input value=\"bar\" type=\"email\" name=\"foo\" id=\"foo\">")))
 
+(deftest test-search-field
+  (is (= (html-str (html/search-field :foo "bar"))
+         "<input value=\"bar\" type=\"search\" name=\"foo\" id=\"foo\">")))
+
+(deftest test-url-field
+  (is (= (html-str (html/url-field :foo "bar"))
+         "<input value=\"bar\" type=\"url\" name=\"foo\" id=\"foo\">")))
+
+(deftest test-tel-field
+  (is (= (html-str (html/tel-field :foo "bar"))
+         "<input value=\"bar\" type=\"tel\" name=\"foo\" id=\"foo\">")))
+
+(deftest test-number-field
+  (is (= (html-str (html/number-field :foo "bar"))
+         "<input value=\"bar\" type=\"number\" name=\"foo\" id=\"foo\">")))
+
+(deftest test-range-field
+  (is (= (html-str (html/range-field :foo "bar"))
+         "<input value=\"bar\" type=\"range\" name=\"foo\" id=\"foo\">")))
+
+(deftest test-date-field
+  (is (= (html-str (html/date-field :foo "bar"))
+         "<input value=\"bar\" type=\"date\" name=\"foo\" id=\"foo\">")))
+
+(deftest test-month-field
+  (is (= (html-str (html/month-field :foo "bar"))
+         "<input value=\"bar\" type=\"month\" name=\"foo\" id=\"foo\">")))
+
+(deftest test-week-field
+  (is (= (html-str (html/week-field :foo "bar"))
+         "<input value=\"bar\" type=\"week\" name=\"foo\" id=\"foo\">")))
+
+(deftest test-time-field
+  (is (= (html-str (html/time-field :foo "bar"))
+         "<input value=\"bar\" type=\"time\" name=\"foo\" id=\"foo\">")))
+
+(deftest test-datetime-field
+  (is (= (html-str (html/datetime-field :foo "bar"))
+         "<input value=\"bar\" type=\"datetime\" name=\"foo\" id=\"foo\">")))
+
+(deftest test-datetime-local-field
+  (is (= (html-str (html/datetime-local-field :foo "bar"))
+         "<input value=\"bar\" type=\"datetime-local\" name=\"foo\" id=\"foo\">")))
+
+(deftest test-color-field
+  (is (= (html-str (html/color-field :foo "bar"))
+         "<input value=\"bar\" type=\"color\" name=\"foo\" id=\"foo\">")))
+
+
 (deftest test-email-field-with-extra-atts
   (is (= (html-str (html/email-field {:class "classy"} :foo "bar"))
          "<input value=\"bar\" type=\"email\" name=\"foo\" id=\"foo\" class=\"classy\">")))
