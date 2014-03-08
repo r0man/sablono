@@ -6,6 +6,15 @@
             #+clj [clojure.test :refer :all]
             #+cljs [cemerick.cljs.test :as t]))
 
+(deftest test-compact-map
+  (are [x expected]
+    (is (= expected (u/compact-map x)))
+    nil nil
+    {} {}
+    {:x nil} {}
+    {:x []} {}
+    {:x ["x"]} {:x ["x"]}))
+
 (deftest test-merge-with-class
   (are [maps expected]
     (is (= expected (apply u/merge-with-class maps)))
@@ -13,7 +22,29 @@
     [{:a 1} {:b 2}]
     {:a 1 :b 2}
     [{:a 1 :class :a} {:b 2 :class "b"} {:c 3 :class ["c"]}]
+    {:a 1 :b 2 :c 3 :class [:a "b" "c"]}
+    [{:a 1 :class :a} {:b 2 :class "b"} {:c 3 :class (seq ["c"])}]
     {:a 1 :b 2 :c 3 :class [:a "b" "c"]}))
+
+(deftest test-strip-css
+  (are [x expected]
+    (is (= expected (u/strip-css x)))
+    nil nil
+    "" ""
+    "foo" "foo"
+    "#foo" "foo"
+    ".foo" "foo"))
+
+(deftest test-match-tag
+  (are [tag expected]
+    (is (= expected (u/match-tag tag)))
+    :div ["div" nil []]
+    :div#foo ["div" "foo" []]
+    :div#foo.bar ["div" "foo" ["bar"]]
+    :div.bar#foo ["div" "foo" ["bar"]]
+    :div#foo.bar.baz ["div" "foo" ["bar" "baz"]]
+    :div.bar.baz#foo ["div" "foo" ["bar" "baz"]]
+    :div.bar#foo.baz ["div" "foo" ["bar" "baz"]]))
 
 (deftest test-normalize-element
   (are [element expected]

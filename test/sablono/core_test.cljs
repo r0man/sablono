@@ -401,4 +401,8 @@
                         [:span.caret]]
                        [:ul.dropdown-menu {:role "menu" :style {:left 0}}]]])))))
 
+(deftest test-issue-22-id-after-class
+  (is (= "<div class=\"well\" id=\"setup\"></div>"
+         (html-str [:div.well#setup]))))
+
 (comment (run-tests))

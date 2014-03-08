@@ -263,3 +263,8 @@
           #js {:className "caret"}))
         (js/React.DOM.ul
          #js {:role "menu", :style #js {:left 0}, :className "dropdown-menu"}))))))
+
+(deftest test-issue-22-id-after-class
+  (are-html-expanded
+   [:div.well#setup]
+   '(js/React.DOM.div #js {:id "setup", :className "well"})))
