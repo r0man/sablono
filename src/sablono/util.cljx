@@ -18,7 +18,7 @@
   (apply str (map to-str xs)))
 
 (defn camel-case
-  "Returns camelcased version of the key, e.g. :http-equiv becomes :httpEquiv."
+  "Returns camel case version of the key, e.g. :http-equiv becomes :httpEquiv."
   [k]
   (if k
     (let [[first-word & words] (split (name k) #"-")]
@@ -48,7 +48,7 @@
    m (keys m)))
 
 (defn merge-with-class
-  "Like clojure.core/merge but concat :class entries."
+  "Like clojure.core/merge but concatenate :class entries."
   [& maps]
   (let [classes (->> (mapcat #(cond
                                (list? %1) [%1]
@@ -65,7 +65,7 @@
   [s] (if s (replace s #"^[.#]" "")))
 
 (defn match-tag
-  "Match `s` as a CSS tag and return a vecotr of tag name, CSS id and
+  "Match `s` as a CSS tag and return a vector of tag name, CSS id and
   CSS classes."
   [s]
   (let [[tag-name & matches] (re-seq #"[#.]?[^#.]+" (name s))]
