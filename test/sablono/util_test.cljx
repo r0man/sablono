@@ -74,9 +74,9 @@
     [(Uri. "/foo")] "/foo"
     [(Uri. "localhost:3000/foo")] "localhost:3000/foo"))
 
-(deftest test-camelcase-key
+(deftest test-camel-case
   (are [attr expected]
-    (is (= expected (u/camelcase-key attr)))
+    (is (= expected (u/camel-case attr)))
     nil nil
     "" ""
     :data :data

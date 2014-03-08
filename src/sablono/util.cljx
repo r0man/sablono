@@ -17,7 +17,7 @@
   [& xs]
   (apply str (map to-str xs)))
 
-(defn camelcase-key
+(defn camel-case
   "Returns camelcased version of the key, e.g. :http-equiv becomes :httpEquiv."
   [k]
   (if k
@@ -33,7 +33,7 @@
 (defn html-to-dom-attrs
   "Converts all HTML attributes to their DOM equivalents."
   [attrs]
-  (let [dom-attrs (merge (zipmap (keys attrs) (map camelcase-key (keys attrs)))
+  (let [dom-attrs (merge (zipmap (keys attrs) (map camel-case (keys attrs)))
                          {:class :className :for :htmlFor})]
     (rename-keys attrs dom-attrs)))
 
