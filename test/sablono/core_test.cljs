@@ -67,7 +67,7 @@
   (testing "attribute values are escaped"
     (is (= (html-str [:div {:id "\""}]) "<div id=\"&quot;\"></div>")))
   (testing "boolean attributes"
-    (is (= (html-str [:input {:type "checkbox" :checked true}]) "<input type=\"checkbox\" checked=\"true\">"))
+    (is (= (html-str [:input {:type "checkbox" :checked true}]) "<input type=\"checkbox\" checked=\"\">"))
     (is (= (html-str [:input {:type "checkbox" :checked false}]) "<input type=\"checkbox\">")))
   (testing "nil attributes"
     (is (= (html-str [:span {:class nil} "foo"]) "<span>foo</span>")))
@@ -168,11 +168,11 @@
 
 (deftest test-check-box
   (is (= (html-str (html/check-box :foo true))
-         "<input value=\"true\" type=\"checkbox\" name=\"foo\" id=\"foo\" checked=\"true\">")))
+         "<input value=\"true\" type=\"checkbox\" name=\"foo\" id=\"foo\" checked=\"\">")))
 
 (deftest test-check-box-with-extra-atts
   (is (= (html-str (html/check-box {:class "classy"} :foo true 1))
-         "<input value=\"1\" type=\"checkbox\" name=\"foo\" id=\"foo\" checked=\"true\" class=\"classy\">")))
+         "<input value=\"1\" type=\"checkbox\" name=\"foo\" id=\"foo\" checked=\"\" class=\"classy\">")))
 
 (deftest test-password-field
   (is (= (html-str (html/password-field :foo "bar"))
@@ -234,25 +234,24 @@
   (is (= (html-str (html/color-field :foo "bar"))
          "<input value=\"bar\" type=\"color\" name=\"foo\" id=\"foo\">")))
 
-
 (deftest test-email-field-with-extra-atts
   (is (= (html-str (html/email-field {:class "classy"} :foo "bar"))
          "<input value=\"bar\" type=\"email\" name=\"foo\" id=\"foo\" class=\"classy\">")))
 
 (deftest test-radio-button
   (is (= (html-str (html/radio-button :foo true 1))
-         "<input value=\"1\" type=\"radio\" name=\"foo\" id=\"foo-1\" checked=\"true\">")))
+         "<input value=\"1\" type=\"radio\" name=\"foo\" id=\"foo-1\" checked=\"\">")))
 
 (deftest test-radio-button-with-extra-atts
   (is (= (html-str (html/radio-button {:class "classy"} :foo true 1))
-         "<input value=\"1\" type=\"radio\" name=\"foo\" id=\"foo-1\" checked=\"true\" class=\"classy\">")))
+         "<input value=\"1\" type=\"radio\" name=\"foo\" id=\"foo-1\" checked=\"\" class=\"classy\">")))
 
 (deftest test-select-options
   (are [x y] (= x y)
        (html-str (html/select-options ["foo" "bar" "baz"]))
        "<option>foo</option><option>bar</option><option>baz</option>"
        (html-str (html/select-options ["foo" "bar"] "bar"))
-       "<option>foo</option><option selected=\"true\">bar</option>"
+       "<option>foo</option><option selected=\"\">bar</option>"
        (html-str (html/select-options [["Foo" 1] ["Bar" 2]]))
        "<option value=\"1\">Foo</option><option value=\"2\">Bar</option>"
        ;; (html-str (html/select-options [["Foo" [1 2]] ["Bar" [3 4]]]))

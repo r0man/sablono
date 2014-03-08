@@ -28,7 +28,7 @@ with [Om](https://github.com/swannodette/om) like this:
 			  [:ul (for [n (range 1 10)]
 					 [:li n])]
 			  (html/submit-button "React!")])))
-	
+
 	(om/root widget {} {:target js/document.body})
 
 ## HTML Tags

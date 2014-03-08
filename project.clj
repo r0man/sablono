@@ -14,7 +14,7 @@
                                   [crate "0.2.5"]
                                   [prismatic/dommy "0.1.2"]]
                    :plugins [[com.keminglabs/cljx "0.3.2"] ;; Must be before Austin: https://github.com/cemerick/austin/issues/37
-                             [com.cemerick/austin "0.1.3"]
+                             [com.cemerick/austin "0.1.4"]
                              [com.cemerick/clojurescript.test "0.2.2"]
                              [lein-cljsbuild "1.0.2"]]
                    :hooks [cljx.hooks leiningen.cljsbuild]
