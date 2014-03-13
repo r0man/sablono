@@ -404,4 +404,16 @@
   (is (= "<div class=\"well\" id=\"setup\"></div>"
          (html-str [:div.well#setup]))))
 
+(deftest test-issue-23-conditionals
+  (are [form expected]
+    (is (= expected form))
+    (html-str (let [x true] (when x [:div]))) "<div></div>"
+    (html-str (let [x false] (when x [:div]))) ""
+    (html-str (let [x false] (when-not x [:div]))) "<div></div>"
+    (html-str (let [x true] (when-not x [:div (str x)]))) ""
+    (html-str (let [x true] (if-not x [:div]))) ""
+    (html-str (let [x false] (if-not x [:div]))) "<div></div>"
+    (let [x true] (html-str (if-not x [:div]))) ""
+    (let [x false] (html-str (if-not x [:div]))) "<div></div>") )
+
 (comment (run-tests))
