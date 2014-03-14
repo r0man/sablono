@@ -11,8 +11,12 @@
             [sablono.test :refer [render-dom]]))
 
 (deftest test-render
-  (is (re-matches #"<div class=\"b\" id=\"a\" data-reactid=\".*\" data-react-checksum=\".*\">c</div>"
-                  (html/render (html [:div#a.b "c"])))))
+  (are [markup match]
+    (is (re-matches (re-pattern match) (html/render markup)))
+    (html [:div#a.b "c"])
+    "<div class=\"b\" id=\"a\" data-reactid=\".*\" data-react-checksum=\".*\">c</div>"
+    (html [:div (when true [:p "data"]) (if true [:p "data"] nil)])
+    "<div data-reactid=\".*\" data-react-checksum=\".*\"><p data-reactid=\".*\">data</p><p data-reactid=\".*\">data</p></div>"))
 
 (deftest tag-names
   (testing "basic tags"
