@@ -414,6 +414,10 @@
     (html-str (let [x true] (if-not x [:div]))) ""
     (html-str (let [x false] (if-not x [:div]))) "<div></div>"
     (let [x true] (html-str (if-not x [:div]))) ""
-    (let [x false] (html-str (if-not x [:div]))) "<div></div>") )
+    (let [x false] (html-str (if-not x [:div]))) "<div></div>"
+    (html-str [:div (if true {:class "test"})]) "<div class=\"test\"></div>"
+    (html-str [:div (when true {:class "test"})]) "<div class=\"test\"></div>"
+    (html-str [:div (if-not false {:class "test"})]) "<div class=\"test\"></div>"
+    (html-str [:div (when-not false {:class "test"})]) "<div class=\"test\"></div>"))
 
 (comment (run-tests))
