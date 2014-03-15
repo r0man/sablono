@@ -72,7 +72,7 @@
     (if tag-name
       [tag-name
        (first (map strip-css (filter #(= \# (first %1)) matches)))
-       (map strip-css (filter #(= \. (first %1)) matches))]
+       (vec (map strip-css (filter #(= \. (first %1)) matches)))]
       (throw (ex-info (str "Can't match CSS tag: " s) {:tag s})))))
 
 (defn normalize-element

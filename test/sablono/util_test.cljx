@@ -44,7 +44,12 @@
     :div.bar#foo ["div" "foo" ["bar"]]
     :div#foo.bar.baz ["div" "foo" ["bar" "baz"]]
     :div.bar.baz#foo ["div" "foo" ["bar" "baz"]]
-    :div.bar#foo.baz ["div" "foo" ["bar" "baz"]]))
+    :div.bar#foo.baz ["div" "foo" ["bar" "baz"]])
+  (let [[tag id classes] (u/match-tag :div#foo.bar.baz)]
+    (is (= "div" tag))
+    (is (= "foo" id))
+    (is (= ["bar" "baz"] classes))
+    (is (vector? classes))))
 
 (deftest test-normalize-element
   (are [element expected]
@@ -55,7 +60,11 @@
     [:div.foo] ["div" {:class ["foo"]} nil]
     [:div.a.b] ["div" {:class ["a" "b"]} nil]
     [:div.a.b {:class "c"}] ["div" {:class ["a" "b" "c"]} nil]
-    [:div.a.b {:class nil}] ["div" {:class ["a" "b"]} nil]))
+    [:div.a.b {:class nil}] ["div" {:class ["a" "b"]} nil])
+  (let [[tag attrs & content] (u/normalize-element [:div.foo])]
+    (is (= "div" tag))
+    (is (= {:class ["foo"]} attrs))
+    (is (vector? (:class attrs)))))
 
 (deftest test-react-symbol
   (are [tag expected]

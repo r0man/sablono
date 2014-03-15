@@ -424,4 +424,9 @@
     (html-str [:div (if-not false {:class "test"})]) "<div class=\"test\"></div>"
     (html-str [:div (when-not false {:class "test"})]) "<div class=\"test\"></div>"))
 
+(deftest test-issue-24-attr-and-keyword-classes
+  (let [style-it (fn [p] {:placeholder (str p) :type "text"})]
+    (is (= (html-str [:input.helloworld (style-it "dinosaurs")])
+           "<input placeholder=\"dinosaurs\" type=\"text\" class=\"helloworld\">"))))
+
 (comment (run-tests))
