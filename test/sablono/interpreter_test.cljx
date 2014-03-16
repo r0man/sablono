@@ -11,4 +11,4 @@
     {:className ""} {}
     {:className "aa"} {"className" "aa"}
     {:className "aa bb"} {"className" "aa bb"}
-    {:className ["aa bb"]} {"className" ["aa bb"]}))
+    {:className ["aa bb"]} {"className" "aa bb"}))

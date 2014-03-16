@@ -268,3 +268,18 @@
   (are-html-expanded
    [:div.well#setup]
    '(js/React.DOM.div #js {:id "setup", :className "well"})))
+
+(deftest test-issue-25-comma-separated-class
+  (are-html-expanded
+   '[:div.c1.c2 "text"]
+   '(js/React.DOM.div #js {:className "c1 c2"} "text")
+   '[:div.aa (merge {:class "bb"})]
+   '(let* [attrs (merge {:class "bb"})]
+          (if (clojure.core/map? attrs)
+            (js/React.DOM.div
+             (sablono.interpreter/attributes
+              (sablono.util/merge-with-class {:class ["aa"]} attrs))
+             nil)
+            (js/React.DOM.div
+             #js {:className "aa"}
+             (sablono.interpreter/interpret attrs))))))

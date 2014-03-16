@@ -431,6 +431,12 @@
 
 (deftest test-issue-25-comma-separated-class
   (is (= (html-str [:div.c1.c2 "text"])
-         "<div class=\"c1 c2\">text</div>")))
+         "<div class=\"c1 c2\">text</div>"))
+  (is (= (html-str [:div.aa (merge {:class "bb"})])
+         "<div class=\"aa bb\"></div>"))
+  (is (= (let [input-classes ["large" "big"], autofocus true]
+           (html-str [:input.form-control
+                      (merge {:class input-classes})]))
+         "<input class=\"form-control large big\">")))
 
 (comment (run-tests))
