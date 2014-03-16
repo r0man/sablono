@@ -429,4 +429,8 @@
     (is (= (html-str [:input.helloworld (style-it "dinosaurs")])
            "<input placeholder=\"dinosaurs\" type=\"text\" class=\"helloworld\">"))))
 
+(deftest test-issue-25-comma-separated-class
+  (is (= (html-str [:div.c1.c2 "text"])
+         "<div class=\"c1 c2\">text</div>")))
+
 (comment (run-tests))
