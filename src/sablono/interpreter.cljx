@@ -8,10 +8,10 @@
 ;; Taken from om, to hack around form elements.
 
 #+cljs
-(defn wrap-form-element [ctor react-name]
+(defn wrap-form-element [ctor display-name]
   (js/React.createClass
    #js
-   {:displayName react-name
+   {:displayName display-name
     :getInitialState
     (fn []
       (this-as this #js {:value (aget (.-props this) "value")}))
