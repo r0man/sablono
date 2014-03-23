@@ -36,14 +36,9 @@
                    :onChange (aget this "onChange")
                    :children (aget (.-props this) "children")}))))}))
 
-#+cljs
-(def input (wrap-form-element js/React.DOM.input "OmInput"))
-
-#+cljs
-(def textarea (wrap-form-element js/React.DOM.textarea "OmTextarea"))
-
-#+cljs
-(def option (wrap-form-element js/React.DOM.option "OmOption"))
+#+cljs (def input (wrap-form-element js/React.DOM.input "Input"))
+#+cljs (def option (wrap-form-element js/React.DOM.option "Option"))
+#+cljs (def textarea (wrap-form-element js/React.DOM.textarea "Textarea"))
 
 #+cljs
 (defn dom-fn [tag]
