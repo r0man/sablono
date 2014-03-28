@@ -7,7 +7,7 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[com.facebook/react "0.9.0.1"]
-                 [org.clojure/clojure "1.5.1"]
+                 [org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-2197"]]
   :cljsbuild {:builds []}
   :profiles {:dev {:dependencies [[reagent "0.4.2"]
