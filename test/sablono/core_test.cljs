@@ -258,6 +258,8 @@
        "<option>foo</option><option selected=\"\">bar</option>"
        (html-str (html/select-options [["Foo" 1] ["Bar" 2]]))
        "<option value=\"1\">Foo</option><option value=\"2\">Bar</option>"
+       (html-str (html/select-options [["Foo" 1 true] ["Bar" 2]]))
+       "<option value=\"1\" disabled=\"\">Foo</option><option value=\"2\">Bar</option>"
        ;; (html-str (html/select-options [["Foo" [1 2]] ["Bar" [3 4]]]))
        ;; (str "<optgroup label=\"Foo\"><option>1</option><option>2</option></optgroup>"
        ;;      "<optgroup label=\"Bar\"><option>3</option><option>4</option></optgroup>")
