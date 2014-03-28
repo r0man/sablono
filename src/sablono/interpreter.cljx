@@ -67,8 +67,7 @@
      (attributes attrs)
      (cond
       (and (sequential? content)
-           (string? (first content))
-           (empty? (rest content)))
+           (= 1 (count content)))
       (interpret (first content))
       content
       (interpret content)

@@ -1,5 +1,6 @@
 (ns sablono.interpreter-test
-  #+cljs (:require-macros [cemerick.cljs.test :refer [are is deftest testing]])
+  #+cljs (:require-macros [cemerick.cljs.test :refer [are is deftest testing]]
+                          [sablono.test :refer [html-str]])
   (:require [sablono.interpreter :as i]
             #+cljs [cemerick.cljs.test :as t]))
 
@@ -12,3 +13,12 @@
     {:className "aa"} {"className" "aa"}
     {:className "aa bb"} {"className" "aa bb"}
     {:className ["aa bb"]} {"className" "aa bb"}))
+
+#+cljs
+(deftest test-interpret
+  (are [form expected]
+    (is (= expected (html-str (i/interpret form))))
+    [:div] "<div></div>"
+    [:div "x"] "<div>x</div>"
+    [:div "1"] "<div>1</div>"
+    [:div 1] "<div>1</div>"))

@@ -258,6 +258,8 @@
        "<option>foo</option><option selected=\"\">bar</option>"
        (html-str (html/select-options [["Foo" 1] ["Bar" 2]]))
        "<option value=\"1\">Foo</option><option value=\"2\">Bar</option>"
+       (html-str (html/select-options [["Foo" 1 true] ["Bar" 2]]))
+       "<option value=\"1\" disabled=\"\">Foo</option><option value=\"2\">Bar</option>"
        ;; (html-str (html/select-options [["Foo" [1 2]] ["Bar" [3 4]]]))
        ;; (str "<optgroup label=\"Foo\"><option>1</option><option>2</option></optgroup>"
        ;;      "<optgroup label=\"Bar\"><option>3</option><option>4</option></optgroup>")
@@ -422,7 +424,9 @@
     (html-str [:div (if true {:class "test"})]) "<div class=\"test\"></div>"
     (html-str [:div (when true {:class "test"})]) "<div class=\"test\"></div>"
     (html-str [:div (if-not false {:class "test"})]) "<div class=\"test\"></div>"
-    (html-str [:div (when-not false {:class "test"})]) "<div class=\"test\"></div>"))
+    (html-str [:div (when-not false {:class "test"})]) "<div class=\"test\"></div>"
+    (let [x 1] (html-str (when x [:div x]))) "<div>1</div>"
+    (let [x 1] (html-str (when-not x [:div x]))) ""))
 
 (deftest test-issue-24-attr-and-keyword-classes
   (let [style-it (fn [p] {:placeholder (str p) :type "text"})]
