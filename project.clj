@@ -6,16 +6,16 @@
   :lein-release {:deploy-via :clojars}
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[com.facebook/react "0.9.0"]
+  :dependencies [[com.facebook/react "0.9.0.1"]
                  [org.clojure/clojure "1.5.1"]
-                 [org.clojure/clojurescript "0.0-2173"]]
+                 [org.clojure/clojurescript "0.0-2197"]]
   :cljsbuild {:builds []}
   :profiles {:dev {:dependencies [[reagent "0.4.2"]
                                   [crate "0.2.5"]
                                   [prismatic/dommy "0.1.2"]]
                    :plugins [[com.keminglabs/cljx "0.3.2"] ;; Must be before Austin: https://github.com/cemerick/austin/issues/37
                              [com.cemerick/austin "0.1.4"]
-                             [com.cemerick/clojurescript.test "0.2.2"]
+                             [com.cemerick/clojurescript.test "0.3.0"]
                              [lein-cljsbuild "1.0.2"]]
                    :hooks [cljx.hooks leiningen.cljsbuild]
                    :cljx {:builds [{:source-paths ["src"]
