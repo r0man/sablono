@@ -1,7 +1,8 @@
 (ns sablono.test
   (:refer-clojure :exclude [replace])
   (:require [clojure.string :refer [replace]]
-            [sablono.core :as core]))
+            [sablono.core :as core]
+            #+cljs [goog.dom :as dom]))
 
 (defmacro are-html-rendered [& body]
   `(cemerick.cljs.test/are [form# expected#]
