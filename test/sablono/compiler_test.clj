@@ -283,3 +283,16 @@
             (js/React.DOM.div
              #js {:className "aa"}
              (sablono.interpreter/interpret attrs))))))
+
+(deftest shorthand-div-forms
+  (are-html-expanded
+   [:#test]
+   '(js/React.DOM.div #js {:id "test"})
+   '[:.klass]
+   '(js/React.DOM.div #js {:className "klass"})
+   '[:#test.klass]
+   '(js/React.DOM.div #js {:id "test" :className "klass"})
+   '[:#test.klass1.klass2]
+   '(js/React.DOM.div #js {:id "test" :className "klass1 klass2"})
+   '[:.klass1.klass2#test]
+   '(js/React.DOM.div #js {:id "test" :className "klass1 klass2"})))
