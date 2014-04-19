@@ -1,4 +1,4 @@
-(defproject sablono "0.2.16-SNAPSHOT"
+(defproject sablono "0.2.16.vr1"
   :description "Lisp style templating for Facebook's React."
   :url "http://github.com/r0man/sablono"
   :author "Roman Scherer"
@@ -16,7 +16,7 @@
                    :plugins [[com.keminglabs/cljx "0.3.2"] ;; Must be before Austin: https://github.com/cemerick/austin/issues/37
                              [com.cemerick/austin "0.1.4"]
                              [com.cemerick/clojurescript.test "0.3.0"]
-                             [lein-cljsbuild "1.0.2"]]
+                             [lein-cljsbuild "1.0.3"]]
                    :hooks [cljx.hooks leiningen.cljsbuild]
                    :cljx {:builds [{:source-paths ["src"]
                                     :output-path "target/classes"
