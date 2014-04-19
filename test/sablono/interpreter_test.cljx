@@ -22,3 +22,9 @@
     [:div "x"] "<div>x</div>"
     [:div "1"] "<div>1</div>"
     [:div 1] "<div>1</div>"))
+
+#+cljs
+(deftest shorthand-div-forms
+  (are [form expected]
+    (is (= expected (html-str (i/interpret form))))
+    [:#test.klass1] "<div id=\"test\" class=\"klass1\"></div>"))

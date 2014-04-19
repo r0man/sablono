@@ -69,15 +69,15 @@
   CSS classes."
   [s]
   (let [matches (re-seq #"[#.]?[^#.]+" (name s))
-        [tag-name matches] (cond (empty? matches)
-                                 (throw (ex-info (str "Can't match CSS tag: " s) {:tag s}))
-                                 (#{\# \.} (ffirst tag-name)) ;; shorthand for div
-                                 ["div" matches]
-                                 :default
-                                 [(first matches) (rest matches)])]
+        [tag-name names] (cond (empty? matches)
+                               (throw (ex-info (str "Can't match CSS tag: " s) {:tag s}))
+                               (#{\# \.} (ffirst matches)) ;; shorthand for div
+                               ["div" matches]
+                               :default
+                               [(first matches) (rest matches)])]
     [tag-name
-     (first (map strip-css (filter #(= \# (first %1)) matches)))
-     (vec (map strip-css (filter #(= \. (first %1)) matches)))]))
+     (first (map strip-css (filter #(= \# (first %1)) names)))
+     (vec (map strip-css (filter #(= \. (first %1)) names)))]))
 
 
 (defn normalize-element
