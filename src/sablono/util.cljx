@@ -68,12 +68,17 @@
   "Match `s` as a CSS tag and return a vector of tag name, CSS id and
   CSS classes."
   [s]
-  (let [[tag-name & matches] (re-seq #"[#.]?[^#.]+" (name s))]
-    (if tag-name
-      [tag-name
-       (first (map strip-css (filter #(= \# (first %1)) matches)))
-       (vec (map strip-css (filter #(= \. (first %1)) matches)))]
-      (throw (ex-info (str "Can't match CSS tag: " s) {:tag s})))))
+  (let [matches (re-seq #"[#.]?[^#.]+" (name s))
+        [tag-name names] (cond (empty? matches)
+                               (throw (ex-info (str "Can't match CSS tag: " s) {:tag s}))
+                               (#{\# \.} (ffirst matches)) ;; shorthand for div
+                               ["div" matches]
+                               :default
+                               [(first matches) (rest matches)])]
+    [tag-name
+     (first (map strip-css (filter #(= \# (first %1)) names)))
+     (vec (map strip-css (filter #(= \. (first %1)) names)))]))
+
 
 (defn normalize-element
   "Ensure an element vector is of the form [tag-name attrs content]."
