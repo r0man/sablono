@@ -286,8 +286,11 @@
 
 (deftest test-issue-33-number-warning
   (are-html-expanded
-   [:div (count [1 2 3])]
-   '(js/React.DOM.div nil 3)))
+   '[:div (count [1 2 3])]
+   '(let* [attrs (count [1 2 3])]
+          (if (clojure.core/map? attrs)
+            (js/React.DOM.div (sablono.interpreter/attributes attrs) nil)
+            (js/React.DOM.div nil (sablono.interpreter/interpret attrs))))))
 
 (deftest shorthand-div-forms
   (are-html-expanded
