@@ -443,4 +443,8 @@
                       (merge {:class input-classes})]))
          "<input class=\"form-control large big\">")))
 
+(deftest test-issue-33-number-warning
+  (is (= (html-str [:div (count [1 2 3])])
+         "<div>3</div>")))
+
 (comment (run-tests))

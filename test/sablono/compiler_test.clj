@@ -284,6 +284,11 @@
              #js {:className "aa"}
              (sablono.interpreter/interpret attrs))))))
 
+(deftest test-issue-33-number-warning
+  (are-html-expanded
+   [:div (count [1 2 3])]
+   '(js/React.DOM.div nil 3)))
+
 (deftest shorthand-div-forms
   (are-html-expanded
    [:#test]
