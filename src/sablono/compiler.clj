@@ -69,9 +69,9 @@
   "Render an element vector as a HTML element."
   [element]
   (let [[tag attrs content] (normalize-element element)]
-    (if content
-      `(~(react-fn tag) ~(compile-attrs attrs) ~@(compile-react content))
-      `(~(react-fn tag) ~(compile-attrs attrs)))))
+    `(~(react-fn tag)
+      ~(compile-attrs attrs)
+      ~@(if content (compile-react content)))))
 
 (defn- unevaluated?
   "True if the expression has not been evaluated."
@@ -161,9 +161,7 @@
 (defmethod compile-element ::literal-tag-and-attributes
   [[tag attrs & content]]
   (let [[tag attrs _] (normalize-element [tag attrs])]
-    (if content
-      `(~(react-fn tag) ~(compile-attrs attrs) ~@(compile-seq content))
-      `(~(react-fn tag) ~(compile-attrs attrs)))))
+    `(~(react-fn tag) ~(compile-attrs attrs) ~@(compile-seq content))))
 
 (defmethod compile-element ::literal-tag-and-no-attributes
   [[tag & content]]
@@ -174,13 +172,13 @@
   (let [[tag tag-attrs _] (normalize-element [tag])
         attrs-sym (gensym "attrs")]
     `(let [~attrs-sym ~attrs]
-       (if (map? ~attrs-sym)
-         ~(if content
-            `(~(react-fn tag) ~(compile-merge-attrs tag-attrs attrs-sym) ~@(compile-seq content))
-            `(~(react-fn tag) ~(compile-merge-attrs tag-attrs attrs-sym) nil))
-         ~(if attrs
-            `(~(react-fn tag) ~(compile-attrs tag-attrs) ~@(compile-seq (cons attrs-sym content)))
-            `(~(react-fn tag) ~(compile-attrs tag-attrs) nil))))))
+       (apply ~(react-fn tag)
+              (if (map? ~attrs-sym)
+                ~(compile-merge-attrs tag-attrs attrs-sym)
+                ~(compile-attrs tag-attrs))
+              (remove nil? (if (map? ~attrs-sym)
+                             [~@(compile-seq content)]
+                             [~@(if attrs (compile-seq (cons attrs-sym content)))]))))))
 
 (defmethod compile-element :default
   [element]
