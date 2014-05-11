@@ -1,4 +1,4 @@
-(defproject sablono "0.2.17"
+(defproject sablono "0.2.18-SNAPSHOT"
   :description "Lisp style templating for Facebook's React."
   :url "http://github.com/r0man/sablono"
   :author "Roman Scherer"
