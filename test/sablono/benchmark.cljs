@@ -2,10 +2,11 @@
   (:require-macros [cemerick.cljs.test :refer [is deftest testing]]
                    [dommy.macros :refer [node]]
                    [sablono.core :refer [html]])
-  (:require [reagent.core :as reagent]
+  (:require [cemerick.cljs.test :as t]
             [crate.core :as crate]
             [dommy.template :as template]
             [goog.dom :as gdom]
+            [reagent.core :as reagent]
             [sablono.test :refer [body]]))
 
 (defn reagent-template [datum]
