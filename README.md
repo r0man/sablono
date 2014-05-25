@@ -20,18 +20,20 @@ Most functions from [Hiccup](https://github.com/weavejester/hiccup)
 are provided in the `sablono.core` namespace. The library can be used
 with [Om](https://github.com/swannodette/om) like this:
 
-	(ns example
-	  (:require [om.core :as om :include-macros true]
-				[sablono.core :as html :refer-macros [html]]))
+``` clj
+(ns example
+  (:require [om.core :as om :include-macros true]
+			[sablono.core :as html :refer-macros [html]]))
 
-	(defn widget [data]
-	  (om/component
-	   (html [:div "Hello world!"
-			  [:ul (for [n (range 1 10)]
-					 [:li n])]
-			  (html/submit-button "React!")])))
+(defn widget [data]
+  (om/component
+   (html [:div "Hello world!"
+		  [:ul (for [n (range 1 10)]
+				 [:li n])]
+		  (html/submit-button "React!")])))
 
-	(om/root widget {} {:target js/document.body})
+(om/root widget {} {:target js/document.body})
+```
 
 ## HTML Tags
 
@@ -55,12 +57,14 @@ used in Clojure.
 An `input` element with event listeners attached to it would look like
 this in *Ŝablono*:
 
-    (html [:input
-           {:auto-complete "off"
-            :class "autocomplete"
-            :on-change #(on-change %1)
-            :on-key-down #(on-key-down %1)
-			:type "text"}])
+``` clj
+(html [:input
+	   {:auto-complete "off"
+		:class "autocomplete"
+		:on-change #(on-change %1)
+		:on-key-down #(on-key-down %1)
+		:type "text"}])
+```
 
 ## Thanks
 
