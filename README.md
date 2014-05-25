@@ -1,6 +1,7 @@
 # ŜABLONO
   [![Build Status](https://travis-ci.org/r0man/sablono.png)](https://travis-ci.org/r0man/sablono)
   [![Dependencies Status](http://jarkeeper.com/r0man/sablono/status.png)](http://jarkeeper.com/r0man/sablono)
+  [![Gittip](http://img.shields.io/gittip/r0man.svg)](https://www.gittip.com/r0man)
 
 Lisp/Hiccup style templating for Facebook's
 [React](http://facebook.github.io/react) in
