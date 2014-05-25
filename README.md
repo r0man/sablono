@@ -73,7 +73,7 @@ This library is based on James Reeves [Hiccup](https://github.com/weavejester/hi
 
 ## License
 
-Copyright © 2013 Roman Scherer
+Copyright © 2013-2014 Roman Scherer
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
