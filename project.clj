@@ -1,7 +1,7 @@
 (defproject sablono "0.2.18-SNAPSHOT"
   :description "Lisp style templating for Facebook's React."
   :url "http://github.com/r0man/sablono"
-  :author "Roman Scherer"
+  :author "r0man"
   :min-lein-version "2.0.0"
   :lein-release {:deploy-via :clojars}
   :license {:name "Eclipse Public License"
