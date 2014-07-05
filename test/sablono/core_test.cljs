@@ -431,7 +431,7 @@
 (deftest test-issue-24-attr-and-keyword-classes
   (let [style-it (fn [p] {:placeholder (str p) :type "text"})]
     (is (= (html-str [:input.helloworld (style-it "dinosaurs")])
-           "<input placeholder=\"dinosaurs\" type=\"text\" class=\"helloworld\">"))))
+           "<input class=\"helloworld\" placeholder=\"dinosaurs\" type=\"text\">"))))
 
 (deftest test-issue-25-comma-separated-class
   (is (= (html-str [:div.c1.c2 "text"])
