@@ -6,6 +6,30 @@
             #+clj [clojure.test :refer :all]
             #+cljs [cemerick.cljs.test :as t]))
 
+(deftest test-camel-case-keys
+  (are [attrs expected]
+    (= expected (u/camel-case-keys attrs))
+    {:id "x"}
+    {:id "x"}
+    {:class "x"}
+    {:class "x"}
+    {:http-equiv "Expires"}
+    {:httpEquiv "Expires"}
+    {:style {:z-index 1000}}
+    {:style {:zIndex 1000}}))
+
+(deftest test-html-to-dom-attrs
+  (are [attrs expected]
+    (= expected (u/html-to-dom-attrs attrs))
+    {:id "x"}
+    {:id "x"}
+    {:class "x"}
+    {:className "x"}
+    {:http-equiv "Expires"}
+    {:httpEquiv "Expires"}
+    {:style {:z-index 1000}}
+    {:style {:zIndex 1000}}))
+
 (deftest test-compact-map
   (are [x expected]
     (is (= expected (u/compact-map x)))

@@ -2,7 +2,8 @@
   #+cljs (:import goog.Uri)
   (:refer-clojure :exclude [replace])
   (:require [clojure.set :refer [rename-keys]]
-            [clojure.string :refer [blank? capitalize join split replace]]))
+            [clojure.string :refer [blank? capitalize join split replace]]
+            [clojure.walk :refer [postwalk]]))
 
 (def ^:dynamic *base-url* nil)
 
@@ -30,12 +31,18 @@
               join
               keyword)))))
 
+(defn camel-case-keys
+  "Recursively transforms all map keys into camel case."
+  [m]
+  (let [f (fn [[k v]] (if (keyword? k) [(camel-case k) v] [k v]))]
+    (postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) m)))
+
 (defn html-to-dom-attrs
   "Converts all HTML attributes to their DOM equivalents."
   [attrs]
-  (let [dom-attrs (merge (zipmap (keys attrs) (map camel-case (keys attrs)))
-                         {:class :className :for :htmlFor})]
-    (rename-keys attrs dom-attrs)))
+  (rename-keys (camel-case-keys attrs)
+               {:class :className
+                :for :htmlFor}))
 
 (defn compact-map
   "Removes all map entries where the value of the entry is empty."

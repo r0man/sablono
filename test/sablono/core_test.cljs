@@ -78,7 +78,7 @@
   (testing "interpreted attributes"
     (let [attr-fn (constantly {:id "a" :class "b" :http-equiv "refresh"})]
       (is (= (html-str [:span (attr-fn) "foo"])
-             "<span id=\"a\" class=\"b\" httpequiv=\"refresh\">foo</span>"))))
+             "<span id=\"a\" httpequiv=\"refresh\" class=\"b\">foo</span>"))))
   (testing "tag with aria attributes"
     (is (= (html-str [:div {:aria-disabled true}])
            "<div aria-disabled=\"true\"></div>")))
@@ -431,7 +431,7 @@
 (deftest test-issue-24-attr-and-keyword-classes
   (let [style-it (fn [p] {:placeholder (str p) :type "text"})]
     (is (= (html-str [:input.helloworld (style-it "dinosaurs")])
-           "<input class=\"helloworld\" placeholder=\"dinosaurs\" type=\"text\">"))))
+           "<input placeholder=\"dinosaurs\" type=\"text\" class=\"helloworld\">"))))
 
 (deftest test-issue-25-comma-separated-class
   (is (= (html-str [:div.c1.c2 "text"])
