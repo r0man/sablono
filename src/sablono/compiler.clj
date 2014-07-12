@@ -35,7 +35,7 @@
     :else `(sablono.util/join-classes ~value))})
 
 (defmethod compile-attr :style [name value]
-  (compile-map-attr name value))
+  (compile-map-attr name (camel-case-keys value)))
 
 (defmethod compile-attr :default [name value]
   (compile-string-attr name value))

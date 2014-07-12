@@ -338,6 +338,11 @@
             (if (clojure.core/map? attrs)
               [] [(sablono.interpreter/interpret attrs)]))))))
 
+(deftest test-issue-37-camel-case-style-attrs
+  (are-html-expanded
+   '[:div {:style {:z-index 1000}}]
+   '(js/React.DOM.div #js {:style #js {:zIndex 1000}})))
+
 (deftest shorthand-div-forms
   (are-html-expanded
    [:#test]

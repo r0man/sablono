@@ -447,4 +447,10 @@
   (is (= (html-str [:div (count [1 2 3])])
          "<div>3</div>")))
 
+(deftest test-issue-37-camel-case-style-attrs
+  (is (= (html-str [:div {:style {:z-index 1000}}])
+         "<div style=\"z-index:1000;\"></div>"))
+  (is (= (html-str [:div (merge {:style {:z-index 1000}})])
+         "<div style=\"z-index:1000;\"></div>")))
+
 (comment (run-tests))
