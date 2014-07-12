@@ -7,7 +7,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[com.facebook/react "0.10.0"]
                  [org.clojure/clojure "1.6.0"]
-                 [org.clojure/clojurescript "0.0-2261"]]
+                 [org.clojure/clojurescript "0.0-2268" :scope "provided"]]
   :deploy-repositories [["releases" :clojars]]
   :cljsbuild {:builds []}
   :profiles {:dev {:dependencies [[reagent "0.4.2"]
