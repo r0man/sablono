@@ -5,7 +5,7 @@
   :min-lein-version "2.0.0"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[com.facebook/react "0.10.0"]
+  :dependencies [[com.facebook/react "0.9.0.2"]
                  [org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-2268" :scope "provided"]]
   :deploy-repositories [["releases" :clojars]]
