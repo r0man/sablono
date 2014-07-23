@@ -62,16 +62,16 @@
 (defn element
   "Render an element vector as a HTML element."
   [element]
-  (let [[tag attrs content] (normalize-element element)]
-    ((dom-fn tag)
-     (attributes attrs)
-     (cond
-      (and (sequential? content)
-           (= 1 (count content)))
-      (interpret (first content))
-      content
-      (interpret content)
-      :else nil))))
+  (let [[tag attrs content] (normalize-element element)
+        f (dom-fn tag)
+        js-attrs (attributes attrs)]
+    (cond
+     (and (sequential? content)
+          (= 1 (count content)))
+     (f js-attrs (interpret (first content)))
+     content
+     (apply f js-attrs (interpret content))
+     :else (f js-attrs nil))))
 
 (defn- interpret-seq [s]
   (into-array (map interpret s)))
