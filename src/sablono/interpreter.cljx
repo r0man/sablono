@@ -11,7 +11,8 @@
 (defn wrap-form-element [ctor display-name]
   (js/React.createClass
    #js
-   {:displayName display-name
+   {:getDisplayName
+    (fn [] display-name)
     :getInitialState
     (fn []
       (this-as this #js {:value (aget (.-props this) "value")}))
