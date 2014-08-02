@@ -111,10 +111,9 @@
 (defn react-fn
   "Same as `react-symbol` but wrap input and text elements."
   [tag]
-  (let [dom-fn (react-symbol tag)]
-    (if (contains? #{:input :textarea} (keyword tag))
-      (symbol "sablono.interpreter" (name tag))
-      dom-fn)))
+  (if (contains? #{:input :option :textarea} (keyword tag))
+    (symbol "sablono.interpreter" (name tag))
+    (react-symbol tag)))
 
 (defn attr-pattern
   "Returns a regular expression that matches the HTML attribute `attr`

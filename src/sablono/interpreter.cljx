@@ -37,14 +37,15 @@
                    :onChange (aget this "onChange")
                    :children (aget (.-props this) "children")}))))}))
 
-#+cljs (def input (wrap-form-element js/React.DOM.input "Input"))
-#+cljs (def option (wrap-form-element js/React.DOM.option "Option"))
-#+cljs (def textarea (wrap-form-element js/React.DOM.textarea "Textarea"))
+#+cljs (def input (wrap-form-element js/React.DOM.input "input"))
+#+cljs (def option (wrap-form-element js/React.DOM.option "option"))
+#+cljs (def textarea (wrap-form-element js/React.DOM.textarea "textarea"))
 
 #+cljs
 (defn dom-fn [tag]
   (if-let [dom-fn (aget js/React.DOM (name tag))]
     (get {:input sablono.interpreter/input
+          :option sablono.interpreter/option
           :textarea sablono.interpreter/textarea}
          (keyword tag) dom-fn)
     (throw (ex-info (str "Unsupported HTML tag: " (name tag)) {:tag tag}))))
