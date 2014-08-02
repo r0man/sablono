@@ -78,7 +78,7 @@
   (testing "interpreted attributes"
     (let [attr-fn (constantly {:id "a" :class "b" :http-equiv "refresh"})]
       (is (= (html-str [:span (attr-fn) "foo"])
-             "<span id=\"a\" httpequiv=\"refresh\" class=\"b\">foo</span>"))))
+             "<span id=\"a\" http-equiv=\"refresh\" class=\"b\">foo</span>"))))
   (testing "tag with aria attributes"
     (is (= (html-str [:div {:aria-disabled true}])
            "<div aria-disabled=\"true\"></div>")))
@@ -287,19 +287,19 @@
 (deftest test-text-area
   ;; TODO: There should be no value, right?
   (is (= (html-str (html/text-area :foo))
-         "<textarea value=\"\" name=\"foo\" id=\"foo\"></textarea>"))
+         "<textarea name=\"foo\" id=\"foo\"></textarea>"))
   (is (= (html-str (html/text-area :foo ""))
-         "<textarea value=\"\" name=\"foo\" id=\"foo\"></textarea>"))
+         "<textarea name=\"foo\" id=\"foo\"></textarea>"))
   (is (= (html-str (html/text-area :foo "bar"))
-         "<textarea value=\"bar\" name=\"foo\" id=\"foo\">bar</textarea>")))
+         "<textarea name=\"foo\" id=\"foo\">bar</textarea>")))
 
 (deftest test-text-area-field-with-extra-atts
   (is (= (html-str (html/text-area {:class "classy"} :foo "bar"))
-         "<textarea value=\"bar\" name=\"foo\" id=\"foo\" class=\"classy\">bar</textarea>")))
+         "<textarea name=\"foo\" id=\"foo\" class=\"classy\">bar</textarea>")))
 
 (deftest test-text-area-escapes
   (is (= (html-str (html/text-area :foo "bar</textarea>"))
-         "<textarea value=\"bar&lt;/textarea&gt;\" name=\"foo\" id=\"foo\">bar&lt;/textarea&gt;</textarea>")))
+         "<textarea name=\"foo\" id=\"foo\">bar&lt;/textarea&gt;</textarea>")))
 
 (deftest test-file-field
   (is (= (html-str (html/file-upload :foo))
@@ -368,7 +368,7 @@
            (str "<select name=\"foo[bar]\" id=\"foo-bar\"></select>"))))
   (testing "text-area"
     (is (= (html-str (with-group :foo (html/text-area :bar "baz")))
-           "<textarea value=\"baz\" name=\"foo[bar]\" id=\"foo-bar\">baz</textarea>")))
+           "<textarea name=\"foo[bar]\" id=\"foo-bar\">baz</textarea>")))
   (testing "file-upload"
     (is (= (html-str (with-group :foo (html/file-upload :bar)))
            "<input type=\"file\" name=\"foo[bar]\" id=\"foo-bar\">")))
