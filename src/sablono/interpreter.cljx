@@ -95,6 +95,9 @@
   IndexedSeq
   (interpret [this]
     (interpret-seq this))
+  Subvec
+  (interpret [this]
+    (element this))
   PersistentVector
   (interpret [this]
     (element this))
