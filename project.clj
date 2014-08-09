@@ -13,7 +13,7 @@
   :profiles {:dev {:dependencies [[reagent "0.4.2"]
                                   [crate "0.2.5"]
                                   [prismatic/dommy "0.1.2"]]
-                   :plugins [[com.keminglabs/cljx "0.4.0"]
+                   :plugins [[com.keminglabs/cljx "0.4.0" :exclusions [org.clojure/clojure]]
                              [com.cemerick/austin "0.1.4"]
                              [com.cemerick/clojurescript.test "0.3.1"]
                              [lein-cljsbuild "1.0.3"]]
