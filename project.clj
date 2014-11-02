@@ -7,12 +7,11 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[com.facebook/react "0.11.2"]
                  [org.clojure/clojure "1.6.0"]
-                 [org.clojure/clojurescript "0.0-2356" :scope "provided"]]
+                 [org.clojure/clojurescript "0.0-2371" :scope "provided"]]
   :deploy-repositories [["releases" :clojars]]
   :cljsbuild {:builds []}
-  :profiles {:dev {:dependencies [[reagent "0.4.2"]
-                                  [crate "0.2.5"]
-                                  [prismatic/dommy "0.1.3"]]
+  :profiles {:dev {:dependencies [[reagent "0.4.3"]
+                                  [crate "0.2.5"]]
                    :plugins [[com.keminglabs/cljx "0.4.0" :exclusions [org.clojure/clojure]]
                              [com.cemerick/austin "0.1.4"]
                              [com.cemerick/clojurescript.test "0.3.1"]

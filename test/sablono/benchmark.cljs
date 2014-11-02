@@ -1,10 +1,8 @@
 (ns sablono.benchmark
   (:require-macros [cemerick.cljs.test :refer [is deftest testing]]
-                   [dommy.macros :refer [node]]
                    [sablono.core :refer [html]])
   (:require [cemerick.cljs.test :as t]
             [crate.core :as crate]
-            [dommy.template :as template]
             [goog.dom :as gdom]
             [reagent.core :as reagent]
             [sablono.test :refer [body]]))
@@ -21,18 +19,6 @@
     [:div {:id (str "item" (:key datum))
            :class ["class1" "class2"]}
      [:span {:class "anchor"} (:name datum)]]]))
-
-(defn dommy-template [datum]
-  (template/node
-   [:li [:a {:href (str "#show/" (:key datum))}
-         [:div.class1.class2 {:id (str "item" (:key datum))}
-          [:span.anchor (:name datum)]]]]))
-
-(defn dommy-compiled [datum]
-  (node
-   [:li [:a {:href (str "#show/" (:key datum))}
-         [:div.class1.class2 {:id (str "item" (:key datum))}
-          [:span.anchor (:name datum)]]]]))
 
 (defn jquery-template [datum]
   (-> "<li>" js/jQuery
@@ -90,8 +76,6 @@
         (shuffle
          [[:reagent reagent-template render-reagent]
           [:crate crate-template render-append]
-          [:dommy dommy-template render-append]
-          [:dommy-compiled dommy-compiled render-append]
           [:jquery jquery-template render-append]
           [:react react-template render-react]
           [:sablono sablono-template render-react]])]
