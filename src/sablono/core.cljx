@@ -83,7 +83,8 @@
 #+cljs
 (defn include-react
   "Include Facebook's React JavaScript library."
-  [] (include-js "http://fb.me/react-0.9.0.js"))
+  ([] (include-react "0.11.2"))
+  ([version] (include-js (str "http://fb.me/react-" version ".js"))))
 
 (defelem link-to
   "Wraps some content in a HTML hyperlink with the supplied URL."
