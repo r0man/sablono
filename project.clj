@@ -1,13 +1,13 @@
-(defproject sablono "0.2.23-SNAPSHOT"
+(defproject sablono "0.3.0-SNAPSHOT"
   :description "Lisp style templating for Facebook's React."
   :url "http://github.com/r0man/sablono"
   :author "r0man"
   :min-lein-version "2.0.0"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[com.facebook/react "0.11.2"]
+  :dependencies [[com.facebook/react "0.12.2.1"]
                  [org.clojure/clojure "1.6.0"]
-                 [org.clojure/clojurescript "0.0-2371" :scope "provided"]]
+                 [org.clojure/clojurescript "0.0-2505" :scope "provided"]]
   :deploy-repositories [["releases" :clojars]]
   :cljsbuild {:builds []}
   :profiles {:dev {:dependencies [[reagent "0.4.3"]
@@ -45,8 +45,7 @@
                                                     :preamble ["jquery.js"
                                                                "phantomjs-shims.js"
                                                                "react/react.min.js"]
-                                                    :externs ["react/externs/react.js"
-                                                              "externs/jquery-1.9.js"]}}]
+                                                    :externs ["externs/jquery-1.9.js"]}}]
                                :test-commands {"phantom" ["phantomjs" :runner "target/test/sablono.js"]}}
                    :repl-options {:nrepl-middleware [cljx.repl-middleware/wrap-cljx]}
                    :resource-paths ["test-resources"]

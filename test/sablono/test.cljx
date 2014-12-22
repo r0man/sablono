@@ -23,7 +23,7 @@
     (goog.dom/append (body) container)
     (let [render-fn (fn [] (this-as this (js/React.DOM.div (clj->js {:id id}) children)))
           component (js/React.createClass #js {:render render-fn})]
-      (js/React.renderComponent (component) container)
+      (js/React.render (component) container)
       (let [html (.-innerHTML (goog.dom/getElement (str id)))]
         (goog.dom/removeNode container)
         (sablono.util/strip-attr html :data-reactid)))))

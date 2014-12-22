@@ -9,33 +9,34 @@
 
 #+cljs
 (defn wrap-form-element [ctor display-name]
-  (js/React.createClass
-   #js
-   {:getDisplayName
-    (fn [] display-name)
-    :getInitialState
-    (fn []
-      (this-as this #js {:value (aget (.-props this) "value")}))
-    :onChange
-    (fn [e]
-      (this-as
-       this
-       (let [handler (aget (.-props this) "onChange")]
-         (when-not (nil? handler)
-           (handler e)
-           (.setState this #js {:value (.. e -target -value)})))))
-    :componentWillReceiveProps
-    (fn [new-props]
-      (this-as this (.setState this #js {:value (aget new-props "value")})))
-    :render
-    (fn []
-      (this-as
-       this
-       (.transferPropsTo
+  (js/React.createFactory
+   (js/React.createClass
+    #js
+    {:getDisplayName
+     (fn [] display-name)
+     :getInitialState
+     (fn []
+       (this-as this #js {:value (aget (.-props this) "value")}))
+     :onChange
+     (fn [e]
+       (this-as
         this
-        (ctor #js {:value (aget (.-state this) "value")
-                   :onChange (aget this "onChange")
-                   :children (aget (.-props this) "children")}))))}))
+        (let [handler (aget (.-props this) "onChange")]
+          (when-not (nil? handler)
+            (handler e)
+            (.setState this #js {:value (.. e -target -value)})))))
+     :componentWillReceiveProps
+     (fn [new-props]
+       (this-as this (.setState this #js {:value (aget new-props "value")})))
+     :render
+     (fn []
+       (this-as
+        this
+        (.transferPropsTo
+         this
+         (ctor #js {:value (aget (.-state this) "value")
+                    :onChange (aget this "onChange")
+                    :children (aget (.-props this) "children")}))))})))
 
 #+cljs (def input (wrap-form-element js/React.DOM.input "input"))
 #+cljs (def option (wrap-form-element js/React.DOM.option "option"))

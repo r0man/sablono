@@ -68,8 +68,9 @@
 
 (defn render-react [root children]
   (let [render-fn #(this-as this (html [:ul children]))
-        component (js/React.createClass #js {:render render-fn})]
-    (js/React.renderComponent (component) root)))
+        component (js/React.createFactory
+                   (js/React.createClass #js {:render render-fn}))]
+    (js/React.render (component) root)))
 
 (defn time-test [data]
   (for [[key li-fn render-fn]

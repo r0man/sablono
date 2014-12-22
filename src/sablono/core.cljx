@@ -64,7 +64,7 @@
 (defn render
   "Render the React `component` as an HTML string."
   [component]
-  (.renderComponentToString js/React component))
+  (js/React.renderToString component))
 
 (defn include-css
   "Include a list of external stylesheet files."
@@ -83,7 +83,7 @@
 #+cljs
 (defn include-react
   "Include Facebook's React JavaScript library."
-  [] (include-js "http://fb.me/react-0.9.0.js"))
+  [] (include-js "http://fb.me/react-0.12.2.js"))
 
 (defelem link-to
   "Wraps some content in a HTML hyperlink with the supplied URL."
