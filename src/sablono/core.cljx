@@ -62,9 +62,17 @@
 
 #+cljs
 (defn render
-  "Render the React `component` as an HTML string."
-  [component]
-  (js/React.renderToString component))
+  "Render `element` as HTML string."
+  [element]
+  (if element
+    (js/React.renderToString element)))
+
+#+cljs
+(defn render-static
+  "Render `element` as HTML string, without React internal attributes."
+  [element]
+  (if element
+    (js/React.renderToStaticMarkup element)))
 
 (defn include-css
   "Include a list of external stylesheet files."
@@ -182,51 +190,51 @@
   ([name] (check-box name nil))
   ([name checked?] (check-box name checked? "true"))
   ([name checked? value]
-     [:input {:type "checkbox"
-              :name (make-name name)
-              :id   (make-id name)
-              :value value
-              :checked checked?}]))
+   [:input {:type "checkbox"
+            :name (make-name name)
+            :id   (make-id name)
+            :value value
+            :checked checked?}]))
 
 (defelem radio-button
   "Creates a radio button."
   ([group] (radio-button group nil))
   ([group checked?] (radio-button group checked? "true"))
   ([group checked? value]
-     [:input {:type "radio"
-              :name (make-name group)
-              :id   (make-id (str (as-str group) "-" (as-str value)))
-              :value value
-              :checked checked?}]))
+   [:input {:type "radio"
+            :name (make-name group)
+            :id   (make-id (str (as-str group) "-" (as-str value)))
+            :value value
+            :checked checked?}]))
 
 (defelem select-options
   "Creates a seq of option tags from a collection."
   ([coll] (select-options coll nil))
   ([coll selected]
-     (for [x coll]
-       (if (sequential? x)
-         (let [[text val disabled?] x
-               disabled? (boolean disabled?)]
-           (if (sequential? val)
-             [:optgroup {:label text} (select-options val selected)]
-             [:option {:value val :selected (= val selected) :disabled disabled?} text]))
-         [:option {:selected (= x selected)} x]))))
+   (for [x coll]
+     (if (sequential? x)
+       (let [[text val disabled?] x
+             disabled? (boolean disabled?)]
+         (if (sequential? val)
+           [:optgroup {:label text} (select-options val selected)]
+           [:option {:value val :selected (= val selected) :disabled disabled?} text]))
+       [:option {:selected (= x selected)} x]))))
 
 (defelem drop-down
   "Creates a drop-down box using the <select> tag."
   ([name options] (drop-down name options nil))
   ([name options selected]
-     [:select {:name (make-name name), :id (make-id name)}
-      (select-options options selected)]))
+   [:select {:name (make-name name), :id (make-id name)}
+    (select-options options selected)]))
 
 (defelem text-area
   "Creates a text area element."
   ([name] (text-area name nil))
   ([name value]
-     [:textarea
-      {:name (make-name name)
-       :id (make-id name)
-       :value value}]))
+   [:textarea
+    {:name (make-name name)
+     :id (make-id name)
+     :value value}]))
 
 (defelem label
   "Creates a label for an input field with the supplied name."

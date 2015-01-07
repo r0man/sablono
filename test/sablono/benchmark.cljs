@@ -4,8 +4,10 @@
   (:require [cemerick.cljs.test :as t]
             [crate.core :as crate]
             [goog.dom :as gdom]
-            [reagent.core :as reagent]
-            [sablono.test :refer [body]]))
+            [reagent.core :as reagent]))
+
+(defn body []
+  (aget (gdom/getElementsByTagNameAndClass "body") 0))
 
 (defn reagent-template [datum]
   [:li [:a {:href (str "#show/" (:key datum))}]
