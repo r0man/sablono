@@ -2,9 +2,10 @@
   (:refer-clojure :exclude [replace])
   (:require-macros [cemerick.cljs.test :refer [are is deftest run-tests testing]]
                    [sablono.core :refer [html with-group]]
-                   [sablono.test :refer [html-str]])
+                   [sablono.test :refer [html-str html-vec]])
   (:require [cemerick.cljs.test :as t]
             [clojure.string :refer [replace]]
+            [hickory.core :as hickory]
             [goog.dom :as gdom]
             [sablono.core :as html :include-macros true]
             [sablono.util :refer [to-str]]))
@@ -19,17 +20,22 @@
 
 (deftest tag-names
   (testing "basic tags"
-    (is (= (html-str [:div]) "<div></div>"))
-    (is (= (html-str ["div"]) "<div></div>"))
-    (is (= (html-str ['div]) "<div></div>")))
+    (is (= (html-vec [:div]) [:div {}]))
+    (is (= (html-vec ["div"]) [:div {}]))
+    (is (= (html-vec ['div]) [:div {}])))
   (testing "tag syntax sugar"
-    (is (= (html-str [:div#foo]) "<div id=\"foo\"></div>"))
-    (is (= (html-str [:div.foo]) "<div class=\"foo\"></div>"))
-    (is (= (html-str [:div.foo (str "bar" "baz")]) "<div class=\"foo\">barbaz</div>"))
-    (is (= (html-str [:div.a.b]) "<div class=\"a b\"></div>"))
-    (is (= (html-str [:div.a.b.c]) "<div class=\"a b c\"></div>"))
-    (is (= (html-str [:div#foo.bar.baz]) "<div class=\"bar baz\" id=\"foo\"></div>"))
-    (is (= (html-str [:div.jumbotron]) "<div class=\"jumbotron\"></div>"))))
+    (is (= (html-vec [:div#foo]) [:div {:id "foo"}]))
+    (is (= (html-vec [:div.foo]) [:div {:class "foo"}]))
+    (is (= (html-vec [:div.foo (str "bar" "baz")])
+           [:div {:class "foo"} "barbaz"]))
+    (is (= (html-vec [:div.a.b])
+           [:div {:class "a b"}]))
+    (is (= (html-vec [:div.a.b.c])
+           [:div {:class "a b c"}]))
+    (is (= (html-vec [:div#foo.bar.baz])
+           [:div {:class "bar baz" :id "foo"}]))
+    (is (= (html-vec [:div.jumbotron])
+           [:div {:class "jumbotron"}]))))
 
 (deftest tag-contents
   (testing "empty tags"
