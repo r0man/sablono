@@ -1,7 +1,6 @@
 # ŜABLONO
   [![Build Status](https://travis-ci.org/r0man/sablono.png)](https://travis-ci.org/r0man/sablono)
   [![Dependencies Status](http://jarkeeper.com/r0man/sablono/status.png)](http://jarkeeper.com/r0man/sablono)
-  [![Gittip](http://img.shields.io/gittip/r0man.svg)](https://www.gittip.com/r0man)
 
 Lisp/Hiccup style templating for Facebook's
 [React](http://facebook.github.io/react) in
@@ -73,7 +72,7 @@ This library is based on James Reeves [Hiccup](https://github.com/weavejester/hi
 
 ## License
 
-Copyright © 2013-2014 r0man
+Copyright © 2013-2015 r0man
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
