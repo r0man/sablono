@@ -18,7 +18,7 @@
     (html [:div (when true [:p "data"]) (if true [:p "data"] nil)])
     "<div data-reactid=\".*\" data-react-checksum=\".*\"><p data-reactid=\".*\">data</p><p data-reactid=\".*\">data</p></div>"))
 
-(deftest tag-names
+(deftest test-tag-names
   (testing "basic tags"
     (is (= (html-vec [:div]) [:div {}]))
     (is (= (html-vec ["div"]) [:div {}]))
@@ -37,99 +37,117 @@
     (is (= (html-vec [:div.jumbotron])
            [:div {:class "jumbotron"}]))))
 
-(deftest tag-contents
+(deftest test-tag-contents
   (testing "empty tags"
-    (is (= (html-str [:div]) "<div></div>"))
-    (is (= (html-str [:h1]) "<h1></h1>"))
-    (is (= (html-str [:text]) "<text></text>"))
-    (is (= (html-str [:a]) "<a></a>"))
-    (is (= (html-str [:iframe]) "<iframe></iframe>"))
-    (is (= (html-str [:title]) "<title></title>"))
-    (is (= (html-str [:section]) "<section></section>")))
+    (is (= (html-vec [:div]) [:div {}]))
+    (is (= (html-vec [:h1]) [:h1 {}]))
+    (is (= (html-vec [:text]) [:text {}]))
+    (is (= (html-vec [:a]) [:a {}]))
+    (is (= (html-vec [:iframe]) [:iframe {}]))
+    (is (= (html-vec [:title]) [:title {}]))
+    (is (= (html-vec [:section]) [:section {}])))
+
   (testing "tags containing text"
-    (is (= (html-str [:text "Lorem Ipsum"]) "<text>Lorem Ipsum</text>")))
+    (is (= (html-vec [:text "Lorem Ipsum"])
+           [:text {} "Lorem Ipsum" ])))
   (testing "contents are concatenated"
-    (is (= (html-str [:div "foo" "bar"]) "<div>foobar</div>"))
-    (is (= (html-str [:div [:p] [:br]]) "<div><p></p><br></div>")))
+    (is (= (html-vec [:div "foo" "bar"])
+           [:div {} "foobar"]))
+    (is (= (html-vec [:div [:p] [:br]])
+           [:div {} [:p {}] [:br {}]])))
   (testing "seqs are expanded"
-    (is (= (html-str [:div (list "foo" "bar")]) "<div>foobar</div>"))
-    ;; (is (= (html (list [:p "a"] [:p "b"])) "<p>a</p><p>b</p>"))
-    )
+    (is (= (html-vec [:div (list "foo" "bar")])
+           [:div {} "foobar"])))
   (testing "vecs don't expand - error if vec doesn't have tag name"
     (is (thrown? js/Error (html (vector [:p "a"] [:p "b"])))))
   (testing "tags can contain tags"
-    (is (= (html-str [:div [:p]]) "<div><p></p></div>"))
-    (is (= (html-str [:div [:b]]) "<div><b></b></div>"))
-    (is (= (html-str [:p [:span [:a "foo"]]]) "<p><span><a>foo</a></span></p>"))))
+    (is (= (html-vec [:div [:p]])
+           [:div {} [:p {}]]))
+    (is (= (html-vec [:div [:b]])
+           [:div {} [:b {}]]))
+    (is (= (html-vec [:p [:span [:a "foo"]]])
+           [:p {} [:span {} [:a {} "foo"]]]))))
 
-(deftest tag-attributes
+(deftest test-tag-attributes
   (testing "tag with blank attribute map"
-    (is (= (html-str [:div {}]) "<div></div>")))
+    (is (= (html-vec [:div {}])
+           [:div {}])))
   (testing "tag with populated attribute map"
-    (is (= (html-str [:div {:min "1", :max "2"}]) "<div min=\"1\" max=\"2\"></div>"))
-    (is (= (html-str [:img {"id" "foo"}]) "<img id=\"foo\">"))
-    (is (= (html-str [:img {:id "foo"}]) "<img id=\"foo\">"))
-    ;; (is (= (html [:img {'id "foo"}]) "<img id=\"foo\">"))
-    ;; (is (= (html [:div {:a "1", 'b "2", "c" "3"}])
-    ;;        "<div a=\"1\" b=\"2\" c=\"3\" />"))
-    )
+    (is (= (html-vec [:div {:min "1" :max "2"}])
+           [:div {:min "1" :max "2"}]))
+    (is (= (html-vec [:img {"id" "foo"}])
+           [:img {:id "foo"}]))
+    (is (= (html-vec [:img {:id "foo"}])
+           [:img {:id "foo"}]))
+    (is (= (html-vec [:img {'id "foo"}])
+           [:img {:id "foo"}])))
   (testing "attribute values are escaped"
-    (is (= (html-str [:div {:id "\""}]) "<div id=\"&quot;\"></div>")))
+    (is (= (html-vec [:div {:id "\""}])
+           [:div {:id "\""}])))
   (testing "boolean attributes"
-    (is (= (html-str [:input {:type "checkbox" :checked true}]) "<input type=\"checkbox\" checked>"))
-    (is (= (html-str [:input {:type "checkbox" :checked false}]) "<input type=\"checkbox\">")))
+    (is (= (html-vec [:input {:type "checkbox" :checked true}])
+           [:input {:type "checkbox" :checked ""}]))
+    (is (= (html-vec [:input {:type "checkbox" :checked false}])
+           [:input {:type "checkbox"}])))
   (testing "nil attributes"
-    (is (= (html-str [:span {:class nil} "foo"]) "<span>foo</span>")))
+    (is (= (html-vec [:span {:class nil} "foo"])
+           [:span {} "foo"])))
   (testing "interpreted attributes"
     (let [attr-fn (constantly {:id "a" :class "b" :http-equiv "refresh"})]
-      (is (= (html-str [:span (attr-fn) "foo"])
-             "<span id=\"a\" http-equiv=\"refresh\" class=\"b\">foo</span>"))))
+      (is (= (html-vec [:span (attr-fn) "foo"])
+             [:span {:id "a" :http-equiv "refresh" :class "b"} "foo"]))))
   (testing "tag with aria attributes"
-    (is (= (html-str [:div {:aria-disabled true}])
-           "<div aria-disabled=\"true\"></div>")))
+    (is (= (html-vec [:div {:aria-disabled true}])
+           [:div {:aria-disabled "true"}])))
   (testing "tag with data attributes"
-    (is (= (html-str [:div {:data-toggle "modal" :data-target "#modal"}])
-           "<div data-toggle=\"modal\" data-target=\"#modal\"></div>"))))
+    (is (= (html-vec [:div {:data-toggle "modal" :data-target "#modal"}])
+           [:div {:data-toggle "modal" :data-target "#modal"}]))))
 
-(deftest compiled-tags
+(deftest test-compiled-tags
   (testing "tag content can be vars"
     (let [x "foo"]
-      (is (= (html-str [:span x]) "<span>foo</span>"))))
+      (is (= (html-vec [:span x])
+             [:span {} "foo"]))))
   (testing "tag content can be forms"
-    (is (= (html-str [:span (str (+ 1 1))]) "<span>2</span>"))
-    (is (= (html-str [:span ({:foo "bar"} :foo)]) "<span>bar</span>")))
+    (is (= (html-vec [:span (str (+ 1 1))])
+           [:span {} "2"]))
+    (is (= (html-vec [:span ({:foo "bar"} :foo)])
+           [:span {} "bar"])))
   (testing "attributes can contain vars"
     (let [id "id"]
-      (is (= (html-str [:div {:id id}]) "<div id=\"id\"></div>"))
-      (is (= (html-str [:div {id "id"}]) "<div id=\"id\"></div>"))
-      (is (= (html-str [:div {:id id} "bar"]) "<div id=\"id\">bar</div>"))))
+      (is (= (html-vec [:div {:id id}])
+             [:div {:id "id"}]))
+      (is (= (html-vec [:div {id "id"}])
+             [:div {:id "id"}]))
+      (is (= (html-vec [:div {:id id} "bar"])
+             [:div {:id "id"} "bar"]))))
   (testing "attributes are evaluated"
-    (is (= (html-str [:img {:src (str "/foo" "/bar")}]) "<img src=\"/foo/bar\">"))
-    (is (= (html-str [:div {:id (str "a" "b")} (str "foo")]) "<div id=\"ab\">foo</div>")))
-  ;; (testing "type hints"
-  ;;   (let [string "x"]
-  ;;     (are-html-rendered
-  ;;      [:span ^String string] "<span>x</span>")))
+    (is (= (html-vec [:img {:src (str "/foo" "/bar")}])
+           [:img {:src "/foo/bar"}]))
+    (is (= (html-vec [:div {:id (str "a" "b")} (str "foo")])
+           [:div {:id "ab"} "foo"])))
   (testing "optimized forms"
-    (is (= (html-str [:ul (for [n (range 3)] [:li n])]) "<ul><li>0</li><li>1</li><li>2</li></ul>"))
-    (is (= (html-str [:div (if true
-                             [:span "foo"]
-                             [:span "bar"])])
-           "<div><span>foo</span></div>")))
+    (is (= (html-vec [:ul (for [n (range 3)] [:li n])])
+           [:ul {}
+            [:li {} "0"]
+            [:li {} "1"]
+            [:li {} "2"]]))
+    (is (= (html-vec [:div (if true [:span "foo"] [:span "bar"])])
+           [:div {} [:span {} "foo"]])))
   (testing "values are evaluated only once"
     (let [times-called (atom 0)
           foo #(swap! times-called inc)]
       (html [:div (foo)])
       (is (= @times-called 1)))))
 
-(deftest include-css-test
+(deftest test-include-css
   (is (= (html/include-css "foo.css")
-         '([:link {:type "text/css", :href "foo.css", :rel "stylesheet"}])))
+         [[:link {:type "text/css" :href "foo.css" :rel "stylesheet"}]]))
   (is (= (html/include-css "foo.css" "bar.css")
-         '([:link {:type "text/css", :href "foo.css", :rel "stylesheet"}]
-           [:link {:type "text/css", :href "bar.css", :rel "stylesheet"}]))))
+         [[:link {:type "text/css" :href "foo.css" :rel "stylesheet"}]
+          [:link {:type "text/css" :href "bar.css" :rel "stylesheet"}]])))
 
-(deftest link-to-test
+(deftest test-link-to
   (is (= (html/link-to "/")
          [:a {:href "/"} nil]))
   (is (= (html/link-to "/" "foo")
@@ -137,323 +155,365 @@
   (is (= (html/link-to "/" "foo" "bar")
          [:a {:href "/"} (list "foo" "bar")])))
 
-(deftest mail-to-test
+(deftest test-mail-to
   (is (= (html/mail-to "foo@example.com")
          [:a {:href "mailto:foo@example.com"} "foo@example.com"]))
   (is (= (html/mail-to "foo@example.com" "foo")
          [:a {:href "mailto:foo@example.com"} "foo"])))
 
-(deftest unordered-list-test
+(deftest test-unordered-list
   (is (= (html/unordered-list ["foo" "bar" "baz"])
          [:ul (list [:li "foo"]
                     [:li "bar"]
                     [:li "baz"])])))
 
-(deftest ordered-list-test
+(deftest test-ordered-list
   (is (= (html/ordered-list ["foo" "bar" "baz"])
          [:ol (list [:li "foo"]
                     [:li "bar"]
                     [:li "baz"])])))
 
 (deftest test-hidden-field
-  (is (= (html-str (html/hidden-field :foo "bar"))
-         "<input value=\"bar\" type=\"hidden\" name=\"foo\" id=\"foo\">")))
+  (is (= (html-vec (html/hidden-field :foo "bar"))
+         [:input {:type "hidden" :name "foo" :id "foo" :value "bar"}])))
 
 (deftest test-hidden-field-with-extra-atts
-  (is (= (html-str (html/hidden-field {:class "classy"} :foo "bar"))
-         "<input value=\"bar\" type=\"hidden\" name=\"foo\" id=\"foo\" class=\"classy\">")))
+  (is (= (html-vec (html/hidden-field {:class "classy"} :foo "bar"))
+         [:input {:type "hidden" :name "foo" :id "foo" :value "bar" :class "classy"}])))
 
 (deftest test-text-field
-  (is (= (html-str (html/text-field :foo))
-         "<input type=\"text\" name=\"foo\" id=\"foo\">"))
-  (is (= (html-str (html/text-field :foo ""))
-         "<input value=\"\" type=\"text\" name=\"foo\" id=\"foo\">"))
-  (is (= (html-str (html/text-field :foo "bar"))
-         "<input value=\"bar\" type=\"text\" name=\"foo\" id=\"foo\">")))
+  (is (= (html-vec (html/text-field :foo))
+         [:input {:type "text" :name "foo" :id "foo"}]))
+  (is (= (html-vec (html/text-field :foo ""))
+         [:input {:type "text" :name "foo" :id "foo" :value ""}]))
+  (is (= (html-vec (html/text-field :foo "bar"))
+         [:input {:type "text" :name "foo" :id "foo" :value "bar"}])))
 
 (deftest test-text-field-with-extra-atts
-  (is (= (html-str (html/text-field {:class "classy"} :foo "bar"))
-         "<input value=\"bar\" type=\"text\" name=\"foo\" id=\"foo\" class=\"classy\">")))
+  (is (= (html-vec (html/text-field {:class "classy"} :foo "bar"))
+         [:input {:type "text" :name "foo" :id "foo" :value "bar" :class "classy"}])))
 
 (deftest test-check-box
-  (is (= (html-str (html/check-box :foo true))
-         "<input value=\"true\" type=\"checkbox\" name=\"foo\" id=\"foo\" checked>")))
+  (is (= (html-vec (html/check-box :foo true))
+         [:input {:type "checkbox" :name "foo" :id "foo" :value "true" :checked ""}])))
 
 (deftest test-check-box-with-extra-atts
-  (is (= (html-str (html/check-box {:class "classy"} :foo true 1))
-         "<input value=\"1\" type=\"checkbox\" name=\"foo\" id=\"foo\" checked class=\"classy\">")))
+  (is (= (html-vec (html/check-box {:class "classy"} :foo true 1))
+         [:input {:type "checkbox" :name "foo" :id "foo" :value "1" :checked "" :class "classy"}])))
 
 (deftest test-password-field
-  (is (= (html-str (html/password-field :foo "bar"))
-         "<input value=\"bar\" type=\"password\" name=\"foo\" id=\"foo\">")))
+  (is (= (html-vec (html/password-field :foo "bar"))
+         [:input {:type "password" :name "foo" :id "foo" :value "bar"}])))
 
 (deftest test-password-field-with-extra-atts
-  (is (= (html-str (html/password-field {:class "classy"} :foo "bar"))
-         "<input value=\"bar\" type=\"password\" name=\"foo\" id=\"foo\" class=\"classy\">")))
+  (is (= (html-vec (html/password-field {:class "classy"} :foo "bar"))
+         [:input {:type "password" :name "foo" :id "foo" :value "bar" :class "classy"}])))
 
 (deftest test-email-field
-  (is (= (html-str (html/email-field :foo "bar"))
-         "<input value=\"bar\" type=\"email\" name=\"foo\" id=\"foo\">")))
+  (is (= (html-vec (html/email-field :foo "bar"))
+         [:input {:type "email" :name "foo" :id "foo" :value "bar"}])))
 
 (deftest test-search-field
-  (is (= (html-str (html/search-field :foo "bar"))
-         "<input value=\"bar\" type=\"search\" name=\"foo\" id=\"foo\">")))
+  (is (= (html-vec (html/search-field :foo "bar"))
+         [:input {:type "search" :name "foo" :id "foo" :value "bar"}])))
 
 (deftest test-url-field
-  (is (= (html-str (html/url-field :foo "bar"))
-         "<input value=\"bar\" type=\"url\" name=\"foo\" id=\"foo\">")))
+  (is (= (html-vec (html/url-field :foo "bar"))
+         [:input {:type "url" :name "foo" :id "foo" :value "bar"}])))
 
 (deftest test-tel-field
-  (is (= (html-str (html/tel-field :foo "bar"))
-         "<input value=\"bar\" type=\"tel\" name=\"foo\" id=\"foo\">")))
+  (is (= (html-vec (html/tel-field :foo "bar"))
+         [:input {:type "tel" :name "foo" :id "foo" :value "bar"}])))
 
 (deftest test-number-field
-  (is (= (html-str (html/number-field :foo "bar"))
-         "<input value=\"bar\" type=\"number\" name=\"foo\" id=\"foo\">")))
+  (is (= (html-vec (html/number-field :foo "bar"))
+         [:input {:type "number" :name "foo" :id "foo" :value "bar"}])))
 
 (deftest test-range-field
-  (is (= (html-str (html/range-field :foo "bar"))
-         "<input value=\"bar\" type=\"range\" name=\"foo\" id=\"foo\">")))
+  (is (= (html-vec (html/range-field :foo "bar"))
+         [:input {:type "range" :name "foo" :id "foo" :value "bar"}])))
 
 (deftest test-date-field
-  (is (= (html-str (html/date-field :foo "bar"))
-         "<input value=\"bar\" type=\"date\" name=\"foo\" id=\"foo\">")))
+  (is (= (html-vec (html/date-field :foo "bar"))
+         [:input {:type "date" :name "foo" :id "foo" :value "bar"}])))
 
 (deftest test-month-field
-  (is (= (html-str (html/month-field :foo "bar"))
-         "<input value=\"bar\" type=\"month\" name=\"foo\" id=\"foo\">")))
+  (is (= (html-vec (html/month-field :foo "bar"))
+         [:input {:type "month" :name "foo" :id "foo" :value "bar"}])))
 
 (deftest test-week-field
-  (is (= (html-str (html/week-field :foo "bar"))
-         "<input value=\"bar\" type=\"week\" name=\"foo\" id=\"foo\">")))
+  (is (= (html-vec (html/week-field :foo "bar"))
+         [:input {:type "week" :name "foo" :id "foo" :value "bar"}])))
 
 (deftest test-time-field
-  (is (= (html-str (html/time-field :foo "bar"))
-         "<input value=\"bar\" type=\"time\" name=\"foo\" id=\"foo\">")))
+  (is (= (html-vec (html/time-field :foo "bar"))
+         [:input {:type "time" :name "foo" :id "foo" :value "bar"}])))
 
 (deftest test-datetime-field
-  (is (= (html-str (html/datetime-field :foo "bar"))
-         "<input value=\"bar\" type=\"datetime\" name=\"foo\" id=\"foo\">")))
+  (is (= (html-vec (html/datetime-field :foo "bar"))
+         [:input {:type "datetime" :name "foo" :id "foo" :value "bar"}])))
 
 (deftest test-datetime-local-field
-  (is (= (html-str (html/datetime-local-field :foo "bar"))
-         "<input value=\"bar\" type=\"datetime-local\" name=\"foo\" id=\"foo\">")))
+  (is (= (html-vec (html/datetime-local-field :foo "bar"))
+         [:input {:type "datetime-local" :name "foo" :id "foo" :value "bar"}])))
 
 (deftest test-color-field
-  (is (= (html-str (html/color-field :foo "bar"))
-         "<input value=\"bar\" type=\"color\" name=\"foo\" id=\"foo\">")))
+  (is (= (html-vec (html/color-field :foo "bar"))
+         [:input {:type "color" :name "foo" :id "foo" :value "bar"}])))
 
 (deftest test-email-field-with-extra-atts
-  (is (= (html-str (html/email-field {:class "classy"} :foo "bar"))
-         "<input value=\"bar\" type=\"email\" name=\"foo\" id=\"foo\" class=\"classy\">")))
+  (is (= (html-vec (html/email-field {:class "classy"} :foo "bar"))
+         [:input {:type "email" :name "foo" :id "foo" :value "bar" :class "classy"}])))
 
 (deftest test-radio-button
-  (is (= (html-str (html/radio-button :foo true 1))
-         "<input value=\"1\" type=\"radio\" name=\"foo\" id=\"foo-1\" checked>")))
+  (is (= (html-vec (html/radio-button :foo true 1))
+         [:input {:type "radio" :name "foo" :id "foo-1" :value "1" :checked ""}])))
 
 (deftest test-radio-button-with-extra-atts
-  (is (= (html-str (html/radio-button {:class "classy"} :foo true 1))
-         "<input value=\"1\" type=\"radio\" name=\"foo\" id=\"foo-1\" checked class=\"classy\">")))
+  (is (= (html-vec (html/radio-button {:class "classy"} :foo true 1))
+         [:input {:type "radio" :name "foo" :id "foo-1" :value "1" :checked "" :class "classy"}])))
 
 (deftest test-select-options
-  (are [x y] (= x y)
-       (html-str [:select (html/select-options ["foo" "bar" "baz"])])
-       "<select><option>foo</option><option>bar</option><option>baz</option></select>"
-       (html-str [:select (html/select-options ["foo" "bar"] "bar")])
-       "<select><option>foo</option><option selected>bar</option></select>"
-       (html-str [:select (html/select-options [["Foo" 1] ["Bar" 2]])])
-       "<select><option value=\"1\">Foo</option><option value=\"2\">Bar</option></select>"
-       (html-str [:select (html/select-options [["Foo" 1 true] ["Bar" 2]])])
-       "<select><option value=\"1\" disabled>Foo</option><option value=\"2\">Bar</option></select>"
-       ;; (html-str (html/select-options [["Foo" [1 2]] ["Bar" [3 4]]]))
-       ;; (str "<optgroup label=\"Foo\"><option>1</option><option>2</option></optgroup>"
-       ;;      "<optgroup label=\"Bar\"><option>3</option><option>4</option></optgroup>")
-       ;; (html-str (html/select-options [["Foo" [["bar" 1] ["baz" 2]]]]))
-       ;; (str "<optgroup label=\"Foo\"><option value=\"1\">bar</option>"
-       ;;      "<option value=\"2\">baz</option></optgroup>")
-       ;; (html-str (html/select-options [["Foo" [1 2]]] 2))
-       ;; (str "<optgroup label=\"Foo\"><option>1</option>"
-       ;;      "<option selected=\"true\">2</option></optgroup>")
-       ))
+  (are [x y]
+    (= x y)
+    (html-vec [:select (html/select-options ["foo" "bar" "baz"])])
+    [:select {}
+     [:option {} "foo"]
+     [:option {} "bar"]
+     [:option {} "baz"]]
+    (html-vec [:select (html/select-options ["foo" "bar"] "bar")])
+    [:select {}
+     [:option {} "foo"]
+     [:option {:selected ""} "bar"]]
+    (html-vec [:select (html/select-options [["Foo" 1] ["Bar" 2]])])
+    [:select {}
+     [:option {:value "1"} "Foo"]
+     [:option {:value "2"} "Bar"]]
+    (html-vec [:select (html/select-options [["Foo" 1 true] ["Bar" 2]])])
+    [:select {}
+     [:option {:value "1" :disabled ""} "Foo"]
+     [:option {:value "2"} "Bar"]]
+    (html-vec [:select (html/select-options [["Foo" [1 2]] ["Bar" [3 4]]])])
+    [:select {}
+     [:optgroup {:label "Foo"}
+      [:option {} "1"]
+      [:option {} "2"]]
+     [:optgroup {:label "Bar"}
+      [:option {} "3"]
+      [:option {} "4"]]]
+    (html-vec [:select (html/select-options [["Foo" [["bar" 1] ["baz" 2]]]])])
+    [:select {}
+     [:optgroup {:label "Foo"}
+      [:option {:value "1"} "bar"]
+      [:option {:value "2"} "baz"]]]
+    (html-vec [:select (html/select-options [["Foo" [1 2]]] 2)])
+    [:select {}
+     [:optgroup {:label "Foo"}
+      [:option {} "1"]
+      [:option {:selected ""} "2"]]]))
 
 (deftest test-drop-down
-  (let [options ["op1" "op2"], selected "op1"
+  (let [options ["op1" "op2"]
+        selected "op1"
         select-options (html/select-options options selected)]
-    (is (= (html-str (html/drop-down :foo options selected))
-           "<select name=\"foo\" id=\"foo\"><option selected>op1</option><option>op2</option></select>"))))
+    (is (= (html-vec (html/drop-down :foo options selected))
+           [:select {:name "foo" :id "foo"}
+            [:option {:selected ""} "op1"]
+            [:option {} "op2"]]))))
 
 (deftest test-drop-down-with-extra-atts
-  (let [options ["op1" "op2"], selected "op1"
+  (let [options ["op1" "op2"]
+        selected "op1"
         select-options (html/select-options options selected)]
-    (is (= (html-str (html/drop-down {:class "classy"} :foo options selected))
-           (str "<select name=\"foo\" id=\"foo\" class=\"classy\"><option selected>op1</option><option>op2</option></select>")))))
+    (is (= (html-vec (html/drop-down {:class "classy"} :foo options selected))
+           [:select {:name "foo" :id "foo" :class "classy"}
+            [:option {:selected ""} "op1"]
+            [:option {} "op2"]]))))
 
 (deftest test-text-area
-  ;; TODO: There should be no value, right?
-  (is (= (html-str (html/text-area :foo))
-         "<textarea name=\"foo\" id=\"foo\"></textarea>"))
-  (is (= (html-str (html/text-area :foo ""))
-         "<textarea name=\"foo\" id=\"foo\"></textarea>"))
-  (is (= (html-str (html/text-area :foo "bar"))
-         "<textarea name=\"foo\" id=\"foo\">bar</textarea>")))
+  (is (= (html-vec (html/text-area :foo))
+         [:textarea {:name "foo" :id "foo"}]))
+  (is (= (html-vec (html/text-area :foo ""))
+         [:textarea {:name "foo" :id "foo"}]))
+  (is (= (html-vec (html/text-area :foo "bar"))
+         [:textarea {:name "foo" :id "foo"} "bar"])))
 
 (deftest test-text-area-field-with-extra-atts
-  (is (= (html-str (html/text-area {:class "classy"} :foo "bar"))
-         "<textarea name=\"foo\" id=\"foo\" class=\"classy\">bar</textarea>")))
+  (is (= (html-vec (html/text-area {:class "classy"} :foo "bar"))
+         [:textarea {:name "foo" :id "foo" :class "classy"} "bar"])))
 
 (deftest test-text-area-escapes
-  (is (= (html-str (html/text-area :foo "bar</textarea>"))
-         "<textarea name=\"foo\" id=\"foo\">bar&lt;/textarea&gt;</textarea>")))
+  (is (= (html-vec (html/text-area :foo "bar</textarea>"))
+         [:textarea {:name "foo" :id "foo"} "bar&lt;/textarea&gt;"])))
 
 (deftest test-file-field
-  (is (= (html-str (html/file-upload :foo))
-         "<input type=\"file\" name=\"foo\" id=\"foo\">")))
+  (is (= (html-vec (html/file-upload :foo))
+         [:input {:type "file" :name "foo" :id "foo"}])))
 
 (deftest test-file-field-with-extra-atts
-  (is (= (html-str (html/file-upload {:class "classy"} :foo))
-         "<input type=\"file\" name=\"foo\" id=\"foo\" class=\"classy\">")))
+  (is (= (html-vec (html/file-upload {:class "classy"} :foo))
+         [:input {:type "file" :name "foo" :id "foo" :class "classy"}])))
 
 (deftest test-label
-  (is (= (html-str (html/label :foo "bar"))
-         "<label for=\"foo\">bar</label>")))
+  (is (= (html-vec (html/label :foo "bar"))
+         [:label {:for "foo"} "bar"])))
 
 (deftest test-label-with-extra-atts
-  (is (= (html-str (html/label {:class "classy"} :foo "bar"))
-         "<label for=\"foo\" class=\"classy\">bar</label>")))
+  (is (= (html-vec (html/label {:class "classy"} :foo "bar"))
+         [:label {:for "foo" :class "classy"} "bar"])))
 
 (deftest test-submit
-  (is (= (html-str (html/submit-button "bar"))
-         "<input value=\"bar\" type=\"submit\">")))
+  (is (= (html-vec (html/submit-button "bar"))
+         [:input {:type "submit" :value "bar"}])))
 
 (deftest test-submit-button-with-extra-atts
-  (is (= (html-str (html/submit-button {:class "classy"} "bar"))
-         "<input value=\"bar\" type=\"submit\" class=\"classy\">")))
+  (is (= (html-vec (html/submit-button {:class "classy"} "bar"))
+         [:input {:type "submit" :value "bar" :class "classy"}])))
 
 (deftest test-reset-button
-  (is (= (html-str (html/reset-button "bar"))
-         "<input value=\"bar\" type=\"reset\">")))
+  (is (= (html-vec (html/reset-button "bar"))
+         [:input {:type "reset" :value "bar"}])))
 
 (deftest test-reset-button-with-extra-atts
-  (is (= (html-str (html/reset-button {:class "classy"} "bar"))
-         "<input value=\"bar\" type=\"reset\" class=\"classy\">")))
+  (is (= (html-vec (html/reset-button {:class "classy"} "bar"))
+         [:input {:type "reset" :value "bar" :class "classy"}])))
 
 (deftest test-form-to
-  (is (= (html-str (html/form-to [:post "/path"] "foo" "bar"))
-         "<form method=\"POST\" action=\"/path\">foobar</form>")))
+  (is (= (html-vec (html/form-to [:post "/path"] "foo" "bar"))
+         [:form {:method "POST" :action "/path"} "foobar"])))
 
 (deftest test-form-to-with-hidden-method
-  (is (= (html-str (html/form-to [:put "/path"] "foo" "bar"))
-         (str "<form method=\"POST\" action=\"/path\">"
-              "<input value=\"PUT\" type=\"hidden\" name=\"_method\" id=\"_method\">"
-              "foobar</form>"))))
+  (is (= (html-vec (html/form-to [:put "/path"] "foo" "bar"))
+         [:form {:method "POST" :action "/path"}
+          [:input {:type "hidden" :name "_method" :id "_method" :value "PUT"}]
+          "foobar"])))
 
 (deftest test-form-to-with-extr-atts
-  (is (= (html-str (html/form-to {:class "classy"} [:post "/path"] "foo" "bar"))
-         "<form method=\"POST\" action=\"/path\" class=\"classy\">foobar</form>")))
+  (is (= (html-vec (html/form-to {:class "classy"} [:post "/path"] "foo" "bar"))
+         [:form {:method "POST" :action "/path" :class "classy"} "foobar"])))
 
 (deftest test-with-group
   (testing "hidden-field"
-    (is (= (html-str [:form (with-group :foo (html/hidden-field :bar "val"))])
-           "<form><input value=\"val\" type=\"hidden\" name=\"foo[bar]\" id=\"foo-bar\"></form>")))
+    (is (= (html-vec [:form (with-group :foo (html/hidden-field :bar "val"))])
+           [:form {} [:input {:type "hidden" :name "foo[bar]" :id "foo-bar" :value "val"}]])))
   (testing "text-field"
-    (is (= (html-str [:form (with-group :foo (html/text-field :bar))])
-           "<form><input type=\"text\" name=\"foo[bar]\" id=\"foo-bar\"></form>")))
+    (is (= (html-vec [:form (with-group :foo (html/text-field :bar))])
+           [:form {} [:input {:type "text" :name "foo[bar]" :id "foo-bar"}]])))
   (testing "checkbox"
-    (is (= (html-str [:form (with-group :foo (html/check-box :bar))])
-           "<form><input value=\"true\" type=\"checkbox\" name=\"foo[bar]\" id=\"foo-bar\"></form>")))
+    (is (= (html-vec [:form (with-group :foo (html/check-box :bar))])
+           [:form {} [:input {:type "checkbox" :name "foo[bar]" :id "foo-bar" :value "true"}]])))
   (testing "password-field"
-    (is (= (html-str [:form (with-group :foo (html/password-field :bar))])
-           "<form><input type=\"password\" name=\"foo[bar]\" id=\"foo-bar\"></form>")))
+    (is (= (html-vec [:form (with-group :foo (html/password-field :bar))])
+           [:form {} [:input {:type "password" :name "foo[bar]" :id "foo-bar"}]])))
   (testing "radio-button"
-    (is (= (html-str [:form (with-group :foo (html/radio-button :bar false "val"))])
-           "<form><input value=\"val\" type=\"radio\" name=\"foo[bar]\" id=\"foo-bar-val\"></form>")))
+    (is (= (html-vec [:form (with-group :foo (html/radio-button :bar false "val"))])
+           [:form {} [:input {:type "radio" :name "foo[bar]" :id "foo-bar-val" :value "val"}]])))
   (testing "drop-down"
-    (is (= (html-str [:form (with-group :foo (html/drop-down :bar []))])
-           "<form><select name=\"foo[bar]\" id=\"foo-bar\"></select></form>")))
+    (is (= (html-vec [:form (with-group :foo (html/drop-down :bar []))])
+           [:form {} [:select {:name "foo[bar]" :id "foo-bar"}]])))
   (testing "text-area"
-    (is (= (html-str [:form (with-group :foo (html/text-area :bar "baz"))])
-           "<form><textarea name=\"foo[bar]\" id=\"foo-bar\">baz</textarea></form>")))
+    (is (= (html-vec [:form (with-group :foo (html/text-area :bar "baz"))])
+           [:form {} [:textarea {:name "foo[bar]" :id "foo-bar"} "baz"]])))
   (testing "file-upload"
-    (is (= (html-str [:form (with-group :foo (html/file-upload :bar))])
-           "<form><input type=\"file\" name=\"foo[bar]\" id=\"foo-bar\"></form>")))
+    (is (= (html-vec [:form (with-group :foo (html/file-upload :bar))])
+           [:form {} [:input {:type "file" :name "foo[bar]" :id "foo-bar"}]])))
   (testing "label"
-    (is (= (html-str [:form (with-group :foo (html/label :bar "Bar"))])
-           "<form><label for=\"foo-bar\">Bar</label></form>")))
+    (is (= (html-vec [:form (with-group :foo (html/label :bar "Bar"))])
+           [:form {} [:label {:for "foo-bar"} "Bar"]])))
   (testing "multiple with-groups"
-    (is (= (html-str [:form (with-group :foo (with-group :bar (html/text-field :baz)))])
-           "<form><input type=\"text\" name=\"foo[bar][baz]\" id=\"foo-bar-baz\"></form>")))
+    (is (= (html-vec [:form (with-group :foo (with-group :bar (html/text-field :baz)))])
+           [:form {} [:input {:type "text" :name "foo[bar][baz]" :id "foo-bar-baz"}]])))
   (testing "multiple elements"
-    (is (= (html-str [:form (with-group :foo (html/label :bar "Bar") (html/text-field :var))])
-           "<form><label for=\"foo-bar\">Bar</label><input type=\"text\" name=\"foo[var]\" id=\"foo-var\"></form>"))))
+    (is (= (html-vec [:form (with-group :foo (html/label :bar "Bar") (html/text-field :var))])
+           [:form {} [:label {:for "foo-bar"} "Bar"] [:input {:type "text" :name "foo[var]" :id "foo-var"}]]))))
 
 (deftest test-merge-attributes-let
   (let [classes (merge {:id "a"} {:class "b"})]
-    (is (= "<div id=\"a\" class=\"b\">content</div>" (html-str [:div classes "content"])))))
+    (is (= (html-vec [:div classes "content"])
+           [:div {:id "a" :class "b"} "content"]))))
 
 (deftest test-issue-2-merge-class
-  (is (= "<div class=\"a true\"></div>"
-         (html-str [:div.a {:class (if (true? true) "true" "false")}])))
-  (is (= "<div class=\"a b true\"></div>"
-         (html-str [:div.a.b {:class (if (true? true) ["true"] "false")}]))))
+  (is (= (html-vec [:div.a {:class (if (true? true) "true" "false")}])
+         [:div {:class "a true"}]))
+  (is (= (html-vec [:div.a.b {:class (if (true? true) ["true"] "false")}])
+         [:div {:class "a b true"}])))
 
 (deftest test-issue-3-recursive-js-value
-  (is (= "<div class=\"interaction-row\" style=\"position:relative;\"></div>"
-         (html-str [:div.interaction-row {:style {:position "relative"}}])))
-  (let [username "foo", hidden #(if %1 {:display "none"} {:display "block"})]
-    (is (= (str "<ul class=\"nav navbar-nav navbar-right pull-right\"><li class=\"dropdown\" "
-                "style=\"display:block;\"><a class=\"dropdown-toggle\" role=\"button\" href=\"#\">"
-                "Welcome, foo<span class=\"caret\"></span></a><ul class=\"dropdown-menu\" role=\"menu\" style=\"left:0;\"></ul></li></ul>")
-           (html-str [:ul.nav.navbar-nav.navbar-right.pull-right
+  (is (= (html-vec [:div.interaction-row {:style {:position "relative"}}])
+         [:div {:class "interaction-row" :style "position:relative;"}]))
+  (let [username "foo"
+        hidden #(if %1 {:display "none"} {:display "block"})]
+    (is (= (html-vec [:ul.nav.navbar-nav.navbar-right.pull-right
                       [:li.dropdown {:style (hidden (nil? username))}
                        [:a.dropdown-toggle {:role "button" :href "#"} (str "Welcome, " username)
                         [:span.caret]]
-                       [:ul.dropdown-menu {:role "menu" :style {:left 0}}]]])))))
+                       [:ul.dropdown-menu {:role "menu" :style {:left 0}}]]])
+           [:ul {:class "nav navbar-nav navbar-right pull-right"}
+            [:li {:class "dropdown" :style "display:block;"}
+             [:a {:class "dropdown-toggle" :role "button" :href "#"}
+              "Welcome, foo" [:span {:class "caret"}]]
+             [:ul {:class "dropdown-menu" :role "menu" :style "left:0;"}]]]))))
 
 (deftest test-issue-22-id-after-class
-  (is (= "<div class=\"well\" id=\"setup\"></div>"
-         (html-str [:div.well#setup]))))
+  (is (= (html-vec [:div.well#setup])
+         [:div {:class "well" :id "setup"}])))
 
 (deftest test-issue-23-conditionals
   (are [form expected]
-    (is (= expected form))
-    (html-str (let [x true] (when x [:div]))) "<div></div>"
-    (html-str (let [x false] (when x [:div]))) nil
-    (html-str (let [x false] (when-not x [:div]))) "<div></div>"
-    (html-str (let [x true] (when-not x [:div (str x)]))) nil
-    (html-str (let [x true] (if-not x [:div]))) nil
-    (html-str (let [x false] (if-not x [:div]))) "<div></div>"
-    (let [x true] (html-str (if-not x [:div]))) nil
-    (let [x false] (html-str (if-not x [:div]))) "<div></div>"
-    (html-str [:div (if true {:class "test"})]) "<div class=\"test\"></div>"
-    (html-str [:div (when true {:class "test"})]) "<div class=\"test\"></div>"
-    (html-str [:div (if-not false {:class "test"})]) "<div class=\"test\"></div>"
-    (html-str [:div (when-not false {:class "test"})]) "<div class=\"test\"></div>"
-    (let [x 1] (html-str (when x [:div x]))) "<div>1</div>"
-    (let [x 1] (html-str (when-not x [:div x]))) nil))
+    (= expected form)
+    (html-vec (let [x true] (when x [:div])))
+    [:div {}]
+    (html-vec (let [x false] (when x [:div])))
+    nil
+    (html-vec (let [x false] (when-not x [:div])))
+    [:div {}]
+    (html-vec (let [x true] (when-not x [:div (str x)])))
+    nil
+    (html-vec (let [x true] (if-not x [:div])))
+    nil
+    (html-vec (let [x false] (if-not x [:div])))
+    [:div {}]
+    (let [x true] (html-vec (if-not x [:div])))
+    nil
+    (let [x false] (html-vec (if-not x [:div])))
+    [:div {}]
+    (html-vec [:div (if true {:class "test"})])
+    [:div {:class "test"}]
+    (html-vec [:div (when true {:class "test"})])
+    [:div {:class "test"}]
+    (html-vec [:div (if-not false {:class "test"})])
+    [:div {:class "test"}]
+    (html-vec [:div (when-not false {:class "test"})])
+    [:div {:class "test"}]
+    (let [x 1] (html-vec (when x [:div x])))
+    [:div {} "1"]
+    (let [x 1] (html-vec (when-not x [:div x])))
+    nil))
 
 (deftest test-issue-24-attr-and-keyword-classes
   (let [style-it (fn [p] {:placeholder (str p) :type "text"})]
-    (is (= (html-str [:input.helloworld (style-it "dinosaurs")])
-           "<input placeholder=\"dinosaurs\" type=\"text\" class=\"helloworld\">"))))
+    (is (= (html-vec [:input.helloworld (style-it "dinosaurs")])
+           [:input {:placeholder "dinosaurs" :type "text" :class "helloworld"}]))))
 
 (deftest test-issue-25-comma-separated-class
-  (is (= (html-str [:div.c1.c2 "text"])
-         "<div class=\"c1 c2\">text</div>"))
-  (is (= (html-str [:div.aa (merge {:class "bb"})])
-         "<div class=\"aa bb\"></div>"))
-  (is (= (let [input-classes ["large" "big"], autofocus true]
-           (html-str [:input.form-control
+  (is (= (html-vec [:div.c1.c2 "text"])
+         [:div {:class "c1 c2"} "text"]))
+  (is (= (html-vec [:div.aa (merge {:class "bb"})])
+         [:div {:class "aa bb"}]))
+  (is (= (let [input-classes ["large" "big"]
+               autofocus true]
+           (html-vec [:input.form-control
                       (merge {:class input-classes})]))
-         "<input class=\"form-control large big\">")))
+         [:input {:class "form-control large big"}])))
 
 (deftest test-issue-33-number-warning
-  (is (= (html-str [:div (count [1 2 3])])
-         "<div>3</div>")))
+  (is (= (html-vec [:div (count [1 2 3])])
+         [:div {} "3"])))
 
 (deftest test-issue-37-camel-case-style-attrs
-  (is (= (html-str [:div {:style {:z-index 1000}}])
-         "<div style=\"z-index:1000;\"></div>"))
-  (is (= (html-str [:div (merge {:style {:z-index 1000}})])
-         "<div style=\"z-index:1000;\"></div>")))
+  (is (= (html-vec [:div {:style {:z-index 1000}}])
+         [:div {:style "z-index:1000;"}]))
+  (is (= (html-vec [:div (merge {:style {:z-index 1000}})])
+         [:div {:style "z-index:1000;"}])))
 
-(comment (run-tests))
+;; (comment (run-tests))

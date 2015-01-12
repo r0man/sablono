@@ -7,10 +7,10 @@
     (sablono.core/html ~element)))
 
 (defmacro html-vec [element]
-  `(->> (sablono.test/html-str ~element)
-        (hickory.core/parse-fragment)
-        (map hickory.core/as-hiccup)
-        (first)))
+  `(some->> (sablono.test/html-str ~element)
+            (hickory.core/parse-fragment)
+            (map hickory.core/as-hiccup)
+            (first)))
 
 (defmacro are-html [& contents]
   `(are [html# expected#]
