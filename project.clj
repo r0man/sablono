@@ -5,9 +5,9 @@
   :min-lein-version "2.0.0"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[com.facebook/react "0.12.2.1"]
+  :dependencies [[com.facebook/react "0.12.2.4"]
                  [org.clojure/clojure "1.6.0"]
-                 [org.clojure/clojurescript "0.0-2665" :scope "provided"]]
+                 [org.clojure/clojurescript "0.0-2727" :scope "provided"]]
   :aliases {"cleantest" ["do" "clean," "cljx" "once," "test," "cljsbuild" "test"]
             "deploy" ["do" "clean," "cljx" "once," "deploy" "clojars"]}
   :cljsbuild {:builds [{:id "dev"
