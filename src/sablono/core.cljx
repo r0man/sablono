@@ -5,7 +5,8 @@
             [sablono.util :refer [as-str to-uri]]
             [sablono.interpreter :as interpreter]
             #+clj [sablono.compiler :as compiler]
-            #+cljs [goog.dom :as dom]))
+            #+cljs [goog.dom :as dom]
+            #+cljs com.facebook.React))
 
 (defmacro html
   "Render Clojure data structures via Facebook's React."

@@ -1,7 +1,8 @@
 (ns sablono.interpreter
   (:require [clojure.string :refer [blank? join]]
             [sablono.util :refer [html-to-dom-attrs normalize-element]]
-            #+cljs [goog.object :as gobject]))
+            #+cljs [goog.object :as gobject]
+            #+cljs com.facebook.React))
 
 (defprotocol IInterpreter
   (interpret [this] "Interpret a Clojure data structure as a React fn call."))
