@@ -5,7 +5,7 @@
   :min-lein-version "2.0.0"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[com.facebook/react "0.12.2.4"]
+  :dependencies [[cljsjs/react "0.12.2-5"]
                  [org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-2727" :scope "provided"]]
   :aliases {"cleantest" ["do" "clean," "cljx" "once," "test," "cljsbuild" "test"]
@@ -26,8 +26,7 @@
                                    ;; :optimizations :whitespace
                                    :pretty-print true
                                    :preamble ["jquery.js"
-                                              "phantomjs-shims.js"
-                                              "react/react.min.js"]
+                                              "phantomjs-shims.js"]
                                    :externs ["externs/hickory.js"
                                              "externs/jquery-1.9.js"]}}]
               :test-commands {"phantom" ["phantomjs" :cljs.test/runner "target/test/sablono.js"]}}

@@ -6,7 +6,7 @@
             [sablono.interpreter :as interpreter]
             #+clj [sablono.compiler :as compiler]
             #+cljs [goog.dom :as dom]
-            #+cljs com.facebook.React))
+            #+cljs cljsjs.react))
 
 (defmacro html
   "Render Clojure data structures via Facebook's React."
