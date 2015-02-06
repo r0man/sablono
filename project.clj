@@ -46,10 +46,10 @@
   :prep-tasks [["cljx" "once"]]
   :profiles {:dev {:dependencies [[crate "0.2.5"]
                                   [hickory "0.5.4"]
+                                  [org.clojure/tools.nrepl "0.2.7"]
                                   [reagent "0.4.3"]]
                    :plugins [[com.keminglabs/cljx "0.5.0"]
-                             [com.cemerick/austin "0.1.6"]
-                             [com.cemerick/piggieback "0.1.5-SNAPSHOT"]
+                             [com.cemerick/austin "0.1.7-SNAPSHOT"]
                              [com.cemerick/clojurescript.test "0.3.3"]
                              [lein-cljsbuild "1.0.4"]]
                    :repl-options {:nrepl-middleware [cljx.repl-middleware/wrap-cljx]}
