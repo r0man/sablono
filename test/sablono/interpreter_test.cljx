@@ -30,32 +30,7 @@
     [:#test.klass1] "<div id=\"test\" class=\"klass1\"></div>"))
 
 #+cljs
-(defn interpret-no-dynamic-children
-  "Same as `i/interpret` except disallows calling React DOM functions
-  with arrays as arguments. React will produce the same output for a
-  single array argument with multiple children as it will for those
-  children expanded into arguments. E.g., `React.DOM.div(null,
-  [React.DOM.div(null), React.DOM.div(null)])` produces the same
-  output as `React.DOM.div(null, React.DOM.div(null),
-  React.DOM.div(null))`, but the former produces a warning about
-  dynamic children and the latter does not. We'd like to check that
-  certain forms passed to `i/interpret` don't result in calls like the
-  latter, so we have to wrap `i/interpret` using this function."
-  [form]
-  (let [dom-fn i/dom-fn
-        wrapped (fn [tag]
-                  (let [f (dom-fn tag)]
-                    (fn [props & children]
-                      (if-let [bad-args (seq (filter #(array? %) children))]
-                        (throw (js/Error.
-                                   (str "some args to " tag
-                                        " are arrays (dynamic children): "
-                                        (pr-str bad-args))))
-                        (apply f props children)))))]
-    (with-redefs [i/dom-fn wrapped]
-      (i/interpret form))))
-
-#+cljs
 (deftest test-static-children-as-arguments
   (testing "static children should interpret as direct React arguments"
-    (is (interpret-no-dynamic-children [:div [:div] [:div]]))))
+    (is (= (html-str (i/interpret [:div [:div] [:div]]))
+           "<div><div></div><div></div></div>"))))

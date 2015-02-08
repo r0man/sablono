@@ -94,12 +94,6 @@
     (is (= {:class ["foo"]} attrs))
     (is (vector? (:class attrs)))))
 
-(deftest test-react-symbol
-  (are [tag expected]
-    (is (= expected (u/react-symbol tag)))
-    :div 'js/React.DOM.div
-    "div" 'js/React.DOM.div))
-
 #+cljs
 (deftest test-as-str
   (are [args expected]

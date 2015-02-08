@@ -22,17 +22,17 @@
 (defmethod compile-attr :class [name value]
   {:class
    (cond
-    (or (nil? value)
-        (keyword? value)
-        (string? value))
-    value
-    (and (sequential? value)
-         (= 1 (count value)))
-    (first value)
-    (and (sequential? value)
-         (every? string? value))
-    (join-classes value)
-    :else `(sablono.util/join-classes ~value))})
+     (or (nil? value)
+         (keyword? value)
+         (string? value))
+     value
+     (and (sequential? value)
+          (= 1 (count value)))
+     (first value)
+     (and (sequential? value)
+          (every? string? value))
+     (join-classes value)
+     :else `(sablono.util/join-classes ~value))})
 
 (defmethod compile-attr :style [name value]
   (compile-map-attr name (camel-case-keys value)))
@@ -52,24 +52,25 @@
 (defn compile-merge-attrs [attrs-1 attrs-2]
   (let [empty-attrs? #(or (nil? %1) (and (map? %1) (empty? %1)))]
     (cond
-     (and (empty-attrs? attrs-1)
-          (empty-attrs? attrs-2))
-     nil
-     (empty-attrs? attrs-1)
-     `(sablono.interpreter/attributes ~attrs-2)
-     (empty-attrs? attrs-2)
-     `(sablono.interpreter/attributes ~attrs-1)
-     (and (map? attrs-1)
-          (map? attrs-2))
-     (merge-with-class attrs-1 attrs-2)
-     :else `(sablono.interpreter/attributes
-             (sablono.util/merge-with-class ~attrs-1 ~attrs-2)))))
+      (and (empty-attrs? attrs-1)
+           (empty-attrs? attrs-2))
+      nil
+      (empty-attrs? attrs-1)
+      `(sablono.interpreter/attributes ~attrs-2)
+      (empty-attrs? attrs-2)
+      `(sablono.interpreter/attributes ~attrs-1)
+      (and (map? attrs-1)
+           (map? attrs-2))
+      (merge-with-class attrs-1 attrs-2)
+      :else `(sablono.interpreter/attributes
+              (sablono.util/merge-with-class ~attrs-1 ~attrs-2)))))
 
 (defn compile-react-element
   "Render an element vector as a HTML element."
   [element]
   (let [[tag attrs content] (normalize-element element)]
     `(~(react-fn tag)
+      ~(name tag)
       ~(compile-attrs attrs)
       ~@(if content (compile-react content)))))
 
@@ -135,16 +136,16 @@
   "Returns the compilation strategy to use for a given element."
   [[tag attrs & content :as element]]
   (cond
-   (every? literal? element)
-   ::all-literal                    ; e.g. [:span "foo"]
-   (and (literal? tag) (map? attrs))
-   ::literal-tag-and-attributes     ; e.g. [:span {} x]
-   (and (literal? tag) (not-implicit-map? attrs))
-   ::literal-tag-and-no-attributes  ; e.g. [:span ^String x]
-   (literal? tag)
-   ::literal-tag                    ; e.g. [:span x]
-   :else
-   ::default))                      ; e.g. [x]
+    (every? literal? element)
+    ::all-literal                    ; e.g. [:span "foo"]
+    (and (literal? tag) (map? attrs))
+    ::literal-tag-and-attributes     ; e.g. [:span {} x]
+    (and (literal? tag) (not-implicit-map? attrs))
+    ::literal-tag-and-no-attributes  ; e.g. [:span ^String x]
+    (literal? tag)
+    ::literal-tag                    ; e.g. [:span x]
+    :else
+    ::default))                      ; e.g. [x]
 
 (declare compile-seq)
 
@@ -161,7 +162,10 @@
 (defmethod compile-element ::literal-tag-and-attributes
   [[tag attrs & content]]
   (let [[tag attrs _] (normalize-element [tag attrs])]
-    `(~(react-fn tag) ~(compile-attrs attrs) ~@(compile-seq content))))
+    `(~(react-fn tag)
+      ~(name tag)
+      ~(compile-attrs attrs)
+      ~@(compile-seq content))))
 
 (defmethod compile-element ::literal-tag-and-no-attributes
   [[tag & content]]
@@ -173,6 +177,7 @@
         attrs-sym (gensym "attrs")]
     `(let [~attrs-sym ~attrs]
        (apply ~(react-fn tag)
+              ~(name tag)
               (if (map? ~attrs-sym)
                 ~(compile-merge-attrs tag-attrs attrs-sym)
                 ~(compile-attrs tag-attrs))
@@ -194,12 +199,12 @@
   [content]
   (doall (for [expr content]
            (cond
-            (vector? expr) (compile-element expr)
-            (literal? expr) expr
-            (hint? expr String) expr
-            (hint? expr Number) expr
-            (seq? expr) (compile-form expr)
-            :else `(sablono.interpreter/interpret ~expr)))))
+             (vector? expr) (compile-element expr)
+             (literal? expr) expr
+             (hint? expr String) expr
+             (hint? expr Number) expr
+             (seq? expr) (compile-form expr)
+             :else `(sablono.interpreter/interpret ~expr)))))
 
 (defn compile-html
   "Pre-compile data structures into HTML where possible."

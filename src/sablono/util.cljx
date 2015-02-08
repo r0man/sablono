@@ -38,8 +38,8 @@
           kmap (zipmap ks (map camel-case ks))]
       (-> (rename-keys m kmap)
           (cond->
-           (map? (:style m))
-           (update-in [:style] camel-case-keys))))
+              (map? (:style m))
+            (update-in [:style] camel-case-keys))))
     m))
 
 (defn html-to-dom-attrs
@@ -63,9 +63,9 @@
   "Like clojure.core/merge but concatenate :class entries."
   [& maps]
   (let [classes (->> (mapcat #(cond
-                               (list? %1) [%1]
-                               (sequential? %1) %1
-                               :else [%1])
+                                (list? %1) [%1]
+                                (sequential? %1) %1
+                                :else [%1])
                              (map :class maps))
                      (remove nil?) vec)
         maps (apply merge maps)]
@@ -109,16 +109,17 @@
   [classes]
   (join " " (flatten classes)))
 
-(defn react-symbol
-  "Returns the React function to render `tag` as a symbol."
-  [tag] (symbol "js" (str "React.DOM." (name tag))))
+(defn wrapped-type?
+  "Return true if the element `type` needs to be wrapped."
+  [type]
+  (contains? #{:input :option :textarea} (keyword type)))
 
 (defn react-fn
-  "Same as `react-symbol` but wrap input and text elements."
-  [tag]
-  (if (contains? #{:input :option :textarea} (keyword tag))
-    (symbol "sablono.interpreter" (name tag))
-    (react-symbol tag)))
+  "Return the symbol of a fn that build a React element. "
+  [type]
+  (if (wrapped-type? type)
+    'sablono.interpreter/create-element
+    'js/React.createElement))
 
 (defn attr-pattern
   "Returns a regular expression that matches the HTML attribute `attr`

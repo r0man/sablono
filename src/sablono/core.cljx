@@ -8,16 +8,19 @@
             #+cljs [goog.dom :as dom]
             #+cljs cljsjs.react))
 
+#+clj
 (defmacro html
   "Render Clojure data structures via Facebook's React."
   [options & content]
   (apply sablono.compiler/compile-html options content))
 
+#+clj
 (defmacro html-expand
   "Returns the expanded HTML generation forms."
   [& forms]
   `(macroexpand `(html ~~@forms)))
 
+#+clj
 (defmacro defhtml
   "Define a function, but wrap its output in an implicit html macro."
   [name & fdecl]
@@ -28,7 +31,7 @@
        ~@(if (vector? (first fbody))
            (wrap-html fbody)
            (map wrap-html fbody)))))
-
+#+clj
 (defmacro with-base-url
   "Sets a base URL that will be prepended onto relative URIs. Note that for this
   to work correctly, it needs to be placed outside the html macro."
@@ -51,6 +54,7 @@
   (for [args arglists]
     (vec (cons 'attr-map? args))))
 
+#+clj
 (defmacro defelem
   "Defines a function that will return a element vector. If the first argument
   passed to the resulting function is a map, it merges it with the attribute
