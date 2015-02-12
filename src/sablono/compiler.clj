@@ -1,5 +1,6 @@
 (ns sablono.compiler
-  (:require [sablono.util :refer :all])
+  (:require [cljs.tagged_literals]
+            [sablono.util :refer :all])
   (:import cljs.tagged_literals.JSValue))
 
 (defprotocol ICompile
