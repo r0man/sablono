@@ -1,6 +1,10 @@
 (ns sablono.compiler
-  (:require [cljs.tagged_literals]
+  (:require [cljs.compiler :as cljs]
             [sablono.util :refer :all])
+  ;; TODO: Fix emit-constant exception for JSValue.
+  ;; Require of cljs.tagged_literals causes trouble, but a require of
+  ;; cljs.compiler seems to work. Also, switching JSValue to a record
+  ;; in ClojureScript seems to fix the problem.
   (:import cljs.tagged_literals.JSValue))
 
 (defprotocol ICompile
@@ -229,12 +233,6 @@
     (if (> (count forms) 1)
       `(~'into-array ~(vec (compile-seq content)))
       (first forms))))
-
-;; TODO: Remove when landed in ClojureScript.
-(defmethod print-method JSValue
-  [^JSValue v, ^java.io.Writer w]
-  (.write w "#js ")
-  (.write w (pr-str (.val v))))
 
 (extend-protocol ICompile
   clojure.lang.IPersistentVector

@@ -1,4 +1,4 @@
-(defproject sablono "0.3.3-SNAPSHOT"
+(defproject sablono "0.3.4-SNAPSHOT"
   :description "Lisp style templating for Facebook's React."
   :url "http://github.com/r0man/sablono"
   :author "r0man"
@@ -52,6 +52,7 @@
                    :plugins [[com.keminglabs/cljx "0.5.0"]
                              [com.cemerick/clojurescript.test "0.3.3"]
                              [lein-cljsbuild "1.0.4"]]
+                   :repl-options {:nrepl-middleware [cljx.repl-middleware/wrap-cljx]}
                    :resource-paths ["test-resources"]
                    :source-paths ["target/classes"]
                    :test-paths ["test" "target/test-classes"]}})
