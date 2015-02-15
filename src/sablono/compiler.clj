@@ -99,6 +99,18 @@
   {:private true}
   form-name)
 
+(defmethod compile-form "do"
+  [[_ & forms]]
+  `(do ~@(butlast forms) ~(compile-html (last forms))))
+
+(defmethod compile-form "let*"
+  [[_ bindings & body]]
+  `(let* ~bindings ~@(butlast body) ~(compile-html (last body))))
+
+(defmethod compile-form "letfn*"
+  [[_ bindings & body]]
+  `(letfn* ~bindings ~@(butlast body) ~(compile-html (last body))))
+
 (defmethod compile-form "for"
   [[_ bindings body]]
   `(~'into-array (for ~bindings ~(compile-html body))))
@@ -109,7 +121,10 @@
 
 (defmethod compile-form :default
   [expr]
-  `(sablono.interpreter/interpret ~expr))
+  (let [mform (macroexpand expr)]
+    (if (= mform expr)
+      `(sablono.interpreter/interpret ~expr)
+      (compile-form mform))))
 
 (defn- not-hint?
   "True if x is not hinted to be the supplied type."
