@@ -66,6 +66,18 @@ this in *Ŝablono*:
 		:type "text"}])
 ```
 
+## innerHTML (*Unsafe*)
+
+It is *really* not recommended to directly set the innerHTML
+attribute, but in rare cases it is necessary. i.e. injecting a
+html string that was generated from Markdown.
+
+``` clj
+(html [:div
+	   {:dangerouslySetInnerHTML {:__html my-content-string }}])
+```
+You can read more at [React's special attributes](http://facebook.github.io/react/docs/special-non-dom-attributes.html).
+
 ## Thanks
 
 This library is based on James Reeves [Hiccup](https://github.com/weavejester/hiccup) library.
