@@ -59,8 +59,8 @@
 
 (deftest test-multiple-children
   (is (= (wrap-js-value
-          '(into-array [(js/React.createElement "div" #js {:id "a"})
-                        (js/React.createElement "div" #js {:id "b"})]))
+          '[(js/React.createElement "div" #js {:id "a"})
+            (js/React.createElement "div" #js {:id "b"})])
          (wrap-js-value (html-expand [:div#a] [:div#b])))))
 
 (deftest tag-names
@@ -235,19 +235,18 @@
      '[:ul (for [n (range 3)] [:li n])]
      '(js/React.createElement
        "ul" nil
-       (into-array
-        (clojure.core/for [n (range 3)]
-          (clojure.core/let
-              [attrs n]
-            (clojure.core/apply
-             js/React.createElement "li"
+       (clojure.core/for [n (range 3)]
+         (clojure.core/let
+             [attrs n]
+           (clojure.core/apply
+            js/React.createElement "li"
+            (if (clojure.core/map? attrs)
+              (sablono.interpreter/attributes attrs)
+              nil)
+            (clojure.core/remove
+             clojure.core/nil?
              (if (clojure.core/map? attrs)
-               (sablono.interpreter/attributes attrs)
-               nil)
-             (clojure.core/remove
-              clojure.core/nil?
-              (if (clojure.core/map? attrs)
-                [] [(sablono.interpreter/interpret attrs)])))))))
+               [] [(sablono.interpreter/interpret attrs)]))))))
      '[:div (if true [:span "foo"] [:span "bar"])]
      '(let* [attrs (if true [:span "foo"] [:span "bar"])]
             (clojure.core/apply

@@ -86,7 +86,7 @@
       :else (create-element type js-attrs nil))))
 
 (defn- interpret-seq [s]
-  (into-array (map interpret s)))
+  (map interpret s))
 
 #+cljs
 (extend-protocol IInterpreter

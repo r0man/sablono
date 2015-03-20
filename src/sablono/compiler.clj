@@ -113,7 +113,7 @@
 
 (defmethod compile-form "for"
   [[_ bindings body]]
-  `(~'into-array (for ~bindings ~(compile-html body))))
+  `(for ~bindings ~(compile-html body)))
 
 (defmethod compile-form "if"
   [[_ condition & body]]
@@ -231,7 +231,7 @@
   [& content]
   (let [forms (compile-seq content)]
     (if (> (count forms) 1)
-      `(~'into-array ~(vec (compile-seq content)))
+      (compile-seq content)
       (first forms))))
 
 (extend-protocol ICompile
