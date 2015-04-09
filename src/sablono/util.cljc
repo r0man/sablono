@@ -1,5 +1,5 @@
 (ns sablono.util
-  #+cljs (:import goog.Uri)
+  #?(:cljs (:import goog.Uri))
   (:refer-clojure :exclude [replace])
   (:require [clojure.set :refer [rename-keys]]
             [clojure.string :refer [blank? capitalize join split replace]]))
@@ -138,34 +138,34 @@
   (if s (-> (replace s #"^\s*<[^>]+>\s*" "")
             (replace #"\s*</[^>]+>\s*$" ""))))
 
-#+cljs
-(extend-protocol ToString
-  cljs.core.Keyword
-  (to-str [x]
-    (name x))
-  goog.Uri
-  (to-str [x]
-    (if (or (. x (hasDomain))
-            (nil? (. x (getPath)))
-            (not (re-matches #"^/.*" (. x (getPath)))))
-      (str x)
-      (let [base (str *base-url*)]
-        (if (re-matches #".*/$" base)
-          (str (subs base 0 (dec (count base))) x)
-          (str base x)))))
-  nil
-  (to-str [_]
-    "")
-  number
-  (to-str [x]
-    (str x))
-  default
-  (to-str [x]
-    (str x)))
+#?(:cljs
+   (extend-protocol ToString
+     cljs.core.Keyword
+     (to-str [x]
+       (name x))
+     goog.Uri
+     (to-str [x]
+       (if (or (. x (hasDomain))
+               (nil? (. x (getPath)))
+               (not (re-matches #"^/.*" (. x (getPath)))))
+         (str x)
+         (let [base (str *base-url*)]
+           (if (re-matches #".*/$" base)
+             (str (subs base 0 (dec (count base))) x)
+             (str base x)))))
+     nil
+     (to-str [_]
+       "")
+     number
+     (to-str [x]
+       (str x))
+     default
+     (to-str [x]
+       (str x))))
 
-#+cljs
-(extend-protocol ToURI
-  Uri
-  (to-uri [x] x)
-  default
-  (to-uri [x] (Uri. (str x))))
+#?(:cljs
+   (extend-protocol ToURI
+     Uri
+     (to-uri [x] x)
+     default
+     (to-uri [x] (Uri. (str x)))))
