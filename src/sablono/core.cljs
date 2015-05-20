@@ -1,43 +1,10 @@
 (ns sablono.core
-  #?(:cljs (:require-macros [sablono.core :refer [defelem gen-input-fields]]))
+  (:require-macros [sablono.core :refer [defelem gen-input-fields]])
   (:require [clojure.string :refer [upper-case]]
-            [clojure.walk :refer [postwalk-replace]]
             [sablono.util :refer [as-str to-uri]]
             [sablono.interpreter :as interpreter]
-            #?(:clj [sablono.compiler :as compiler])
-            #?(:cljs [goog.dom :as dom])
-            #?(:cljs cljsjs.react)))
-
-#?(:clj
-   (defmacro html
-  "Render Clojure data structures via Facebook's React."
-  [options & content]
-  (apply sablono.compiler/compile-html options content)))
-
-#?(:clj
-   (defmacro html-expand
-  "Returns the expanded HTML generation forms."
-  [& forms]
-  `(macroexpand `(html ~~@forms))))
-
-#?(:clj
-   (defmacro defhtml
-  "Define a function, but wrap its output in an implicit html macro."
-  [name & fdecl]
-  (let [[fhead fbody] (split-with #(not (or (list? %) (vector? %))) fdecl)
-        wrap-html (fn [[args & body]] `(~args (html ~@body)))]
-    `(defn ~name
-       ~@fhead
-       ~@(if (vector? (first fbody))
-           (wrap-html fbody)
-           (map wrap-html fbody))))))
-#?(:clj
-   (defmacro with-base-url
-  "Sets a base URL that will be prepended onto relative URIs. Note that for this
-  to work correctly, it needs to be placed outside the html macro."
-  [base-url & body]
-  `(binding [sablono.util/*base-url* ~base-url]
-     ~@body)))
+            [goog.dom :as dom]
+            [cljsjs.react]))
 
 (defn wrap-attrs
   "Add an optional attribute argument to a function that returns a element vector."
@@ -54,30 +21,17 @@
   (for [args arglists]
     (vec (cons 'attr-map? args))))
 
-#?(:clj
-   (defmacro defelem
-  "Defines a function that will return a element vector. If the first argument
-  passed to the resulting function is a map, it merges it with the attribute
-  map of the returned element value."
-  [name & fdecl]
-  (let [fn-name# (gensym (str name))
-        fdecl (postwalk-replace {name fn-name#} fdecl)]
-    `(do (defn ~fn-name# ~@fdecl)
-         (def ~name (sablono.core/wrap-attrs ~fn-name#))))))
-
-#?(:cljs
-   (defn render
+(defn render
   "Render `element` as HTML string."
   [element]
   (if element
-    (js/React.renderToString element))))
+    (js/React.renderToString element)))
 
-#?(:cljs
-   (defn render-static
+(defn render-static
   "Render `element` as HTML string, without React internal attributes."
   [element]
   (if element
-    (js/React.renderToStaticMarkup element))))
+    (js/React.renderToStaticMarkup element)))
 
 (defn include-css
   "Include a list of external stylesheet files."
@@ -85,18 +39,16 @@
   (for [style styles]
     [:link {:type "text/css", :href (as-str style), :rel "stylesheet"}]))
 
-#?(:cljs
-   (defn include-js
+(defn include-js
   "Include the JavaScript library at `src`."
   [src]
   (dom/appendChild
    (.-body (dom/getDocument))
-   (dom/createDom "script" #js {:src src}))))
+   (dom/createDom "script" #js {:src src})))
 
-#?(:cljs
-   (defn include-react
+(defn include-react
   "Include Facebook's React JavaScript library."
-  [] (include-js "http://fb.me/react-0.12.2.js")))
+  [] (include-js "http://fb.me/react-0.12.2.js"))
 
 (defelem link-to
   "Wraps some content in a HTML hyperlink with the supplied URL."
@@ -127,14 +79,6 @@
 
 (def ^:dynamic *group* [])
 
-#?(:clj
-   (defmacro with-group
-  "Group together a set of related form fields for use with the Ring
-  nested-params middleware."
-  [group & body]
-  `(binding [sablono.core/*group* (conj sablono.core/*group* (as-str ~group))]
-     (list ~@body))))
-
 (defn- make-name
   "Create a field name from the supplied argument the current field group."
   [name]
@@ -154,39 +98,6 @@
            :name (make-name name)
            :id (make-id name)
            :value value}])
-
-#?(:clj
-   (defn gen-input-field [input-type]
-     (let [fn-name (symbol (str input-type "-field"))
-           docstring (str "Creates a " input-type " input field.")]
-       `(defelem ~fn-name
-          ~docstring
-          ([name#] (~fn-name name# nil))
-          ([name# value#] (sablono.core/input-field* (str '~input-type) name# value#))))))
-
-#?(:clj
-   (defmacro gen-input-fields
-  "Generates the input fields."
-  []
-  (let [fields '[color
-                 date
-                 datetime
-                 datetime-local
-                 email
-                 file
-                 hidden
-                 month
-                 number
-                 password
-                 range
-                 search
-                 tel
-                 text
-                 time
-                 url
-                 week]]
-    `(do
-       ~@(map gen-input-field fields)))))
 
 (gen-input-fields)
 

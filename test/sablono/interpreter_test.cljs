@@ -1,7 +1,7 @@
 (ns sablono.interpreter-test
-  (:require-macros [cemerick.cljs.test :refer [are is deftest testing]]
+  (:require-macros [cljs.test :refer [are is deftest testing]]
                    [sablono.test :refer [html-str]])
-  (:require [cemerick.cljs.test :as t]
+  (:require [cljs.test :as t]
             [sablono.interpreter :as i]))
 
 (deftest test-attributes

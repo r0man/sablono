@@ -1,8 +1,9 @@
 (ns sablono.compiler-test
   (:require [clojure.test :refer :all]
             [clojure.walk :refer [prewalk]]
+            [sablono.compiler :refer :all]
             [sablono.core :refer [html html-expand]]
-            [sablono.compiler :refer :all])
+            [sablono.interpreter :as interpreter])
   (:import cljs.tagged_literals.JSValue))
 
 (deftype JSValueWrapper [val]
@@ -32,8 +33,8 @@
 
 (defmacro are-html-expanded [& body]
   `(are [form# expected#]
-     (is (= (wrap-js-value expected#)
-            (wrap-js-value (replace-gensyms (html-expand form#)))))
+       (is (= (wrap-js-value expected#)
+              (wrap-js-value (replace-gensyms (html-expand form#)))))
      ~@body))
 
 (deftest test-to-js
