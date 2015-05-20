@@ -28,5 +28,5 @@
 
 (deftest test-static-children-as-arguments
   (testing "static children should interpret as direct React arguments"
-    (is (= (html-str (i/interpret [:div [:div] [:div]]))
+    (is (= (html-str (i/interpret [:div [:div {:key 1}] [:div {:key 2}]]))
            "<div><div></div><div></div></div>"))))
