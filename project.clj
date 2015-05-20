@@ -10,31 +10,34 @@
                  [org.clojure/clojurescript "0.0-3291" :scope "provided"]]
   :aliases {"cleantest" ["do" "clean," "test," "cljsbuild" "test"]
             "deploy" ["do" "clean," "deploy" "clojars"]}
-  :cljsbuild {:builds [{:id "dev"
-                        :source-paths ["src" "test"]
-                        :compiler {:output-to "target/dev/sablono.js"
-                                   :output-dir "target/dev"
-                                   :optimizations :none
-                                   :pretty-print true
-                                   :source-map true
-                                   :verbose true}}
-                       {:id "test"
-                        :source-paths ["src" "test"]
-                        :notify-command ["phantomjs" :cljs.test/runner "target/test/sablono.js"]
-                        :compiler {:output-to "target/test/sablono.js"
-                                   :output-dir "target/test"
-                                   ;; :optimizations :advanced
-                                   :optimizations :whitespace
-                                   :pretty-print true
-                                   :preamble ["jquery.js"
-                                              "phantomjs-shims.js"]
-                                   :externs ["externs/hickory.js"
-                                             "externs/jquery-1.9.js"]
-                                   :verbose true}}]
-              :test-commands {"phantom" ["phantomjs" :cljs.test/runner "target/test/sablono.js"]}}
+  :cljsbuild {:builds
+              [{:id "none"
+                :compiler
+                {:asset-path "../../target/none/out"
+                 :main sablono.test
+                 :output-to "target/none/sablono.js"
+                 :output-dir "target/none/out"
+                 :optimizations :none
+                 :pretty-print true
+                 :source-map true
+                 :verbose true}
+                :notify-command ["bin/phantomjs" "none"]
+                :source-paths ["src" "test"]}
+               {:id "advanced"
+                :compiler
+                {:asset-path "../../target/advanced/out"
+                 :main sablono.test
+                 :output-to "target/advanced/sablono.js"
+                 :optimizations :advanced
+                 :pretty-print true
+                 :externs ["externs/hickory.js"]
+                 :verbose true}
+                :notify-command ["bin/phantomjs" "advanced"]
+                :source-paths ["src" "test"]}]
+              :test-commands {"phantom" ["bin/phantomjs"]}}
   :deploy-repositories [["releases" :clojars]]
   :profiles {:dev {:dependencies [[crate "0.2.5"]
-                                  [com.cemerick/clojurescript.test "0.3.3"]
+                                  [cljsjs/jquery "1.9.1-0"]
                                   [com.cemerick/piggieback "0.2.1"]
                                   [org.clojure/tools.nrepl "0.2.10"]
                                   [org.clojure/tools.reader "0.9.2"]

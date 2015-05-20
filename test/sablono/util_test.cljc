@@ -1,15 +1,13 @@
 (ns sablono.util-test
-  #?(:cljs (:require-macros
-            [cemerick.cljs.test :refer [are is deftest testing]]
-            [sablono.core :refer [with-base-url]]))
-  #?(:cljs (:import goog.Uri))
-  (:require [sablono.util :as u]
+  (:require [sablono.core :refer-macros [with-base-url]]
+            [sablono.util :as u]
             #?(:clj [clojure.test :refer :all])
-            #?(:cljs [cemerick.cljs.test :as t])))
+            #?(:cljs [cljs.test :as t :refer-macros [are is deftest testing]]))
+  #?(:cljs (:import goog.Uri)))
 
 (deftest test-camel-case-keys
   (are [attrs expected]
-    (= expected (u/camel-case-keys attrs))
+      (= expected (u/camel-case-keys attrs))
     {:id "x"}
     {:id "x"}
     {:class "x"}
@@ -23,7 +21,7 @@
 
 (deftest test-html-to-dom-attrs
   (are [attrs expected]
-    (= expected (u/html-to-dom-attrs attrs))
+      (= expected (u/html-to-dom-attrs attrs))
     {:id "x"}
     {:id "x"}
     {:class "x"}
@@ -37,7 +35,7 @@
 
 (deftest test-compact-map
   (are [x expected]
-    (is (= expected (u/compact-map x)))
+      (is (= expected (u/compact-map x)))
     nil nil
     {} {}
     {:x nil} {}
@@ -46,7 +44,7 @@
 
 (deftest test-merge-with-class
   (are [maps expected]
-    (is (= expected (apply u/merge-with-class maps)))
+      (is (= expected (apply u/merge-with-class maps)))
     [] nil
     [{:a 1} {:b 2}]
     {:a 1 :b 2}
@@ -57,7 +55,7 @@
 
 (deftest test-strip-css
   (are [x expected]
-    (is (= expected (u/strip-css x)))
+      (is (= expected (u/strip-css x)))
     nil nil
     "" ""
     "foo" "foo"
@@ -66,7 +64,7 @@
 
 (deftest test-match-tag
   (are [tag expected]
-    (is (= expected (u/match-tag tag)))
+      (is (= expected (u/match-tag tag)))
     :div ["div" nil []]
     :div#foo ["div" "foo" []]
     :div#foo.bar ["div" "foo" ["bar"]]
@@ -82,7 +80,7 @@
 
 (deftest test-normalize-element
   (are [element expected]
-    (is (= expected (u/normalize-element element)))
+      (is (= expected (u/normalize-element element)))
     [:div] ["div" {} nil]
     [:div {:class nil}] ["div" {:class nil} nil]
     [:div#foo] ["div" {:id "foo"} nil]
@@ -98,7 +96,7 @@
 #?(:cljs
    (deftest test-as-str
      (are [args expected]
-       (is (= expected (apply u/as-str args)))
+         (is (= expected (apply u/as-str args)))
        ["foo"] "foo"
        [:foo] "foo"
        [100] "100"
@@ -108,7 +106,7 @@
 
 (deftest test-camel-case
   (are [attr expected]
-    (is (= expected (u/camel-case attr)))
+      (is (= expected (u/camel-case attr)))
     nil nil
     "" ""
     :data :data
@@ -120,14 +118,14 @@
    (deftest test-to-uri
      (testing "with no base URL"
        (are [obj expected]
-         (is (= expected (u/to-str (u/to-uri obj))))
+           (is (= expected (u/to-str (u/to-uri obj))))
          "foo" "foo"
          "/foo/bar" "/foo/bar"
          "/foo#bar" "/foo#bar"))
      (testing "with base URL"
        (with-base-url "/foo"
          (are [obj expected]
-           (is (= expected (u/to-str (u/to-uri obj))))
+             (is (= expected (u/to-str (u/to-uri obj))))
            "/bar" "/foo/bar"
            "http://example.com" "http://example.com"
            "https://example.com/bar" "https://example.com/bar"
@@ -137,7 +135,7 @@
      (testing "with base URL for root context"
        (with-base-url "/"
          (are [obj expected]
-           (is (= expected (u/to-str (u/to-uri obj))))
+             (is (= expected (u/to-str (u/to-uri obj))))
            "/bar" "/bar"
            "http://example.com" "http://example.com"
            "https://example.com/bar" "https://example.com/bar"
@@ -147,7 +145,7 @@
      (testing "with base URL containing trailing slash"
        (with-base-url "/foo/"
          (are [obj expected]
-           (is (= expected (u/to-str (u/to-uri obj))))
+             (is (= expected (u/to-str (u/to-uri obj))))
            "/bar" "/foo/bar"
            "http://example.com" "http://example.com"
            "https://example.com/bar" "https://example.com/bar"
@@ -157,7 +155,7 @@
 
 (deftest test-strip-attr
   (are [html attr expected]
-    (is (= expected (u/strip-attr html attr)))
+      (is (= expected (u/strip-attr html attr)))
     nil :data-reactid nil
     "" :data-reactid ""
     "<div></div>" :data-reactid "<div></div>"
@@ -168,7 +166,7 @@
 
 (deftest test-strip-outer
   (are [html expected]
-    (is (= expected (u/strip-outer html)))
+      (is (= expected (u/strip-outer html)))
     nil nil
     "" ""
     "<div>x</div>" "x"

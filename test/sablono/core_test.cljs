@@ -1,18 +1,19 @@
 (ns sablono.core-test
   (:refer-clojure :exclude [replace])
-  (:require-macros [cemerick.cljs.test :refer [are is deftest run-tests testing]]
+  (:require-macros [cljs.test :refer [are is deftest testing]]
                    [sablono.core :refer [html with-group]]
                    [sablono.test :refer [html-str html-vec]])
-  (:require [cemerick.cljs.test :as t]
+  (:require [cljs.test :as t :refer-macros [are is deftest testing]]
             [clojure.string :refer [replace]]
             [hickory.core :as hickory]
             [goog.dom :as gdom]
             [sablono.core :as html :include-macros true]
             [sablono.util :refer [to-str]]))
 
+
 (deftest test-render
   (are [markup match]
-    (is (re-matches (re-pattern match) (html/render markup)))
+      (is (re-matches (re-pattern match) (html/render markup)))
     (html [:div#a.b "c"])
     "<div id=\"a\" class=\"b\" data-reactid=\".*\" data-react-checksum=\".*\">c</div>"
     (html [:div (when true [:p "data"]) (if true [:p "data"] nil)])
@@ -276,7 +277,7 @@
 
 (deftest test-select-options
   (are [x y]
-    (= x y)
+      (= x y)
     (html-vec [:select (html/select-options ["foo" "bar" "baz"])])
     [:select {}
      [:option {} "foo"]
@@ -461,7 +462,7 @@
 
 (deftest test-issue-23-conditionals
   (are [form expected]
-    (= expected form)
+      (= expected form)
     (html-vec (let [x true] (when x [:div])))
     [:div {}]
     (html-vec (let [x false] (when x [:div])))
@@ -516,5 +517,3 @@
          [:div {:style "z-index:1000;"}]))
   (is (= (html-vec [:div (merge {:style {:z-index 1000}})])
          [:div {:style "z-index:1000;"}])))
-
-;; (comment (run-tests))

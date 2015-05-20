@@ -1,16 +1,17 @@
 (ns sablono.benchmark
-  (:require-macros [cemerick.cljs.test :refer [is deftest testing]]
-                   [sablono.core :refer [html]])
-  (:require [cemerick.cljs.test :as t]
+  (:require [cljsjs.jquery]
+            [cljs.test :refer-macros [is deftest testing]]
             [crate.core :as crate]
             [goog.dom :as gdom]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [sablono.core :as html :refer-macros [defhtml html]]))
 
 (defn body []
   (aget (gdom/getElementsByTagNameAndClass "body") 0))
 
 (defn reagent-template [datum]
-  [:li [:a {:href (str "#show/" (:key datum))}]
+  [:li {:key (:id datum)}
+   [:a {:href (str "#show/" (:key datum))}]
    [:div {:id (str "item" (:key datum))
           :className ["class1" "class2"]}
     [:span {:className "anchor"} (:name datum)]]])
@@ -36,17 +37,19 @@
 
 (defn react-template [datum]
   (js/React.DOM.li
+   #js {:key (:id datum)}
    (js/React.DOM.a #js {:href (str "#show/" (:key datum))})
    (js/React.DOM.div
     #js {:id (str "item" (:key datum))
          :className "class1 class2"}
     (js/React.DOM.span #js {:className "anchor"} (:name datum)))))
 
-(defn sablono-template [datum]
-  (html [:li [:a {:href (str "#show/" (:key datum))}]
-         [:div {:id (str "item" (:key datum))
-                :class ["class1" "class2"]}
-          [:span {:class "anchor"} (:name datum)]]]))
+(defhtml sablono-template [datum]
+  [:li {:key (:id datum)}
+   [:a {:href (str "#show/" (:key datum))}]
+   [:div {:id (str "item" (:key datum))
+          :class ["class1" "class2"]}
+    [:span {:class "anchor"} (:name datum)]]])
 
 (defn run-test [root data li-fn render-fn]
   (let [now (js/Date.)]
@@ -56,7 +59,8 @@
 
 (defn gen-data []
   (for [i (range 1e4)]
-    {:key (rand-int 1e6)
+    {:id i
+     :key (rand-int 1e6)
      :name (str "product" i)}))
 
 (defn render-append [root children]
