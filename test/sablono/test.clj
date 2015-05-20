@@ -1,6 +1,5 @@
 (ns sablono.test
-  (:require [sablono.core :as core]
-            #+cljs [hickory.core :as hickory]))
+  (:require [sablono.core]))
 
 (defmacro html-str [element]
   `(sablono.core/render-static
