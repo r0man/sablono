@@ -127,22 +127,23 @@
 
 (defelem select-options
   "Creates a seq of option tags from a collection."
-  ([coll] (select-options coll nil))
-  ([coll selected]
-   (for [x coll]
-     (if (sequential? x)
-       (let [[text val disabled?] x
-             disabled? (boolean disabled?)]
-         (if (sequential? val)
-           [:optgroup {:label text} (select-options val selected)]
-           [:option {:value val :selected (= val selected) :disabled disabled?} text]))
-       [:option {:selected (= x selected)} x]))))
+  [coll]
+  (for [x coll]
+    (if (sequential? x)
+      (let [[text val disabled?] x
+            disabled? (boolean disabled?)]
+        (if (sequential? val)
+          [:optgroup {:label text} (select-options val)]
+          [:option {:value val :disabled disabled?} text]))
+      [:option {:value x} x])))
 
 (defelem drop-down
   "Creates a drop-down box using the <select> tag."
   ([name options] (drop-down name options nil))
   ([name options selected]
-   [:select {:name (make-name name), :id (make-id name)}
+   [:select
+    {:name (make-name name)
+     :id (make-id name)}
     (select-options options selected)]))
 
 (defelem text-area

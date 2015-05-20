@@ -276,17 +276,12 @@
          [:input {:type "radio" :name "foo" :id "foo-1" :value "1" :checked "" :class "classy"}])))
 
 (deftest test-select-options
-  (are [x y]
-      (= x y)
+  (are [x y] (= x y)
     (html-vec [:select (html/select-options ["foo" "bar" "baz"])])
     [:select {}
-     [:option {} "foo"]
-     [:option {} "bar"]
-     [:option {} "baz"]]
-    (html-vec [:select (html/select-options ["foo" "bar"] "bar")])
-    [:select {}
-     [:option {} "foo"]
-     [:option {:selected ""} "bar"]]
+     [:option {:value "foo"} "foo"]
+     [:option {:value "bar"} "bar"]
+     [:option {:value "baz"} "baz"]]
     (html-vec [:select (html/select-options [["Foo" 1] ["Bar" 2]])])
     [:select {}
      [:option {:value "1"} "Foo"]
@@ -298,39 +293,32 @@
     (html-vec [:select (html/select-options [["Foo" [1 2]] ["Bar" [3 4]]])])
     [:select {}
      [:optgroup {:label "Foo"}
-      [:option {} "1"]
-      [:option {} "2"]]
+      [:option {:value "1"} "1"]
+      [:option {:value "2"} "2"]]
      [:optgroup {:label "Bar"}
-      [:option {} "3"]
-      [:option {} "4"]]]
+      [:option {:value "3"} "3"]
+      [:option {:value "4"} "4"]]]
     (html-vec [:select (html/select-options [["Foo" [["bar" 1] ["baz" 2]]]])])
     [:select {}
      [:optgroup {:label "Foo"}
       [:option {:value "1"} "bar"]
-      [:option {:value "2"} "baz"]]]
-    (html-vec [:select (html/select-options [["Foo" [1 2]]] 2)])
-    [:select {}
-     [:optgroup {:label "Foo"}
-      [:option {} "1"]
-      [:option {:selected ""} "2"]]]))
+      [:option {:value "2"} "baz"]]]))
 
 (deftest test-drop-down
-  (let [options ["op1" "op2"]
-        selected "op1"
-        select-options (html/select-options options selected)]
+  (let [options ["op1" "op2"], selected "op1"
+        select-options (html/select-options options)]
     (is (= (html-vec (html/drop-down :foo options selected))
            [:select {:name "foo" :id "foo"}
-            [:option {:selected ""} "op1"]
-            [:option {} "op2"]]))))
+            [:option {:value "op1"} "op1"]
+            [:option {:value "op2"} "op2"]]))))
 
 (deftest test-drop-down-with-extra-atts
-  (let [options ["op1" "op2"]
-        selected "op1"
-        select-options (html/select-options options selected)]
+  (let [options ["op1" "op2"], selected "op1"
+        select-options (html/select-options options)]
     (is (= (html-vec (html/drop-down {:class "classy"} :foo options selected))
            [:select {:name "foo" :id "foo" :class "classy"}
-            [:option {:selected ""} "op1"]
-            [:option {} "op2"]]))))
+            [:option {:value "op1"} "op1"]
+            [:option {:value "op2"} "op2"]]))))
 
 (deftest test-text-area
   (is (= (html-vec (html/text-area :foo))
