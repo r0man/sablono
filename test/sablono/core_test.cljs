@@ -175,6 +175,14 @@
                     [:li "bar"]
                     [:li "baz"])])))
 
+(deftest test-input
+  (is (= (html-vec [:input])
+         [:input {}])))
+
+(deftest test-input-with-extra-atts
+  (is (= (html-vec [:input {:class "classy"}])
+         [:input {:class "classy"}])))
+
 (deftest test-hidden-field
   (is (= (html-vec (html/hidden-field :foo "bar"))
          [:input {:type "hidden" :name "foo" :id "foo" :value "bar"}])))
