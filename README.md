@@ -68,8 +68,8 @@ this in *Ŝablono*:
 
 ## Setting innerHTML of a DOM node
 
-It is not recommended to directly set the innerHTML attribute, but in
-rare cases it is necessary. i.e. injecting a HTML string that was
+It is not recommended to directly set the innerHTML of DOM nodes, but
+in some cases it is necessary. i.e. injecting a HTML string that was
 generated from Markdown.
 
 ``` clj
