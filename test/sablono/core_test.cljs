@@ -3,7 +3,8 @@
   (:require-macros [cljs.test :refer [are is deftest testing]]
                    [sablono.core :refer [html with-group]]
                    [sablono.test :refer [html-str html-vec]])
-  (:require [cljs.test :as t :refer-macros [are is deftest testing]]
+  (:require [cljs.pprint :refer [pprint]]
+            [cljs.test :as t :refer-macros [are is deftest testing]]
             [clojure.string :refer [replace]]
             [hickory.core :as hickory]
             [goog.dom :as gdom]
@@ -129,7 +130,7 @@
     (is (= (html-vec [:div {:id (str "a" "b")} (str "foo")])
            [:div {:id "ab"} "foo"])))
   (testing "optimized forms"
-    (is (= (html-vec [:ul (for [n (range 3)] [:li n])])
+    (is (= (html-vec [:ul (for [n (range 3)] [:li {:key n} n])])
            [:ul {}
             [:li {} "0"]
             [:li {} "1"]
@@ -392,38 +393,42 @@
 
 (deftest test-with-group
   (testing "hidden-field"
-    (is (= (html-vec [:form (with-group :foo (html/hidden-field :bar "val"))])
+    (is (= (html-vec [:form (with-group :foo (html/hidden-field {:key 0} :bar "val"))])
            [:form {} [:input {:type "hidden" :name "foo[bar]" :id "foo-bar" :value "val"}]])))
   (testing "text-field"
-    (is (= (html-vec [:form (with-group :foo (html/text-field :bar))])
+    (is (= (html-vec [:form (with-group :foo (html/text-field {:key 0} :bar))])
            [:form {} [:input {:type "text" :name "foo[bar]" :id "foo-bar"}]])))
   (testing "checkbox"
-    (is (= (html-vec [:form (with-group :foo (html/check-box :bar))])
+    (is (= (html-vec [:form (with-group :foo (html/check-box {:key 0} :bar))])
            [:form {} [:input {:type "checkbox" :name "foo[bar]" :id "foo-bar" :value "true"}]])))
   (testing "password-field"
-    (is (= (html-vec [:form (with-group :foo (html/password-field :bar))])
+    (is (= (html-vec [:form (with-group :foo (html/password-field {:key 0} :bar))])
            [:form {} [:input {:type "password" :name "foo[bar]" :id "foo-bar"}]])))
   (testing "radio-button"
-    (is (= (html-vec [:form (with-group :foo (html/radio-button :bar false "val"))])
+    (is (= (html-vec [:form (with-group :foo (html/radio-button {:key 0} :bar false "val"))])
            [:form {} [:input {:type "radio" :name "foo[bar]" :id "foo-bar-val" :value "val"}]])))
   (testing "drop-down"
-    (is (= (html-vec [:form (with-group :foo (html/drop-down :bar []))])
+    (is (= (html-vec [:form (with-group :foo (html/drop-down {:key 0} :bar []))])
            [:form {} [:select {:name "foo[bar]" :id "foo-bar"}]])))
   (testing "text-area"
-    (is (= (html-vec [:form (with-group :foo (html/text-area :bar "baz"))])
+    (is (= (html-vec [:form (with-group :foo (html/text-area {:key 0} :bar "baz"))])
            [:form {} [:textarea {:name "foo[bar]" :id "foo-bar"} "baz"]])))
   (testing "file-upload"
-    (is (= (html-vec [:form (with-group :foo (html/file-upload :bar))])
+    (is (= (html-vec [:form (with-group :foo (html/file-upload {:key 0} :bar))])
            [:form {} [:input {:type "file" :name "foo[bar]" :id "foo-bar"}]])))
   (testing "label"
-    (is (= (html-vec [:form (with-group :foo (html/label :bar "Bar"))])
+    (is (= (html-vec [:form (with-group :foo (html/label {:key 0} :bar "Bar"))])
            [:form {} [:label {:for "foo-bar"} "Bar"]])))
   (testing "multiple with-groups"
-    (is (= (html-vec [:form (with-group :foo (with-group :bar (html/text-field :baz)))])
+    (is (= (html-vec [:form (with-group :foo (with-group :bar (html/text-field {:key 0} :baz)))])
            [:form {} [:input {:type "text" :name "foo[bar][baz]" :id "foo-bar-baz"}]])))
   (testing "multiple elements"
-    (is (= (html-vec [:form (with-group :foo (html/label :bar "Bar") (html/text-field :var))])
-           [:form {} [:label {:for "foo-bar"} "Bar"] [:input {:type "text" :name "foo[var]" :id "foo-var"}]]))))
+    (is (= (html-vec [:form (with-group :foo
+                              (html/label {:key 0} :bar "Bar")
+                              (html/text-field {:key 1} :var))])
+           [:form {}
+            [:label {:for "foo-bar"} "Bar"]
+            [:input {:type "text" :name "foo[var]" :id "foo-var"}]]))))
 
 (deftest test-merge-attributes-let
   (let [classes (merge {:id "a"} {:class "b"})]
