@@ -7,7 +7,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[cljsjs/react "0.12.2-5"]
                  [org.clojure/clojure "1.7.0-beta3"]
-                 [org.clojure/clojurescript "0.0-3291" :scope "provided"]]
+                 [org.clojure/clojurescript "0.0-3308" :scope "provided"]]
   :aliases {"cleantest" ["do" "clean," "test," "cljsbuild" "test"]
             "deploy" ["do" "clean," "deploy" "clojars"]}
   :cljsbuild {:builds
@@ -37,7 +37,7 @@
               :test-commands {"phantom" ["bin/phantomjs"]}}
   :deploy-repositories [["releases" :clojars]]
   :profiles {:dev {:dependencies [[crate "0.2.5"]
-                                  [cljsjs/jquery "1.9.1-0"]
+                                  [cljsjs/jquery "2.1.4-0"]
                                   [com.cemerick/piggieback "0.2.1"]
                                   [org.clojure/tools.nrepl "0.2.10"]
                                   [org.clojure/tools.reader "0.9.2"]
