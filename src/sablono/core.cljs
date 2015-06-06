@@ -1,6 +1,7 @@
 (ns sablono.core
   (:require-macros [sablono.core :refer [defelem gen-input-fields]])
   (:require [clojure.string :refer [upper-case]]
+            [goog.string :as gstring]
             [sablono.util :refer [as-str to-uri]]
             [sablono.interpreter :as interpreter]
             [goog.dom :as dom]
@@ -125,6 +126,9 @@
             :value value
             :checked checked?}]))
 
+(defn- hash-key [x]
+  (gstring/hashCode (pr-str x)))
+
 (defelem select-options
   "Creates a seq of option tags from a collection."
   [coll]
@@ -133,9 +137,19 @@
       (let [[text val disabled?] x
             disabled? (boolean disabled?)]
         (if (sequential? val)
-          [:optgroup {:label text} (select-options val)]
-          [:option {:value val :disabled disabled?} text]))
-      [:option {:value x} x])))
+          [:optgroup
+           {:key (hash-key text)
+            :label text}
+           (select-options val)]
+          [:option
+           {:disabled disabled?
+            :key (hash-key val)
+            :value val}
+           text]))
+      [:option
+       {:key (hash-key x)
+        :value x}
+       x])))
 
 (defelem drop-down
   "Creates a drop-down box using the <select> tag."
@@ -180,6 +194,7 @@
     (-> (if (contains? #{:get :post} method)
           [:form {:method method-str, :action action-uri}]
           [:form {:method "POST", :action action-uri}
-           (hidden-field "_method" method-str)])
+           ;; TODO: What key to use here?
+           (hidden-field {:key 0xdeadbeef} "_method" method-str)])
         (concat body)
         (vec))))
