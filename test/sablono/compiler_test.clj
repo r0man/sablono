@@ -384,3 +384,12 @@
    '(js/React.createElement "div" #js {:id "test" :className "klass1 klass2"})
    '[:.klass1.klass2#test]
    '(js/React.createElement "div" #js {:id "test" :className "klass1 klass2"})))
+
+(deftest test-namespaced-fn-call
+  (are-html-expanded
+    '(some-ns/comp "arg")
+    '(sablono.interpreter/interpret (some-ns/comp "arg"))
+   
+    '(some.ns/comp "arg")
+    '(sablono.interpreter/interpret (some.ns/comp "arg"))))
+    
