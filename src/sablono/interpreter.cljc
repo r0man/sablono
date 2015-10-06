@@ -14,36 +14,35 @@
    (defn wrap-form-element [ctor display-name]
      (js/React.createFactory
       (js/React.createClass
-       (clj->js
-        {:getDisplayName
-         (fn [] (name display-name))
-         :getInitialState
-         (fn []
-           (this-as this
-             (clj->js {:value (aget (.-props this) "value")})))
-         :onChange
-         (fn [e]
-           (this-as this
-             (let [handler (aget (.-props this) "onChange")]
-               (when-not (nil? handler)
-                 (handler e)
-                 (.setState this (clj->js {:value (.. e -target -value)}))))))
-         :componentWillReceiveProps
-         (fn [new-props]
-           (this-as this
-             (.setState this (clj->js {:value (aget new-props "value")}))))
-         :render
-         (fn []
-           (this-as this
-             ;; NOTE: if switch to macro we remove a closure allocation
-             (let [props (clj->js {})]
-               (gobject/extend
-                   props (.-props this)
-                   (clj->js
-                    {:value (aget (.-state this) "value")
-                     :onChange (aget this "onChange")
-                     :children (aget (.-props this) "children")}))
-               (ctor props))))})))))
+       #js
+       {:getDisplayName
+        (fn [] (name display-name))
+        :getInitialState
+        (fn []
+          (this-as this
+            #js {:value (aget (.-props this) "value")}))
+        :onChange
+        (fn [e]
+          (this-as this
+            (let [handler (aget (.-props this) "onChange")]
+              (when-not (nil? handler)
+                (handler e)
+                (.setState this #js {:value (.. e -target -value)})))))
+        :componentWillReceiveProps
+        (fn [new-props]
+          (this-as this
+            (.setState this #js {:value (aget new-props "value")})))
+        :render
+        (fn []
+          (this-as this
+            ;; NOTE: if switch to macro we remove a closure allocation
+            (let [props #js {}]
+              (gobject/extend
+                  props (.-props this)
+                  #js {:value (aget (.-state this) "value")
+                       :onChange (aget this "onChange")
+                       :children (aget (.-props this) "children")})
+              (ctor props))))}))))
 
 #?(:cljs (def input (wrap-form-element js/React.DOM.input "input")))
 #?(:cljs (def option (wrap-form-element js/React.DOM.option "option")))
