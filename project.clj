@@ -5,9 +5,9 @@
   :min-lein-version "2.0.0"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[cljsjs/react "0.13.3-0"]
-                 [org.clojure/clojure "1.7.0-beta3"]
-                 [org.clojure/clojurescript "0.0-3308" :scope "provided"]]
+  :dependencies [[cljsjs/react "0.13.3-1"]
+                 [org.clojure/clojure "1.7.0" :scope "provided"]
+                 [org.clojure/clojurescript "1.7.122" :scope "provided"]]
   :aliases {"cleantest" ["do" "clean," "test," "cljsbuild" "test"]
             "deploy" ["do" "clean," "deploy" "clojars"]}
   :cljsbuild {:builds
@@ -39,11 +39,8 @@
   :profiles {:dev {:dependencies [[crate "0.2.5"]
                                   [cljsjs/jquery "2.1.4-0"]
                                   [com.cemerick/piggieback "0.2.1"]
-                                  [org.clojure/tools.nrepl "0.2.10"]
-                                  [org.clojure/tools.reader "0.9.2"]
                                   [hickory "0.5.4"]
-                                  [reagent "0.5.0"]]
-                   :plugins [[com.cemerick/clojurescript.test "0.3.3"]
-                             [lein-cljsbuild "1.0.6"]]
+                                  [reagent "0.5.1"]]
+                   :plugins [[lein-cljsbuild "1.1.0"]]
                    :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
                    :resource-paths ["test-resources"]}})
