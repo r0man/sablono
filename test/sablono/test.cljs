@@ -3,6 +3,7 @@
             [sablono.benchmark]
             [sablono.core-test]
             [sablono.interpreter-test]
+            [sablono.parser-test]
             [sablono.util-test]))
 
 (defmethod report [::test/default :summary] [m]
@@ -16,7 +17,8 @@
   []
   (enable-console-print!)
   (test/run-tests
-   'sablono.util-test
-   'sablono.interpreter-test
    'sablono.core-test
+   'sablono.interpreter-test
+   'sablono.parser-test
+   'sablono.util-test
    'sablono.benchmark))

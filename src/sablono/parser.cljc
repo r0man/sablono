@@ -19,11 +19,23 @@
   [xs]
   (first (set (filter-first \# xs))))
 
-(defn element?
+(defn- element?
   "Return true if `x` is a DOM element, otherwise false."
   [x]
   (and (vector? x)
        (keyword? (first x))))
+
+(defn normalize-element [element]
+  {:pre [(element? element)]}
+  "Normalize `element` into a [type props & children] vector."
+  (let [[type props & children] element]
+    (vec (cond
+           (map? props)
+           element
+           (and (nil? props) (empty? children))
+           [type nil]
+           :else
+           (concat [type nil] (cons props children))))))
 
 (defn parse-tag [tag]
   {:pre [(keyword? tag)]}
@@ -49,44 +61,13 @@
        id
        (assoc :id id))}))
 
-;; (parse-tag :#a)
-
-;; (declare parse-element)
-
-;; (defn merge-props
-;;   "Like clojure.core/merge but concatenate :class entries."
-;;   [& props]
-;;   (apply merge-with
-;;          (fn [v1 v2]
-;;            (cond
-;;              (or (set? v1) (set? v2))
-;;              (set/union v1 v2)
-;;              :else v2))
-;;          props))
-
-;; (defn- parse-children
-;;   "Parse the `children` of a DOM element."
-;;   [children]
-;;   (map (fn [child]
-;;          (if (element? child)
-;;            (parse-element child)
-;;            child))
-;;        children))
-
-;; (defn parse-element [element]
-;;   "Parse the DOM `element`."
-;;   {:pre [(vector? element)]}
-;;   (let [[tag props-1 & children] (normalize-element element)
-;;         props-1 (normalize-props props-1)
-;;         [tag props-2] (parse-tag tag)]
-;;     (vec (concat [tag (merge-props props-1 props-2)]
-;;                  (parse-children children)))))
-
-;; ;; (parse-element [:div#a.b {:class "c"} [:div.a]])
-;; ;; (parse-element '[:div#a.b {:class "c"} ((fn [] [:div.a]))])
-;; ;; (parse-element [:div#a.b {:class #{"c"}}])
-;; ;; (parse-element [:div#a.b {:class ["c"]}])
-;; ;; (merge-props {:class #{"c"}} {:class #{"b"}, :id "a"})
-
-;; ;; (parse-element [:div#id.class [:a.link [:div]]])
-;; ;; (parse-element [:div#id.class {} [:a.link]])
+(defn parse-element [element]
+  "Parse the DOM `element`."
+  {:pre [(vector? element)]}
+  (let [[tag props & children] (normalize-element element)
+        tag (parse-tag tag)]
+    {:type (:type tag)
+     :props
+     (cond-> (merge (:props tag) props)
+       (not-empty children)
+       (assoc :children (vec children)))}))
