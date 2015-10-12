@@ -69,41 +69,82 @@
 (deftest test-parse-element
   (are [element expected]
       (= expected (p/parse-element element))
+
+    1 1
+    1.0 1.0
+    "x" "x"
+
     [:div]
-    {:type "div" :props nil}
+    {:_isReactElement true
+     :type "div"
+     :props nil}
 
     [:#a]
-    {:type "div" :props {:id "a"}}
+    {:_isReactElement true
+     :type "div"
+     :props {:id "a"}}
 
     [ :.b]
-    {:type "div" :props {:class #{"b"}}}
+    {:_isReactElement true
+     :type "div"
+     :props {:class #{"b"}}}
 
     [ :div#a]
-    {:type "div" :props {:id "a"}}
+    {:_isReactElement true
+     :type "div"
+     :props {:id "a"}}
 
     [ :div#a#a]
-    {:type "div" :props {:id "a"}}
+    {:_isReactElement true
+     :type "div"
+     :props {:id "a"}}
 
     [ :div.b]
-    {:type "div" :props {:class #{"b"}}}
+    {:_isReactElement true
+     :type "div"
+     :props {:class #{"b"}}}
 
     [:div.b.b]
-    {:type "div" :props {:class #{"b"}}}
+    {:_isReactElement true
+     :type "div"
+     :props {:class #{"b"}}}
 
     [ :div#a#b#c]
-    {:type "div" :props {:id "a"}}
+    {:_isReactElement true
+     :type "div"
+     :props {:id "a"}}
 
     [ :div.a.b.c]
-    {:type "div" :props {:class #{"a" "b" "c"}}}
+    {:_isReactElement true
+     :type "div"
+     :props {:class #{"a" "b" "c"}}}
 
     [ :div#a.b]
-    {:type "div" :props {:id "a" :class #{"b"}}}
+    {:_isReactElement true
+     :type "div"
+     :props {:id "a" :class #{"b"}}}
 
     [ :div.b#a]
-    {:type "div" :props {:id "a" :class #{"b"}}}
+    {:_isReactElement true
+     :type "div"
+     :props {:id "a" :class #{"b"}}}
 
     [ :div#a#b#c.d.e.f]
-    {:type "div" :props {:class #{"d" "f" "e"}, :id "a"}}
+    {:_isReactElement true
+     :type "div"
+     :props {:class #{"d" "f" "e"}, :id "a"}}
 
     [:div "a"]
-    {:type "div", :props {:children ["a"]}}))
+    {:_isReactElement true
+     :type "div"
+     :props {:children ["a"]}}
+
+    [:div "a" "b" "c" [:div "d"]]
+    {:_isReactElement true
+     :type "div"
+     :props
+     {:children
+      ["a" "b" "c"
+       {:_isReactElement true
+        :type "div"
+        :props {:children ["d"]}}]}}))

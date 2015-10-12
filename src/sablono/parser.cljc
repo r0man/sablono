@@ -1,4 +1,5 @@
 (ns sablono.parser
+  "Parse Hiccup vectors into React maps."
   (:require [clojure.set :as set]
             [clojure.string :as str]))
 
@@ -9,15 +10,18 @@
 
 (defn- filter-first
   [c xs]
-  (map strip (filter #(= c (first %1)) xs)))
+  (->> (filter #(= c (first %1)) xs)
+       (map strip)))
 
 (defn- find-classes
   [xs]
-  (set (filter-first \. xs)))
+  (->> (filter-first \. xs)
+       (apply sorted-set)))
 
 (defn- find-id
   [xs]
-  (first (set (filter-first \# xs))))
+  (->> (filter-first \# xs)
+       set first))
 
 (defn- element?
   "Return true if `x` is a DOM element, otherwise false."
@@ -27,15 +31,17 @@
 
 (defn normalize-element [element]
   {:pre [(element? element)]}
-  "Normalize `element` into a [type props & children] vector."
+  "Normalize the Hiccup `element` into a [type props & children]
+  vector."
   (let [[type props & children] element]
-    (vec (cond
-           (map? props)
-           element
-           (and (nil? props) (empty? children))
-           [type nil]
-           :else
-           (concat [type nil] (cons props children))))))
+    (vec
+     (cond
+       (map? props)
+       element
+       (and (nil? props) (empty? children))
+       [type nil]
+       :else
+       (concat [type nil] (cons props children))))))
 
 (defn parse-tag [tag]
   {:pre [(keyword? tag)]}
@@ -63,11 +69,13 @@
 
 (defn parse-element [element]
   "Parse the DOM `element`."
-  {:pre [(vector? element)]}
-  (let [[tag props & children] (normalize-element element)
-        tag (parse-tag tag)]
-    {:type (:type tag)
-     :props
-     (cond-> (merge (:props tag) props)
-       (not-empty children)
-       (assoc :children (vec children)))}))
+  (if (element? element)
+    (let [[tag props & children] (normalize-element element)
+          tag (parse-tag tag)]
+      {:_isReactElement true
+       :type (:type tag)
+       :props
+       (cond-> (merge (:props tag) props)
+         (not-empty children)
+         (assoc :children (vec (map parse-element children))))})
+    element))

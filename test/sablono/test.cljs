@@ -3,6 +3,7 @@
             [sablono.benchmark]
             [sablono.core-test]
             [sablono.interpreter-test]
+            [sablono.interpreter2-test]
             [sablono.parser-test]
             [sablono.util-test]))
 
@@ -19,6 +20,8 @@
   (test/run-tests
    'sablono.core-test
    'sablono.interpreter-test
+   'sablono.interpreter2-test
    'sablono.parser-test
    'sablono.util-test
-   'sablono.benchmark))
+   ;; 'sablono.benchmark
+   ))
