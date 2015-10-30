@@ -1,11 +1,12 @@
-(defproject sablono "0.3.7-SNAPSHOT"
+(defproject sablono "0.4.0-SNAPSHOT"
   :description "Lisp style templating for Facebook's React."
   :url "http://github.com/r0man/sablono"
   :author "r0man"
   :min-lein-version "2.0.0"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[cljsjs/react "0.13.3-1"]
+  :dependencies [[cljsjs/react "0.14.0-1" :scope "provided"]
+                 [cljsjs/react-dom "0.14.0-1" :scope "provided"]
                  [org.clojure/clojure "1.7.0" :scope "provided"]
                  [org.clojure/clojurescript "1.7.122" :scope "provided"]]
   :aliases {"cleantest" ["do" "clean," "test," "cljsbuild" "test"]

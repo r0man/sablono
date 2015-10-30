@@ -14,6 +14,12 @@ Via Clojars: https://clojars.org/sablono
 
 [![Current Version](https://clojars.org/sablono/latest-version.svg)](https://clojars.org/sablono)
 
+## Dependencies
+
+*Ŝablono* doesn't declare a dependency on React anymore. You need to
+ provide this yourself or through one of the ClojureScript React
+ wrappers.
+
 ## Usage
 
 Most functions from [Hiccup](https://github.com/weavejester/hiccup)
