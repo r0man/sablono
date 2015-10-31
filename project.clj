@@ -8,7 +8,7 @@
   :dependencies [[cljsjs/react "0.14.0-1" :scope "provided"]
                  [cljsjs/react-dom "0.14.0-1" :scope "provided"]
                  [org.clojure/clojure "1.7.0" :scope "provided"]
-                 [org.clojure/clojurescript "1.7.122" :scope "provided"]]
+                 [org.clojure/clojurescript "1.7.145" :scope "provided"]]
   :aliases {"cleantest" ["do" "clean," "test," "cljsbuild" "test"]
             "deploy" ["do" "clean," "deploy" "clojars"]}
   :cljsbuild {:builds
