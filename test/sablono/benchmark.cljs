@@ -1,5 +1,7 @@
 (ns sablono.benchmark
   (:require [cljsjs.jquery]
+            [cljsjs.react]
+            [cljsjs.react.dom]
             [cljs.test :refer-macros [is deftest testing]]
             [crate.core :as crate]
             [goog.dom :as gdom]
@@ -76,7 +78,7 @@
   (let [render-fn #(this-as this (html [:ul children]))
         component (js/React.createFactory
                    (js/React.createClass #js {:render render-fn}))]
-    (js/React.render (component) root)))
+    (js/ReactDOM.render (component) root)))
 
 (defn time-test [data]
   (for [[key li-fn render-fn]
