@@ -121,23 +121,6 @@
     'sablono.interpreter/create-element
     'js/React.createElement))
 
-(defn attr-pattern
-  "Returns a regular expression that matches the HTML attribute `attr`
-  and it's value."
-  [attr]
-  (re-pattern (str "\\s+" (name attr) "\\s*=\\s*['\"][^\"']+['\"]")))
-
-(defn strip-attr
-  "Strip the HTML attribute `attr` and it's value from the string `s`."
-  [s attr]
-  (if s (replace s (attr-pattern attr) "")))
-
-(defn strip-outer
-  "Strip the outer HTML tag from the string `s`."
-  [s]
-  (if s (-> (replace s #"^\s*<[^>]+>\s*" "")
-            (replace #"\s*</[^>]+>\s*$" ""))))
-
 #?(:cljs
    (extend-protocol ToString
      cljs.core.Keyword

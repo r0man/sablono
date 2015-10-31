@@ -152,23 +152,3 @@
            "bar" "bar"
            "../bar" "../bar"
            "//example.com/bar" "//example.com/bar")))))
-
-(deftest test-strip-attr
-  (are [html attr expected]
-      (is (= expected (u/strip-attr html attr)))
-    nil :data-reactid nil
-    "" :data-reactid ""
-    "<div></div>" :data-reactid "<div></div>"
-    "<div data-reactid=\"1\"></div>" :data-reactid "<div></div>"
-    "<div data-reactid='1'></div>" :data-reactid "<div></div>"
-    "<div data-reactid=\"1\" data-checksum=\"2\"></div>" :data-reactid "<div data-checksum=\"2\"></div>"
-    "<div data-reactid='1' data-checksum='2'></div>" :data-reactid "<div data-checksum='2'></div>"))
-
-(deftest test-strip-outer
-  (are [html expected]
-      (is (= expected (u/strip-outer html)))
-    nil nil
-    "" ""
-    "<div>x</div>" "x"
-    "<div><div>x</div></div>" "<div>x</div>"
-    " <div id=\"a\">\n<div>x</div></div> " "<div>x</div>"))
