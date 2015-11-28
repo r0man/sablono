@@ -42,6 +42,13 @@
             (update-in [:style] camel-case-keys))))
     m))
 
+(defn element?
+  "Return true if `x` is an HTML element. True when `x` is a vector
+  and the first element is a keyword, e.g. `[:div]` or `[:div [:span \"x\"]`."
+  [x]
+  (and (vector? x)
+       (keyword? (first x))))
+
 (defn html-to-dom-attrs
   "Converts all HTML attributes to their DOM equivalents."
   [attrs]
