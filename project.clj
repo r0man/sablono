@@ -10,12 +10,15 @@
                  [cljsjs/react-dom-server "0.14.3-0" :scope "provided"]
                  [org.clojure/clojure "1.7.0" :scope "provided"]
                  [org.clojure/clojurescript "1.7.170" :scope "provided"]]
-  :aliases {"cleantest" ["do" "clean," "test," "cljsbuild" "test"]
+  :aliases {"ci" ["do"
+                  "clean"
+                  ["doo" "phantom" "none" "once"]
+                  ["doo" "phantom" "advanced" "once"]]
             "deploy" ["do" "clean," "deploy" "clojars"]}
   :cljsbuild {:builds
               [{:id "none"
                 :compiler
-                {:asset-path "../../target/none/out"
+                {:asset-path "target/none/out"
                  :main sablono.test
                  :output-to "target/none/sablono.js"
                  :output-dir "target/none/out"
@@ -27,7 +30,7 @@
                 :source-paths ["src" "test"]}
                {:id "advanced"
                 :compiler
-                {:asset-path "../../target/advanced/out"
+                {:asset-path "target/advanced/out"
                  :main sablono.test
                  :output-to "target/advanced/sablono.js"
                  :optimizations :advanced
@@ -42,7 +45,8 @@
                                   [cljsjs/jquery "2.1.4-0"]
                                   [hickory "0.5.4"]
                                   [reagent "0.5.1"]]
-                   :plugins [[lein-cljsbuild "1.1.1"]]
+                   :plugins [[lein-cljsbuild "1.1.1"]
+                             [lein-doo "0.1.6-rc.1"]]
                    :resource-paths ["test-resources"]}
              :repl {:dependencies [[com.cemerick/piggieback "0.2.1"]]
                     :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}})
