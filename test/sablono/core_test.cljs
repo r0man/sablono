@@ -518,3 +518,7 @@
          [:div {:style "z-index:1000;"}]))
   (is (= (html-vec [:div (merge {:style {:z-index 1000}})])
          [:div {:style "z-index:1000;"}])))
+
+(deftest test-div-with-nested-lazy-seq
+  (is (= (html-vec [:div (map identity ["A" "B"])])
+         [:div {} "AB"])))
