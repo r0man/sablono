@@ -39,9 +39,9 @@
   :deploy-repositories [["releases" :clojars]]
   :profiles {:dev {:dependencies [[crate "0.2.5"]
                                   [cljsjs/jquery "2.1.4-0"]
-                                  [com.cemerick/piggieback "0.2.1"]
                                   [hickory "0.5.4"]
                                   [reagent "0.5.1"]]
-                   :plugins [[lein-cljsbuild "1.1.0"]]
-                   :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
-                   :resource-paths ["test-resources"]}})
+                   :plugins [[lein-cljsbuild "1.1.1"]]
+                   :resource-paths ["test-resources"]}
+             :repl {:dependencies [[com.cemerick/piggieback "0.2.1"]]
+                    :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}})
