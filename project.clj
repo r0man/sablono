@@ -6,7 +6,8 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[cljsjs/react "0.14.3-0" :scope "provided"]
-                 [cljsjs/react-dom "0.14.3-0" :scope "provided"]
+                 [cljsjs/react-dom "0.14.3-1" :scope "provided"]
+                 [cljsjs/react-dom-server "0.14.3-0" :scope "provided"]
                  [org.clojure/clojure "1.7.0" :scope "provided"]
                  [org.clojure/clojurescript "1.7.170" :scope "provided"]]
   :aliases {"cleantest" ["do" "clean," "test," "cljsbuild" "test"]
