@@ -33,6 +33,13 @@
     {:on-click '(fn [e] (let [m {:a-b "c"}]))}
     {:onClick '(fn [e] (let [m {:a-b "c"}]))}))
 
+(deftest test-element?
+  (is (u/element? [:div]))
+  (is (not (u/element? nil)))
+  (is (not (u/element? [])))
+  (is (not (u/element? 1)))
+  (is (not (u/element? "x"))))
+
 (deftest test-compact-map
   (are [x expected]
       (is (= expected (u/compact-map x)))
