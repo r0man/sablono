@@ -86,7 +86,7 @@ You can read more at [React's special attributes](http://facebook.github.io/reac
 
 ## Thanks
 
-This library is based on James Reeves [Hiccup](https://github.com/weavejester/hiccup) library.
+This library is based on James Reeves excellent [Hiccup](https://github.com/weavejester/hiccup) library.
 
 ## License
 
