@@ -522,3 +522,7 @@
 (deftest test-div-with-nested-lazy-seq
   (is (= (html-vec [:div (map identity ["A" "B"])])
          [:div {} "AB"])))
+
+(deftest test-div-with-nested-list
+  (is (= (html-vec [:div (list "A" "B")])
+         [:div {} "AB"])))
