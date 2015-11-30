@@ -170,7 +170,7 @@
     :else
     ::default))                      ; e.g. [x]
 
-(declare compile-seq)
+(declare compile-html)
 
 (defmulti compile-element
   "Returns an unevaluated form that will render the supplied vector as a HTML
@@ -188,7 +188,7 @@
     `(~(react-fn tag)
       ~(name tag)
       ~(compile-attrs attrs)
-      ~@(compile-seq content))))
+      ~@(map compile-html content))))
 
 (defmethod compile-element ::literal-tag-and-no-attributes
   [[tag & content]]
@@ -205,8 +205,8 @@
                 ~(compile-merge-attrs tag-attrs attrs-sym)
                 ~(compile-attrs tag-attrs))
               (remove nil? (if (map? ~attrs-sym)
-                             [~@(compile-seq content)]
-                             [~@(if attrs (compile-seq (cons attrs-sym content)))]))))))
+                             [~@(map compile-html content)]
+                             [~@(if attrs (map compile-html (cons attrs-sym content)))]))))))
 
 (defmethod compile-element :default
   [element]
@@ -217,25 +217,16 @@
            (compile-element x)
            x))]))
 
-(defn- compile-seq
-  "Compile a sequence of data-structures into HTML."
-  [content]
-  (doall (for [expr content]
-           (cond
-             (vector? expr) (compile-element expr)
-             (literal? expr) expr
-             (hint? expr String) expr
-             (hint? expr Number) expr
-             (seq? expr) (compile-form expr)
-             :else `(sablono.interpreter/interpret ~expr)))))
-
 (defn compile-html
   "Pre-compile data structures into HTML where possible."
-  [& content]
-  (let [forms (compile-seq content)]
-    (if (> (count forms) 1)
-      `(~'into-array ~(vec (compile-seq content)))
-      (first forms))))
+  [content]
+  (cond
+    (vector? content) (compile-element content)
+    (literal? content) content
+    (hint? content String) content
+    (hint? content Number) content
+    (seq? content) (compile-form content)
+    :else `(sablono.interpreter/interpret ~content)))
 
 ;; TODO: Remove when landed in ClojureScript.
 (defmethod print-method JSValue

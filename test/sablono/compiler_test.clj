@@ -58,12 +58,6 @@
           (is (= 2 (first (.val v))))
           (is (= [3] (.val (second (.val v))))))))))
 
-(deftest test-multiple-children
-  (is (= (wrap-js-value
-          '(into-array [(js/React.createElement "div" #js {:id "a"})
-                        (js/React.createElement "div" #js {:id "b"})]))
-         (wrap-js-value (html-expand [:div#a] [:div#b])))))
-
 (deftest tag-names
   (testing "basic tags"
     (are-html-expanded
@@ -389,7 +383,6 @@
   (are-html-expanded
     '(some-ns/comp "arg")
     '(sablono.interpreter/interpret (some-ns/comp "arg"))
-   
+
     '(some.ns/comp "arg")
     '(sablono.interpreter/interpret (some.ns/comp "arg"))))
-    
