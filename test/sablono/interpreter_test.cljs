@@ -53,3 +53,9 @@
 (deftest test-interpret-div-with-nested-list
   (is (= (interpret [:div (list "A" "B")])
          [:div {} "AB"])))
+
+(deftest test-interpret-div-with-nested-vector
+  (is (= (interpret [:div ["A" "B"]])
+         [:div {} "AB"]))
+  (is (= (interpret [:div (vector"A" "B")])
+         [:div {} "AB"])))

@@ -85,6 +85,16 @@
     (is (= ["bar" "baz"] classes))
     (is (vector? classes))))
 
+(deftest test-normalize-children
+  (are [children expected]
+      (is (= expected (u/normalize-children children)))
+    [] []
+    1 1
+    "x" "x"
+    ["x"] ["x"]
+    [["x"]] ["x"]
+    [["x" "y"]] ["x" "y"]))
+
 (deftest test-normalize-element
   (are [element expected]
       (is (= expected (u/normalize-element element)))

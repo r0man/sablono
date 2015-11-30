@@ -110,7 +110,9 @@
        (element this))
      PersistentVector
      (interpret [this]
-       (element this))
+       (if (util/element? this)
+         (element this)
+         (interpret (seq this))))
      default
      (interpret [this]
        this)

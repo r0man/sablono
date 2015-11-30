@@ -9,8 +9,8 @@
 
 (defmacro html-expand
   "Returns the expanded HTML generation forms."
-  [& forms]
-  `(macroexpand `(html ~~@forms)))
+  [form]
+  `(macroexpand `(html ~~form)))
 
 (defmacro defhtml
   "Define a function, but wrap its output in an implicit html macro."

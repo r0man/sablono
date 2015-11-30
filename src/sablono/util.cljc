@@ -98,6 +98,18 @@
      (first (map strip-css (filter #(= \# (first %1)) names)))
      (vec (map strip-css (filter #(= \. (first %1)) names)))]))
 
+(defn normalize-children
+  "Normalize the children of a HTML element."
+  [x]
+  (if (and (sequential? x)
+           (= (count x) 1))
+    (let [x (first x)]
+      (cond
+        (string? x) (list x)
+        (element? x) (list x)
+        (sequential? x) (seq x)
+        :else x))
+    x))
 
 (defn normalize-element
   "Ensure an element vector is of the form [tag-name attrs content]."
@@ -108,8 +120,8 @@
         tag-attrs (compact-map {:id id :class class})
         map-attrs (first content)]
     (if (map? map-attrs)
-      [tag (merge-with-class tag-attrs map-attrs) (next content)]
-      [tag tag-attrs content])))
+      [tag (merge-with-class tag-attrs map-attrs) (normalize-children (next content))]
+      [tag tag-attrs (normalize-children content)])))
 
 (defn join-classes
   "Join the `classes` with a whitespace."
