@@ -4,8 +4,8 @@
 
 (defmacro html
   "Render Clojure data structures via Facebook's React."
-  [options & content]
-  (apply sablono.compiler/compile-html options content))
+  [content]
+  (sablono.compiler/compile-html content))
 
 (defmacro html-expand
   "Returns the expanded HTML generation forms."
