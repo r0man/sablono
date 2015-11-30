@@ -237,7 +237,9 @@
 (extend-protocol ICompile
   clojure.lang.IPersistentVector
   (compile-react [this]
-    (compile-react-element this))
+    (if (element? this)
+      (compile-react-element this)
+      (compile-react (seq this))))
   clojure.lang.ISeq
   (compile-react [this]
     (map compile-react this))

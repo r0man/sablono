@@ -61,8 +61,6 @@
   (testing "seqs are expanded"
     (is (= (html-vec [:div (list "foo" "bar")])
            [:div {} "foobar"])))
-  (testing "vecs don't expand - error if vec doesn't have tag name"
-    (is (thrown? js/Error (html (vector [:p "a"] [:p "b"])))))
   (testing "tags can contain tags"
     (is (= (html-vec [:div [:p]])
            [:div {} [:p {}]]))
@@ -525,4 +523,10 @@
 
 (deftest test-div-with-nested-list
   (is (= (html-vec [:div (list "A" "B")])
+         [:div {} "AB"])))
+
+(deftest test-div-with-nested-vector
+  (is (= (html-vec [:div ["A" "B"]])
+         [:div {} "AB"]))
+  (is (= (html-vec [:div (vector"A" "B")])
          [:div {} "AB"])))

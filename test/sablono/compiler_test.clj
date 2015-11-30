@@ -1,4 +1,5 @@
 (ns sablono.compiler-test
+  (:refer-clojure :exclude [compile])
   (:require [clojure.test :refer :all]
             [clojure.walk :refer [prewalk]]
             [sablono.compiler :refer :all]
@@ -31,6 +32,9 @@
        'attrs form))
    forms))
 
+(defmacro compile [form]
+  `(wrap-js-value (replace-gensyms (macroexpand '(html ~form)))))
+
 (defmacro are-html-expanded [& body]
   `(are [form# expected#]
        (is (= (wrap-js-value expected#)
@@ -62,7 +66,6 @@
   (testing "basic tags"
     (are-html-expanded
      '[:div] '(js/React.createElement "div" nil)
-     '[:div] '(js/React.createElement "div" nil)
      '["div"] '(js/React.createElement "div" nil)
      '['div] '(js/React.createElement "div" nil)))
   (testing "tag syntax sugar"
@@ -71,16 +74,16 @@
      '[:div.foo] '(js/React.createElement "div" #js {:className "foo"})
      '[:div.foo (str "bar" "baz")]
      '(let* [attrs (str "bar" "baz")]
-            (clojure.core/apply
-             js/React.createElement "div"
-             (if (clojure.core/map? attrs)
-               (sablono.interpreter/attributes
-                (sablono.util/merge-with-class {:class ["foo"]} attrs))
-               #js {:className "foo"})
-             (clojure.core/remove
-              clojure.core/nil?
-              (if (clojure.core/map? attrs)
-                [] [(sablono.interpreter/interpret attrs)]))))
+        (clojure.core/apply
+         js/React.createElement "div"
+         (if (clojure.core/map? attrs)
+           (sablono.interpreter/attributes
+            (sablono.util/merge-with-class {:class ["foo"]} attrs))
+           #js {:className "foo"})
+         (clojure.core/remove
+          clojure.core/nil?
+          (if (clojure.core/map? attrs)
+            [] [(sablono.interpreter/interpret attrs)]))))
      '[:div.a.b] '(js/React.createElement "div" #js {:className "a b"})
      '[:div.a.b.c] '(js/React.createElement "div" #js {:className "a b c"})
      '[:div#foo.bar.baz] '(js/React.createElement "div" #js {:id "foo", :className "bar baz"})
@@ -113,15 +116,15 @@
     (are-html-expanded
      '[:div (list "foo" "bar")]
      '(let* [attrs (list "foo" "bar")]
-            (clojure.core/apply
-             js/React.createElement "div"
-             (if (clojure.core/map? attrs)
-               (sablono.interpreter/attributes attrs)
-               nil)
-             (clojure.core/remove
-              clojure.core/nil?
-              (if (clojure.core/map? attrs)
-                [] [(sablono.interpreter/interpret attrs)]))))
+        (clojure.core/apply
+         js/React.createElement "div"
+         (if (clojure.core/map? attrs)
+           (sablono.interpreter/attributes attrs)
+           nil)
+         (clojure.core/remove
+          clojure.core/nil?
+          (if (clojure.core/map? attrs)
+            [] [(sablono.interpreter/interpret attrs)]))))
      '(list [:p "a"] [:p "b"])
      '(sablono.interpreter/interpret (list [:p "a"] [:p "b"]))))
   (testing "vecs don't expand - error if vec doesn't have tag name"
@@ -187,28 +190,28 @@
       (are-html-expanded
        '[:span x]
        '(let* [attrs x]
-              (clojure.core/apply
-               js/React.createElement "span"
-               (if (clojure.core/map? attrs)
-                 (sablono.interpreter/attributes attrs)
-                 nil)
-               (clojure.core/remove
-                clojure.core/nil?
-                (if (clojure.core/map? attrs)
-                  [] [(sablono.interpreter/interpret attrs)])))))))
+          (clojure.core/apply
+           js/React.createElement "span"
+           (if (clojure.core/map? attrs)
+             (sablono.interpreter/attributes attrs)
+             nil)
+           (clojure.core/remove
+            clojure.core/nil?
+            (if (clojure.core/map? attrs)
+              [] [(sablono.interpreter/interpret attrs)])))))))
   (testing "tag content can be forms"
     (are-html-expanded
      '[:span (str (+ 1 1))]
      '(let* [attrs (str (+ 1 1))]
-            (clojure.core/apply
-             js/React.createElement "span"
-             (if (clojure.core/map? attrs)
-               (sablono.interpreter/attributes attrs)
-               nil)
-             (clojure.core/remove
-              clojure.core/nil?
-              (if (clojure.core/map? attrs)
-                [] [(sablono.interpreter/interpret attrs)]))))
+        (clojure.core/apply
+         js/React.createElement "span"
+         (if (clojure.core/map? attrs)
+           (sablono.interpreter/attributes attrs)
+           nil)
+         (clojure.core/remove
+          clojure.core/nil?
+          (if (clojure.core/map? attrs)
+            [] [(sablono.interpreter/interpret attrs)]))))
      [:span ({:foo "bar"} :foo)] '(js/React.createElement "span" nil "bar")))
   (testing "attributes can contain vars"
     (let [id "id"]
@@ -245,15 +248,15 @@
                 [] [(sablono.interpreter/interpret attrs)])))))))
      '[:div (if true [:span "foo"] [:span "bar"])]
      '(let* [attrs (if true [:span "foo"] [:span "bar"])]
-            (clojure.core/apply
-             js/React.createElement "div"
-             (if (clojure.core/map? attrs)
-               (sablono.interpreter/attributes attrs)
-               nil)
-             (clojure.core/remove
-              clojure.core/nil?
-              (if (clojure.core/map? attrs)
-                [] [(sablono.interpreter/interpret attrs)]))))
+        (clojure.core/apply
+         js/React.createElement "div"
+         (if (clojure.core/map? attrs)
+           (sablono.interpreter/attributes attrs)
+           nil)
+         (clojure.core/remove
+          clojure.core/nil?
+          (if (clojure.core/map? attrs)
+            [] [(sablono.interpreter/interpret attrs)]))))
      '(let [] (when true [:span "foo"]))
      '(let* [] (if true (do (js/React.createElement "span" nil "foo"))))
      '(letfn [(foo [] true)]
@@ -267,9 +270,9 @@
               [:div "should be optimized"])))
      '(do [:div "should not be optimized"]
           (let* []
-                (if true
-                  (do (js/React.createElement "div" nil
-                                              "should be optimized")))))))
+            (if true
+              (do (js/React.createElement "div" nil
+                                          "should be optimized")))))))
   (testing "values are evaluated only once"
     (let [times-called (atom 0)
           foo #(swap! times-called inc)]
@@ -336,30 +339,30 @@
    '(js/React.createElement "div" #js {:className "c1 c2"} "text")
    '[:div.aa (merge {:class "bb"})]
    '(let* [attrs (merge {:class "bb"})]
-          (clojure.core/apply
-           js/React.createElement "div"
-           (if (clojure.core/map? attrs)
-             (sablono.interpreter/attributes
-              (sablono.util/merge-with-class {:class ["aa"]} attrs))
-             #js {:className "aa"})
-           (clojure.core/remove
-            clojure.core/nil?
-            (if (clojure.core/map? attrs)
-              [] [(sablono.interpreter/interpret attrs)]))))))
+      (clojure.core/apply
+       js/React.createElement "div"
+       (if (clojure.core/map? attrs)
+         (sablono.interpreter/attributes
+          (sablono.util/merge-with-class {:class ["aa"]} attrs))
+         #js {:className "aa"})
+       (clojure.core/remove
+        clojure.core/nil?
+        (if (clojure.core/map? attrs)
+          [] [(sablono.interpreter/interpret attrs)]))))))
 
 (deftest test-issue-33-number-warning
   (are-html-expanded
    '[:div (count [1 2 3])]
    '(let* [attrs (count [1 2 3])]
-          (clojure.core/apply
-           js/React.createElement "div"
-           (if (clojure.core/map? attrs)
-             (sablono.interpreter/attributes attrs)
-             nil)
-           (clojure.core/remove
-            clojure.core/nil?
-            (if (clojure.core/map? attrs)
-              [] [(sablono.interpreter/interpret attrs)]))))))
+      (clojure.core/apply
+       js/React.createElement "div"
+       (if (clojure.core/map? attrs)
+         (sablono.interpreter/attributes attrs)
+         nil)
+       (clojure.core/remove
+        clojure.core/nil?
+        (if (clojure.core/map? attrs)
+          [] [(sablono.interpreter/interpret attrs)]))))))
 
 (deftest test-issue-37-camel-case-style-attrs
   (are-html-expanded
@@ -381,8 +384,41 @@
 
 (deftest test-namespaced-fn-call
   (are-html-expanded
-    '(some-ns/comp "arg")
-    '(sablono.interpreter/interpret (some-ns/comp "arg"))
+   '(some-ns/comp "arg")
+   '(sablono.interpreter/interpret (some-ns/comp "arg"))
+   '(some.ns/comp "arg")
+   '(sablono.interpreter/interpret (some.ns/comp "arg"))))
 
-    '(some.ns/comp "arg")
-    '(sablono.interpreter/interpret (some.ns/comp "arg"))))
+(deftest test-compile-div-with-nested-lazy-seq
+  (is (= (compile [:div (map identity ["A" "B"])])
+         '(let* [attrs (map identity ["A" "B"])]
+            (clojure.core/apply
+             js/React.createElement "div"
+             (if (clojure.core/map? attrs)
+               (sablono.interpreter/attributes attrs)
+               nil)
+             (clojure.core/remove
+              clojure.core/nil?
+              (if (clojure.core/map? attrs)
+                []
+                [(sablono.interpreter/interpret attrs)])))))))
+
+(deftest test-compile-div-with-nested-list
+  (is (= (compile [:div '("A" "B")])
+         '(js/React.createElement "div" nil "A" "B"))))
+
+(deftest test-compile-div-with-nested-vector
+  (is (= (compile [:div ["A" "B"]])
+         '(js/React.createElement "div" nil "A" "B")))
+  (is (= (compile [:div (vector "A" "B")])
+         '(let* [attrs (vector "A" "B")]
+            (clojure.core/apply
+             js/React.createElement "div"
+             (if (clojure.core/map? attrs)
+               (sablono.interpreter/attributes attrs)
+               nil)
+             (clojure.core/remove
+              clojure.core/nil?
+              (if (clojure.core/map? attrs)
+                []
+                [(sablono.interpreter/interpret attrs)])))))))
