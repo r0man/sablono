@@ -46,6 +46,7 @@
 
 #?(:cljs (def input (wrap-form-element js/React.DOM.input "input")))
 #?(:cljs (def option (wrap-form-element js/React.DOM.option "option")))
+#?(:cljs (def select (wrap-form-element js/React.DOM.select "select")))
 #?(:cljs (def textarea (wrap-form-element js/React.DOM.textarea "textarea")))
 
 #?(:cljs
@@ -53,6 +54,7 @@
      ((if (util/wrapped-type? type)
         (get {:input sablono.interpreter/input
               :option sablono.interpreter/option
+              :select sablono.interpreter/select
               :textarea sablono.interpreter/textarea}
              (keyword type))
         (partial js/React.createElement (name type)))
