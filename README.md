@@ -1,6 +1,6 @@
 # ŜABLONO
-  [![Build Status](https://travis-ci.org/r0man/sablono.png)](https://travis-ci.org/r0man/sablono)
-  [![Dependencies Status](http://jarkeeper.com/r0man/sablono/status.png)](http://jarkeeper.com/r0man/sablono)
+  [![Build Status](https://travis-ci.org/r0man/sablono.svg)](https://travis-ci.org/r0man/sablono)
+  [![Dependencies Status](http://jarkeeper.com/r0man/sablono/status.svg)](http://jarkeeper.com/r0man/sablono)
   [![Downloads](https://jarkeeper.com/r0man/sablono/downloads.svg)](https://jarkeeper.com/r0man/sablono)
 
 Lisp/Hiccup style templating for Facebook's
