@@ -17,9 +17,20 @@ Via Clojars: https://clojars.org/sablono
 
 ## Dependencies
 
-*Ŝablono* doesn't declare a dependency on React anymore. You need to
- provide this yourself or through one of the ClojureScript React
- wrappers.
+*Ŝablono* doesn't declare a dependency on React anymore. Use the React
+ dependencies from one of the ClojureScript wrappers or provide the
+ dependencies yourself like this:
+
+``` clj
+[cljsjs/react "0.14.3-0"]
+[cljsjs/react-dom "0.14.3-1"]
+```
+
+To use server rendering you also need the following dependency.
+
+``` clj
+[cljsjs/react-dom-server "0.14.3-0"]
+```
 
 ## Usage
 
