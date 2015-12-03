@@ -24,11 +24,6 @@ Via Clojars: https://clojars.org/sablono
 ``` clj
 [cljsjs/react "0.14.3-0"]
 [cljsjs/react-dom "0.14.3-1"]
-```
-
-To use server rendering you also need the following dependency.
-
-``` clj
 [cljsjs/react-dom-server "0.14.3-0"]
 ```
 
