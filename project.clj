@@ -9,7 +9,7 @@
                  [cljsjs/react-dom "0.14.3-1" :scope "provided"]
                  [cljsjs/react-dom-server "0.14.3-0" :scope "provided"]
                  [org.clojure/clojure "1.7.0" :scope "provided"]
-                 [org.clojure/clojurescript "1.7.170" :scope "provided"]]
+                 [org.clojure/clojurescript "1.7.189" :scope "provided"]]
   :aliases {"ci" ["do"
                   "clean"
                   ["doo" "phantom" "none" "once"]
