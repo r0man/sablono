@@ -46,7 +46,7 @@
                                   [hickory "0.5.4"]
                                   [reagent "0.5.1"]]
                    :plugins [[lein-cljsbuild "1.1.1"]
-                             [lein-doo "0.1.6-rc.1"]]
+                             [lein-doo "0.1.6"]]
                    :resource-paths ["test-resources"]}
              :repl {:dependencies [[com.cemerick/piggieback "0.2.1"]]
                     :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}})
