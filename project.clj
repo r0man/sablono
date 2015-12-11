@@ -12,7 +12,7 @@
                  [org.clojure/clojurescript "1.7.189" :scope "provided"]]
   :aliases {"ci" ["do"
                   ["clean"]
-                  ["test"]
+                  ["test" ":default"]
                   ["doo" "phantom" "none" "once"]
                   ["doo" "phantom" "advanced" "once"]]
             "deploy" ["do" "clean," "deploy" "clojars"]}
@@ -42,12 +42,15 @@
                 :source-paths ["src" "test"]}]
               :test-commands {"phantom" ["bin/phantomjs"]}}
   :deploy-repositories [["releases" :clojars]]
-  :profiles {:dev {:dependencies [[crate "0.2.5"]
-                                  [cljsjs/jquery "2.1.4-0"]
+  :profiles {:dev {:dependencies [[cljsjs/jquery "2.1.4-0"]
+                                  [crate "0.2.5"]
+                                  [criterium "0.4.3"]
                                   [hickory "0.5.4"]
                                   [reagent "0.5.1"]]
                    :plugins [[lein-cljsbuild "1.1.1"]
                              [lein-doo "0.1.6"]]
                    :resource-paths ["test-resources"]}
              :repl {:dependencies [[com.cemerick/piggieback "0.2.1"]]
-                    :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}})
+                    :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}}
+  :test-selectors {:benchmark :benchmark
+                   :default (complement :benchmark)})
