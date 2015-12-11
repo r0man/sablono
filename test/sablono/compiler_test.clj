@@ -78,7 +78,7 @@
          js/React.createElement "div"
          (if (clojure.core/map? attrs)
            (sablono.interpreter/attributes
-            (sablono.util/merge-with-class {:class ["foo"]} attrs))
+            (sablono.normalize/merge-with-class {:class #{"foo"}} attrs))
            #js {:className "foo"})
          (clojure.core/remove
           clojure.core/nil?
@@ -300,10 +300,10 @@
   (are-html-expanded
    '[:div.a {:class (if (true? true) "true" "false")}]
    '(js/React.createElement
-     "div" #js {:className (sablono.util/join-classes ["a" (if (true? true) "true" "false")])})
+     "div" #js {:className (sablono.util/join-classes #{"a" (if (true? true) "true" "false")})})
    '[:div.a.b {:class (if (true? true) ["true"] "false")}]
    '(js/React.createElement
-     "div" #js {:className (sablono.util/join-classes ["a" "b" (if (true? true) ["true"] "false")])})))
+     "div" #js {:className (sablono.util/join-classes #{"a" "b" (if (true? true) ["true"] "false")})})))
 
 (deftest test-issue-3-recursive-js-literal
   (are-html-expanded
@@ -343,7 +343,7 @@
        js/React.createElement "div"
        (if (clojure.core/map? attrs)
          (sablono.interpreter/attributes
-          (sablono.util/merge-with-class {:class ["aa"]} attrs))
+          (sablono.normalize/merge-with-class {:class #{"aa"}} attrs))
          #js {:className "aa"})
        (clojure.core/remove
         clojure.core/nil?
@@ -422,3 +422,8 @@
               (if (clojure.core/map? attrs)
                 []
                 [(sablono.interpreter/interpret attrs)])))))))
+
+(deftest test-class-as-set
+  (are-html-expanded
+   [:div.a {:class #{"a" "b" "c"}}]
+   '(js/React.createElement "div" #js {:className "a b c"})))

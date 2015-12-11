@@ -2,6 +2,7 @@
   (:require-macros [sablono.core :refer [defelem gen-input-fields]])
   (:require [clojure.string :refer [upper-case]]
             [goog.string :as gstring]
+            [sablono.normalize :as normalize]
             [sablono.util :refer [as-str to-uri]]
             [sablono.interpreter :as interpreter]
             [goog.dom :as dom]

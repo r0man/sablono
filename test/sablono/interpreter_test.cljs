@@ -59,3 +59,7 @@
          [:div {} "AB"]))
   (is (= (interpret [:div (vector"A" "B")])
          [:div {} "AB"])))
+
+(deftest test-class-as-set
+  (is (= (interpret [:div.a {:class #{"a" "b" "c"}}])
+         [:div {:class "a b c"}])))

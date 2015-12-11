@@ -505,7 +505,7 @@
                autofocus true]
            (html-vec [:input.form-control
                       (merge {:class input-classes})]))
-         [:input {:class "form-control large big"}])))
+         [:input {:class "big large form-control"}])))
 
 (deftest test-issue-33-number-warning
   (is (= (html-vec [:div (count [1 2 3])])
@@ -530,3 +530,7 @@
          [:div {} "AB"]))
   (is (= (html-vec [:div (vector"A" "B")])
          [:div {} "AB"])))
+
+(deftest test-class-as-set
+  (is (= (html-vec [:div.a {:class #{"a" "b" "c"}}])
+         [:div {:class "a b c"}])))
