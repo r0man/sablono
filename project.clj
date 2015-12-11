@@ -11,7 +11,8 @@
                  [org.clojure/clojure "1.7.0" :scope "provided"]
                  [org.clojure/clojurescript "1.7.189" :scope "provided"]]
   :aliases {"ci" ["do"
-                  "clean"
+                  ["clean"]
+                  ["test"]
                   ["doo" "phantom" "none" "once"]
                   ["doo" "phantom" "advanced" "once"]]
             "deploy" ["do" "clean," "deploy" "clojars"]}

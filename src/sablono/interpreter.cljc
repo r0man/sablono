@@ -1,5 +1,6 @@
 (ns sablono.interpreter
   (:require [clojure.string :refer [blank? join]]
+            [sablono.normalize :as normalize]
             [sablono.util :as util]
             #?(:cljs [goog.object :as gobject])
             #?(:cljs cljsjs.react)))
@@ -77,7 +78,7 @@
    (defn element
   "Render an element vector as a HTML element."
   [element]
-  (let [[type attrs content] (util/normalize-element element)
+  (let [[type attrs content] (normalize/element element)
         js-attrs (attributes attrs)]
     (cond
       (and (sequential? content)

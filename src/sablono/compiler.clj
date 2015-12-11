@@ -1,5 +1,6 @@
 (ns sablono.compiler
   (:require [cljs.compiler :as cljs]
+            [sablono.normalize :as normalize]
             [sablono.util :refer :all])
   ;; TODO: Fix emit-constant exception for JSValue.
   ;; Require of cljs.tagged_literals causes trouble, but a require of
@@ -34,7 +35,8 @@
      (and (sequential? value)
           (= 1 (count value)))
      (first value)
-     (and (sequential? value)
+     (and (or (sequential? value)
+              (set? value))
           (every? string? value))
      (join-classes value)
      :else `(sablono.util/join-classes ~value))})
@@ -66,14 +68,14 @@
       `(sablono.interpreter/attributes ~attrs-1)
       (and (map? attrs-1)
            (map? attrs-2))
-      (merge-with-class attrs-1 attrs-2)
+      (normalize/merge-with-class attrs-1 attrs-2)
       :else `(sablono.interpreter/attributes
-              (sablono.util/merge-with-class ~attrs-1 ~attrs-2)))))
+              (sablono.normalize/merge-with-class ~attrs-1 ~attrs-2)))))
 
 (defn compile-react-element
   "Render an element vector as a HTML element."
   [element]
-  (let [[tag attrs content] (normalize-element element)]
+  (let [[tag attrs content] (normalize/element element)]
     `(~(react-fn tag)
       ~(name tag)
       ~(compile-attrs attrs)
@@ -184,7 +186,7 @@
 
 (defmethod compile-element ::literal-tag-and-attributes
   [[tag attrs & content]]
-  (let [[tag attrs _] (normalize-element [tag attrs])]
+  (let [[tag attrs _] (normalize/element [tag attrs])]
     `(~(react-fn tag)
       ~(name tag)
       ~(compile-attrs attrs)
@@ -196,7 +198,7 @@
 
 (defmethod compile-element ::literal-tag
   [[tag attrs & content]]
-  (let [[tag tag-attrs _] (normalize-element [tag])
+  (let [[tag tag-attrs _] (normalize/element [tag])
         attrs-sym (gensym "attrs")]
     `(let [~attrs-sym ~attrs]
        (apply ~(react-fn tag)
