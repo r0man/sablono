@@ -427,3 +427,9 @@
   (are-html-expanded
    [:div.a {:class #{"a" "b" "c"}}]
    '(js/React.createElement "div" #js {:className "a b c"})))
+
+(deftest test-class-merge-symbol
+  (let [class #{"b"}]
+    (are-html-expanded
+     [:div.a {:class class}]
+     '(js/React.createElement "div" #js {:className "a b"}))))
