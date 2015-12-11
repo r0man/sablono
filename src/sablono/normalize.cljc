@@ -28,6 +28,8 @@
     nil
     (list? class)
     #{class}
+    (symbol? class)
+    #{class}
     (string? class)
     #{class}
     (keyword? class)

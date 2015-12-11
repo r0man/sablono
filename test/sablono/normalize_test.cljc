@@ -59,7 +59,8 @@
     "x" #{"x"}
     ["x"] #{"x"}
     [:x] #{"x"}
-    '(if true "x") #{'(if true "x")}))
+    '(if true "x") #{'(if true "x")}
+    'x #{'x}))
 
 (deftest test-attributes
   (are [attrs expected]
