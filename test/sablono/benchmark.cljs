@@ -93,7 +93,9 @@
           secs (run-test root data li-fn render-fn)]
       [key secs])))
 
-(deftest perf-test []
+;; TODO: Make :benchmark test selector working in ClojureScript
+
+(deftest ^:benchmark perf-test []
   (let [data (doall (gen-data))]
     (prn (->> (for [i (range 3)]
                 (into {} (time-test data)))
