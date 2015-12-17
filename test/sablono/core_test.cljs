@@ -1,11 +1,12 @@
 (ns sablono.core-test
   (:refer-clojure :exclude [replace])
-  (:require-macros [cljs.test :refer [are is deftest testing]]
+  (:require-macros [cljs.test :refer [are is testing]]
                    [sablono.core :refer [html with-group]]
                    [sablono.test :refer [html-str html-vec]])
   (:require [cljs.pprint :refer [pprint]]
             [cljs.test :as t :refer-macros [are is deftest testing]]
             [clojure.string :refer [replace]]
+            [devcards.core :refer-macros [deftest]]
             [hickory.core :as hickory]
             [goog.dom :as gdom]
             [sablono.core :as html :include-macros true]

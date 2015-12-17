@@ -16,8 +16,21 @@
                   ["doo" "phantom" "none" "once"]
                   ["doo" "phantom" "advanced" "once"]]
             "deploy" ["do" "clean," "deploy" "clojars"]}
+  :clean-targets ^{:protect false} [:target]
   :cljsbuild {:builds
-              [{:id "none"
+              [{:id "devcards"
+                :compiler
+                {:asset-path "devcards"
+                 :main sablono.test
+                 :output-to "target/public/sablono.js"
+                 :output-dir "target/public/devcards"
+                 :optimizations :none
+                 :pretty-print true
+                 :source-map true
+                 :verbose true}
+                :figwheel {:devcards true}
+                :source-paths ["src" "test"]}
+               {:id "none"
                 :compiler
                 {:asset-path "target/none/out"
                  :main sablono.test
@@ -42,12 +55,15 @@
   :profiles {:dev {:dependencies [[cljsjs/jquery "2.1.4-0"]
                                   [crate "0.2.5"]
                                   [criterium "0.4.3"]
+                                  [devcards "0.2.1"]
                                   [doo "0.1.6"]
+                                  [figwheel-sidecar "0.5.0-2"]
                                   [hickory "0.5.4"]
                                   [reagent "0.5.1"]]
                    :plugins [[lein-cljsbuild "1.1.1"]
-                             [lein-doo "0.1.6"]]
-                   :resource-paths ["test-resources"]}
+                             [lein-doo "0.1.6"]
+                             [lein-figwheel "0.5.0-2"]]
+                   :resource-paths ["test-resources" "target"]}
              :repl {:dependencies [[com.cemerick/piggieback "0.2.1"]]
                     :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}}
   :test-selectors {:benchmark :benchmark
