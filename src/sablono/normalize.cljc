@@ -20,18 +20,24 @@
     (keyword? x) (name x)
     :else x))
 
-(defn normalize-class
+(defn class
   "Normalize `class` into a set of classes."
   [class]
   (cond
     (nil? class)
     nil
+
     (list? class)
-    #{class}
+    (if (symbol? (first class))
+      #{class}
+      (set (map class-name class)))
+
     (symbol? class)
     #{class}
+
     (string? class)
     #{class}
+
     (keyword? class)
     #{(class-name class)}
     (and (or (set? class)
@@ -40,6 +46,7 @@
                       (string? %))
                  class))
     (apply sorted-set (map class-name class))
+
     (and (or (set? class)
              (sequential? class)))
     (set (map class-name class))
@@ -50,7 +57,7 @@
   [attrs]
   (cond-> attrs
     (:class attrs)
-    (update-in [:class] normalize-class)))
+    (update-in [:class] class)))
 
 (defn merge-with-class
   "Like clojure.core/merge but concatenate :class entries."

@@ -20,7 +20,8 @@
     {:className ""} {}
     {:className "aa"} {"className" "aa"}
     {:className "aa bb"} {"className" "aa bb"}
-    {:className ["aa bb"]} {"className" "aa bb"}))
+    {:className ["aa bb"]} {"className" "aa bb"}
+    {:className '("aa bb")} {"className" "aa bb"}))
 
 (deftest test-interpret-shorthand-div-forms
   (is (= (interpret [:#test.klass1])
@@ -64,3 +65,38 @@
 (deftest test-class-as-set
   (is (= (interpret [:div.a {:class #{"a" "b" "c"}}])
          [:div {:class "a b c"}])))
+
+(deftest test-class-as-list
+  (is (= (interpret [:div.a {:class (list "a" "b" "c")}])
+         [:div {:class "a b c"}])))
+
+(deftest test-class-as-vector
+  (is (= (interpret [:div.a {:class (vector "a" "b" "c")}])
+         [:div {:class "a b c"}])))
+
+(deftest test-issue-80
+  (is (= (interpret
+          [:div
+           [:div {:class (list "foo" "bar")}]
+           [:div {:class (vector "foo" "bar")}]
+           (let []
+             [:div {:class (list "foo" "bar")}])
+           (let []
+             [:div {:class (vector "foo" "bar")}])
+           (when true
+             [:div {:class (list "foo" "bar")}])
+           (when true
+             [:div {:class (vector "foo" "bar")}])
+           (do
+             [:div {:class (list "foo" "bar")}])
+           (do
+             [:div {:class (vector "foo" "bar")}])])
+         [:div {}
+          [:div {:class "bar foo"}]
+          [:div {:class "bar foo"}]
+          [:div {:class "bar foo"}]
+          [:div {:class "bar foo"}]
+          [:div {:class "bar foo"}]
+          [:div {:class "bar foo"}]
+          [:div {:class "bar foo"}]
+          [:div {:class "bar foo"}]])))
