@@ -38,13 +38,13 @@
                  :pretty-print true
                  :externs ["externs/hickory.js"]
                  :verbose true}
-                :notify-command ["bin/phantomjs" "advanced"]
                 :source-paths ["src" "test"]}]
               :test-commands {"phantom" ["bin/phantomjs"]}}
   :deploy-repositories [["releases" :clojars]]
   :profiles {:dev {:dependencies [[cljsjs/jquery "2.1.4-0"]
                                   [crate "0.2.5"]
                                   [criterium "0.4.3"]
+                                  [doo "0.1.6"]
                                   [hickory "0.5.4"]
                                   [reagent "0.5.1"]]
                    :plugins [[lein-cljsbuild "1.1.1"]
