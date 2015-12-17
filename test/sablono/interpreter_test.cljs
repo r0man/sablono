@@ -1,7 +1,8 @@
 (ns sablono.interpreter-test
-  (:require-macros [cljs.test :refer [are is deftest testing]]
+  (:require-macros [cljs.test :refer [are is testing]]
                    [sablono.test :refer [html-str]])
   (:require [cljs.test :as t]
+            [devcards.core :refer-macros [deftest]]
             [sablono.core :as c]
             [sablono.interpreter :as i]))
 

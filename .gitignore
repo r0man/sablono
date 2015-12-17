@@ -11,3 +11,4 @@ pom.xml.asc
 /.repl
 /docs/uberdoc.html
 /.repl-*
+/figwheel_server.log
