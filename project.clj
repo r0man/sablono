@@ -16,7 +16,7 @@
                   ["doo" "phantom" "none" "once"]
                   ["doo" "phantom" "advanced" "once"]]
             "deploy" ["do" "clean," "deploy" "clojars"]}
-  :clean-targets ^{:protect false} [:target]
+  :clean-targets ^{:protect false} [:target-path]
   :cljsbuild {:builds
               [{:id "devcards"
                 :compiler
