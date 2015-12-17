@@ -48,7 +48,6 @@
                  :output-to "target/advanced/sablono.js"
                  :optimizations :advanced
                  :pretty-print true
-                 :externs ["externs/hickory.js"]
                  :verbose true}
                 :source-paths ["src" "test"]}]}
   :deploy-repositories [["releases" :clojars]]
