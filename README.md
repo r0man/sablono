@@ -45,7 +45,7 @@ with [Om](https://github.com/swannodette/om) like this:
 				 [:li {:key n} n])]
 		  (html/submit-button "React!")])))
 
-(om/root widget {} {:target js/document.body})
+(om/root widget {} {:target (. js/document (getElementById "my-app"))})
 ```
 
 ## HTML Tags
