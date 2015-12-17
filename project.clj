@@ -27,7 +27,6 @@
                  :pretty-print true
                  :source-map true
                  :verbose true}
-                :notify-command ["bin/phantomjs" "none"]
                 :source-paths ["src" "test"]}
                {:id "advanced"
                 :compiler
@@ -38,8 +37,7 @@
                  :pretty-print true
                  :externs ["externs/hickory.js"]
                  :verbose true}
-                :source-paths ["src" "test"]}]
-              :test-commands {"phantom" ["bin/phantomjs"]}}
+                :source-paths ["src" "test"]}]}
   :deploy-repositories [["releases" :clojars]]
   :profiles {:dev {:dependencies [[cljsjs/jquery "2.1.4-0"]
                                   [crate "0.2.5"]
