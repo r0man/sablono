@@ -1,7 +1,8 @@
 (ns sablono.normalize-test
   (:require [sablono.normalize :as normalize]
             #?(:clj [clojure.test :refer :all]
-               :cljs [cljs.test :refer-macros [are deftest is]])))
+               :cljs [cljs.test :refer-macros [are is]])
+            #?(:cljs [devcards.core :refer-macros [deftest]])))
 
 (deftest test-compact-map
   (are [x expected]
@@ -53,14 +54,15 @@
 
 (deftest test-normalize-class
   (are [class expected]
-      (= expected (normalize/normalize-class class))
+      (= expected (normalize/class class))
     nil nil
     :x #{"x"}
     "x" #{"x"}
     ["x"] #{"x"}
     [:x] #{"x"}
     '(if true "x") #{'(if true "x")}
-    'x #{'x}))
+    'x #{'x}
+    '("a" "b") #{"a" "b"}))
 
 (deftest test-attributes
   (are [attrs expected]

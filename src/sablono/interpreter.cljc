@@ -68,7 +68,7 @@
    (defn attributes [attrs]
      (let [attrs (clj->js (util/html-to-dom-attrs attrs))
            class (.-className attrs)
-           class (if (array? class) (join " " class) class)]
+           class (if (array? class) (join " " (sort class)) class)]
        (if (blank? class)
          (js-delete attrs "className")
          (set! (.-className attrs) class))
@@ -76,17 +76,17 @@
 
 #?(:cljs
    (defn element
-  "Render an element vector as a HTML element."
-  [element]
-  (let [[type attrs content] (normalize/element element)
-        js-attrs (attributes attrs)]
-    (cond
-      (and (sequential? content)
-           (= 1 (count content)))
-      (create-element type js-attrs (interpret (first content)))
-      content
-      (create-element type js-attrs (interpret content))
-      :else (create-element type js-attrs nil)))))
+     "Render an element vector as a HTML element."
+     [element]
+     (let [[type attrs content] (normalize/element element)
+           js-attrs (attributes attrs)]
+       (cond
+         (and (sequential? content)
+              (= 1 (count content)))
+         (create-element type js-attrs (interpret (first content)))
+         content
+         (create-element type js-attrs (interpret content))
+         :else (create-element type js-attrs nil)))))
 
 (defn- interpret-seq [s]
   (into-array (map interpret s)))
