@@ -1,4 +1,5 @@
 (ns sablono.normalize
+  (:refer-clojure :exclude [class])
   (:require [clojure.set :as set]
             [clojure.string :as str]
             [sablono.util :as util]))
