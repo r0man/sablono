@@ -562,3 +562,7 @@
           [:div {:class "bar foo"}]
           [:div {:class "bar foo"}]
           [:div {:class "bar foo"}]])))
+
+(deftest test-issue-90
+  (is (= (html-vec [:div nil (case :a :a "a")])
+         [:div {} "a"])))

@@ -257,22 +257,24 @@
           clojure.core/nil?
           (if (clojure.core/map? attrs)
             [] [(sablono.interpreter/interpret attrs)]))))
-     '(let [] (when true [:span "foo"]))
-     '(let* [] (if true (do (js/React.createElement "span" nil "foo"))))
-     '(letfn [(foo [] true)]
-        (when (foo)
-          [:span "bar"]))
-     '(letfn* [foo (clojure.core/fn foo [] true)]
-              (if (foo) (do (js/React.createElement "span" nil "bar"))))
-     '(do [:div "should not be optimized"]
-          (let []
-            (when true
-              [:div "should be optimized"])))
-     '(do [:div "should not be optimized"]
-          (let* []
-            (if true
-              (do (js/React.createElement "div" nil
-                                          "should be optimized")))))))
+     ;; TODO: Need to use ClojureScript macroexpansion for this to work.
+     ;; (html (let [] (when true [:span "foo"])))
+     ;; '(let* [] (if true (do (js/React.createElement "span" nil "foo"))))
+     ;; '(letfn [(foo [] true)]
+     ;;    (when (foo)
+     ;;      [:span "bar"]))
+     ;; '(letfn* [foo (clojure.core/fn foo [] true)]
+     ;;          (if (foo) (do (js/React.createElement "span" nil "bar"))))
+     ;; '(do [:div "should not be optimized"]
+     ;;      (let []
+     ;;        (when true
+     ;;          [:div "should be optimized"])))
+     ;; '(do [:div "should not be optimized"]
+     ;;      (let* []
+     ;;        (if true
+     ;;          (do (js/React.createElement "div" nil
+     ;;                                      "should be optimized")))))
+     ))
   (testing "values are evaluated only once"
     (let [times-called (atom 0)
           foo #(swap! times-called inc)]
@@ -433,3 +435,10 @@
     (are-html-expanded
      [:div.a {:class class}]
      '(js/React.createElement "div" #js {:className "a b"}))))
+
+(deftest test-issue-90
+  (is (= (compile [:div nil (case :a :a "a")])
+         '(js/React.createElement
+           "div" nil nil
+           (sablono.interpreter/interpret
+            (case :a :a "a"))))))
