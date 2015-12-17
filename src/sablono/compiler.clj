@@ -123,13 +123,7 @@
 
 (defmethod compile-form :default
   [expr]
-  (try
-    (let [mform (macroexpand expr)]
-      (if (= mform expr)
-        `(sablono.interpreter/interpret ~expr)
-        (compile-form mform)))
-    (catch ClassNotFoundException e
-      `(sablono.interpreter/interpret ~expr))))
+  `(sablono.interpreter/interpret ~expr))
 
 (defn- not-hint?
   "True if x is not hinted to be the supplied type."
