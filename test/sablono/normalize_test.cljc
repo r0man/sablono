@@ -78,19 +78,22 @@
   (are [children expected]
       (= expected (normalize/children children))
     [] []
-    1 1
-    "x" "x"
+    1 [1]
+    "x" ["x"]
     ["x"] ["x"]
     [["x"]] ["x"]
-    [["x" "y"]] ["x" "y"]))
+    [["x" "y"]] ["x" "y"]
+    [:div] [[:div]]
+    [[:div]] [[:div]]
+    [[[:div]]] [[:div]]))
 
 (deftest test-element
   (are [element expected]
       (= expected (normalize/element element))
-    [:div] ["div" {} nil]
-    [:div {:class nil}] ["div" {:class nil} nil]
-    [:div#foo] ["div" {:id "foo"} nil]
-    [:div.foo] ["div" {:class #{"foo"}} nil]
-    [:div.a.b] ["div" {:class #{"a" "b"}} nil]
-    [:div.a.b {:class "c"}] ["div" {:class #{"a" "b" "c"}} nil]
-    [:div.a.b {:class nil}] ["div" {:class #{"a" "b"}} nil]))
+    [:div] ["div" {} '()]
+    [:div {:class nil}] ["div" {:class nil} '()]
+    [:div#foo] ["div" {:id "foo"} '()]
+    [:div.foo] ["div" {:class #{"foo"}} '()]
+    [:div.a.b] ["div" {:class #{"a" "b"}} '()]
+    [:div.a.b {:class "c"}] ["div" {:class #{"a" "b" "c"}} '()]
+    [:div.a.b {:class nil}] ["div" {:class #{"a" "b"}} '()]))

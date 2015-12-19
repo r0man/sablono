@@ -12,7 +12,6 @@
             [sablono.core :as html :include-macros true]
             [sablono.util :refer [to-str]]))
 
-
 (deftest test-render
   (are [markup match]
       (is (re-matches (re-pattern match) (html/render markup)))
@@ -502,8 +501,7 @@
          [:div {:class "c1 c2"} "text"]))
   (is (= (html-vec [:div.aa (merge {:class "bb"})])
          [:div {:class "aa bb"}]))
-  (is (= (let [input-classes ["large" "big"]
-               autofocus true]
+  (is (= (let [input-classes ["large" "big"]]
            (html-vec [:input.form-control
                       (merge {:class input-classes})]))
          [:input {:class "big form-control large"}])))

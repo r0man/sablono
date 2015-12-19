@@ -51,18 +51,24 @@
 #?(:cljs (def textarea (wrap-form-element js/React.DOM.textarea "textarea")))
 
 #?(:cljs
+   (defn element-factory
+     "Return a function that creates a React element for the HTML tag `type`."
+     [type]
+     (if (util/wrapped-type? type)
+       (get {:input sablono.interpreter/input
+             :option sablono.interpreter/option
+             :select sablono.interpreter/select
+             :textarea sablono.interpreter/textarea}
+            (keyword type))
+       (partial js/React.createElement (name type)))))
+
+#?(:cljs
    (defn create-element [type props & children]
-     ((if (util/wrapped-type? type)
-        (get {:input sablono.interpreter/input
-              :option sablono.interpreter/option
-              :select sablono.interpreter/select
-              :textarea sablono.interpreter/textarea}
-             (keyword type))
-        (partial js/React.createElement (name type)))
-      props
-      (if (and (sequential? children)
-               (= 1 (count children)))
-        (first children) children))))
+     (let [factory (element-factory type)
+           children (remove nil? children)]
+       (if (empty? children)
+         (factory props)
+         (apply factory props children)))))
 
 #?(:cljs
    (defn attributes [attrs]
@@ -78,18 +84,11 @@
    (defn element
      "Render an element vector as a HTML element."
      [element]
-     (let [[type attrs content] (normalize/element element)
-           js-attrs (attributes attrs)]
-       (cond
-         (and (sequential? content)
-              (= 1 (count content)))
-         (create-element type js-attrs (interpret (first content)))
-         content
-         (create-element type js-attrs (interpret content))
-         :else (create-element type js-attrs nil)))))
+     (let [[type attrs content] (normalize/element element)]
+       (apply create-element type (attributes attrs) (map interpret content)))))
 
 (defn- interpret-seq [s]
-  (into-array (map interpret s)))
+  (map interpret s))
 
 #?(:cljs
    (extend-protocol IInterpreter

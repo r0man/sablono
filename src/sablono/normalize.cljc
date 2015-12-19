@@ -93,15 +93,26 @@
 (defn children
   "Normalize the children of a HTML element."
   [x]
-  (if (and (sequential? x)
-           (= (count x) 1))
-    (let [x (first x)]
-      (cond
-        (string? x) (list x)
-        (util/element? x) (list x)
-        (sequential? x) (seq x)
-        :else x))
-    x))
+  (->> (cond
+         (string? x)
+         (list x)
+         (util/element? x)
+         (list x)
+         (and (list? x)
+              (symbol? x))
+         (list x)
+         (list? x)
+         x
+         (and (sequential? x)
+              (sequential? (first x))
+              (not (string? (first x)))
+              (not (util/element? (first x)))
+              (= (count x) 1))
+         (children (first x))
+         (sequential? x)
+         x
+         :else (list x))
+       (remove nil?)))
 
 (defn element
   "Ensure an element vector is of the form [tag-name attrs content]."
