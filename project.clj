@@ -55,6 +55,7 @@
                                   [crate "0.2.5"]
                                   [criterium "0.4.3"]
                                   [devcards "0.2.1"]
+                                  [devcards "0.2.1" :exclusions [sablono]]
                                   [doo "0.1.6"]
                                   [figwheel-sidecar "0.5.0-2"]
                                   [hickory "0.5.4"]
