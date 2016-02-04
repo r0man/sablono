@@ -61,7 +61,7 @@
                                   [reagent "0.6.0-alpha"]]
                    :plugins [[lein-cljsbuild "1.1.1"]
                              [lein-doo "0.1.6"]
-                             [lein-figwheel "0.5.0-2"]]
+                             [lein-figwheel "0.5.0-6"]]
                    :resource-paths ["test-resources" "target"]}
              :repl {:dependencies [[com.cemerick/piggieback "0.2.1"]]
                     :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}}
