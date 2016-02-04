@@ -59,7 +59,7 @@
                                   [figwheel-sidecar "0.5.0-6"]
                                   [hickory "0.6.0"]
                                   [reagent "0.6.0-alpha"]]
-                   :plugins [[lein-cljsbuild "1.1.1"]
+                   :plugins [[lein-cljsbuild "1.1.2"]
                              [lein-doo "0.1.6"]
                              [lein-figwheel "0.5.0-6"]]
                    :resource-paths ["test-resources" "target"]}
