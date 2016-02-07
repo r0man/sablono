@@ -22,7 +22,7 @@
     :else x))
 
 (defn class
-  "Normalize `class` into a set of classes."
+  "Normalize `class` into a vector of classes."
   [class]
   (cond
     (nil? class)
@@ -30,27 +30,29 @@
 
     (list? class)
     (if (symbol? (first class))
-      #{class}
-      (set (map class-name class)))
+      [class]
+      (map class-name class))
 
     (symbol? class)
-    #{class}
+    [class]
 
     (string? class)
-    #{class}
+    [class]
 
     (keyword? class)
-    #{(class-name class)}
+    [(class-name class)]
+
     (and (or (set? class)
              (sequential? class))
          (every? #(or (keyword? %)
                       (string? %))
                  class))
-    (apply sorted-set (map class-name class))
+    (mapv class-name class)
 
     (and (or (set? class)
              (sequential? class)))
-    (set (map class-name class))
+    (mapv class-name class)
+
     :else class))
 
 (defn attributes
@@ -64,8 +66,8 @@
   "Like clojure.core/merge but concatenate :class entries."
   [& maps]
   (let [maps (map attributes maps)
-        classes (map #(into #{} %) (map :class maps))
-        classes (apply set/union classes)]
+        classes (map :class maps)
+        classes (vec (dedupe (apply concat classes)))]
     (cond-> (apply merge maps)
       (not (empty? classes))
       (assoc :class classes))))

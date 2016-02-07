@@ -32,9 +32,6 @@
          (keyword? value)
          (string? value))
      value
-     (and (sequential? value)
-          (= 1 (count value)))
-     (first value)
      (and (or (sequential? value)
               (set? value))
           (every? string? value))

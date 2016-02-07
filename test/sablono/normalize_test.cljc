@@ -21,11 +21,11 @@
     [{:a 1} {:b 2}]
     {:a 1 :b 2}
     [{:a 1 :class :a} {:b 2 :class "b"} {:c 3 :class ["c"]}]
-    {:a 1 :b 2 :c 3 :class #{"a" "b" "c"}}
+    {:a 1 :b 2 :c 3 :class ["a" "b" "c"]}
     [{:a 1 :class :a} {:b 2 :class "b"} {:c 3 :class (seq ["c"])}]
-    {:a 1 :b 2 :c 3 :class #{"a" "b" "c"}}
-    ['{:a 1 :class #{"a"}} '{:b 2 :class #{(if true "b")}}]
-    '{:a 1 :class #{"a" (if true "b")} :b 2}))
+    {:a 1 :b 2 :c 3 :class ["a" "b" "c"]}
+    ['{:a 1 :class ["a"]} '{:b 2 :class [(if true "b")]}]
+    '{:a 1 :class ["a" (if true "b")] :b 2}))
 
 (deftest test-strip-css
   (are [x expected]
@@ -56,13 +56,13 @@
   (are [class expected]
       (= expected (normalize/class class))
     nil nil
-    :x #{"x"}
-    "x" #{"x"}
-    ["x"] #{"x"}
-    [:x] #{"x"}
-    '(if true "x") #{'(if true "x")}
-    'x #{'x}
-    '("a" "b") #{"a" "b"}))
+    :x ["x"]
+    "x" ["x"]
+    ["x"] ["x"]
+    [:x] ["x"]
+    '(if true "x") ['(if true "x")]
+    'x ['x]
+    '("a" "b") ["a" "b"]))
 
 (deftest test-attributes
   (are [attrs expected]
@@ -70,9 +70,9 @@
     nil nil
     {} {}
     {:class nil} {:class nil}
-    {:class "x"} {:class #{"x"}}
-    {:class #{"x"}} {:class #{"x"}}
-    '{:class #{"x" (if true "y")}} '{:class #{(if true "y") "x"}}))
+    {:class "x"} {:class ["x"]}
+    {:class ["x"]} {:class ["x"]}
+    '{:class ["x" (if true "y")]} '{:class ["x" (if true "y")]}))
 
 (deftest test-children
   (are [children expected]
@@ -93,7 +93,7 @@
     [:div] ["div" {} '()]
     [:div {:class nil}] ["div" {:class nil} '()]
     [:div#foo] ["div" {:id "foo"} '()]
-    [:div.foo] ["div" {:class #{"foo"}} '()]
-    [:div.a.b] ["div" {:class #{"a" "b"}} '()]
-    [:div.a.b {:class "c"}] ["div" {:class #{"a" "b" "c"}} '()]
-    [:div.a.b {:class nil}] ["div" {:class #{"a" "b"}} '()]))
+    [:div.foo] ["div" {:class ["foo"]} '()]
+    [:div.a.b] ["div" {:class ["a" "b"]} '()]
+    [:div.a.b {:class "c"}] ["div" {:class ["a" "b" "c"]} '()]
+    [:div.a.b {:class nil}] ["div" {:class ["a" "b"]} '()]))
