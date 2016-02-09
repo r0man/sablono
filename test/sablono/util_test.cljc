@@ -41,6 +41,16 @@
   (is (not (u/element? 1)))
   (is (not (u/element? "x"))))
 
+(deftest test-join-classes
+  (are [classes expected]
+      (= expected (u/join-classes classes))
+    ["a"] "a"
+    #{"a"} "a"
+    ["a" "b"] "a b"
+    #{"a" "b"} "a b"
+    ["a" ["b"]] "a b"
+    ["a" (set ["a" "b" "c"])] "a b c"))
+
 #?(:cljs
    (deftest test-as-str
      (are [args expected]

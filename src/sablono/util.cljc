@@ -59,7 +59,13 @@
 (defn join-classes
   "Join the `classes` with a whitespace."
   [classes]
-  (join " " (sort (flatten (seq classes)))))
+  (->> (map #(cond
+               (string? %) %
+               :else (seq %))
+            classes)
+       (flatten)
+       (dedupe)
+       (join " ")))
 
 (defn wrapped-type?
   "Return true if the element `type` needs to be wrapped."

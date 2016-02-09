@@ -92,14 +92,14 @@
            (do
              [:div {:class (vector "foo" "bar")}])])
          [:div {}
-          [:div {:class "bar foo"}]
-          [:div {:class "bar foo"}]
-          [:div {:class "bar foo"}]
-          [:div {:class "bar foo"}]
-          [:div {:class "bar foo"}]
-          [:div {:class "bar foo"}]
-          [:div {:class "bar foo"}]
-          [:div {:class "bar foo"}]])))
+          [:div {:class "foo bar"}]
+          [:div {:class "foo bar"}]
+          [:div {:class "foo bar"}]
+          [:div {:class "foo bar"}]
+          [:div {:class "foo bar"}]
+          [:div {:class "foo bar"}]
+          [:div {:class "foo bar"}]
+          [:div {:class "foo bar"}]])))
 
 (deftest test-issue-90
   (is (= (interpret [:div nil (case :a :a "a")])

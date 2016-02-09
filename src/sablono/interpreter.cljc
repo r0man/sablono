@@ -74,7 +74,7 @@
    (defn attributes [attrs]
      (let [attrs (clj->js (util/html-to-dom-attrs attrs))
            class (.-className attrs)
-           class (if (array? class) (join " " (sort class)) class)]
+           class (if (array? class) (join " " class) class)]
        (if (blank? class)
          (js-delete attrs "className")
          (set! (.-className attrs) class))

@@ -504,7 +504,7 @@
   (is (= (let [input-classes ["large" "big"]]
            (html-vec [:input.form-control
                       (merge {:class input-classes})]))
-         [:input {:class "big form-control large"}])))
+         [:input {:class "form-control large big"}])))
 
 (deftest test-issue-33-number-warning
   (is (= (html-vec [:div (count [1 2 3])])
@@ -534,6 +534,35 @@
   (is (= (html-vec [:div.a {:class #{"a" "b" "c"}}])
          [:div {:class "a b c"}])))
 
+
+(deftest test-class-duplication
+  (is (= (html-vec [:div.a.a.b.b.c {:class "c"}])
+         [:div {:class "a b c"}]))  )
+
+(deftest test-class-order
+  (is (= (html-vec [:div.a.b.c {:class "d"}])
+         [:div {:class "a b c d"}]))
+  (is (= (html-vec [:div.a.b.c {:class ["foo" "bar"]}])
+         [:div {:class "a b c foo bar"}])))
+
+(deftest test-class-as-set
+  (is (= (html-vec [:div.a {:class #{"a" "b" "c"}}])
+         [:div {:class "a b c"}]))
+  (is (= (html-vec [:div.a {:class (set ["a" "b" "c"])}])
+         [:div {:class "a b c"}])))
+
+(deftest test-class-as-list
+  (is (= (html-vec [:div.a {:class '("a" "b" "c")}])
+         [:div {:class "a b c"}]))
+  (is (= (html-vec [:div.a {:class (list "a" "b" "c")}])
+         [:div {:class "a b c"}])))
+
+(deftest test-class-as-vector
+  (is (= (html-vec [:div.a {:class ["a" "b" "c"]}])
+         [:div {:class "a b c"}]))
+  (is (= (html-vec [:div.a {:class (vector "a" "b" "c")}])
+         [:div {:class "a b c"}])))
+
 (deftest test-issue-80
   (is (= (html-vec
           [:div
@@ -552,15 +581,19 @@
            (do
              [:div {:class (vector "foo" "bar")}])])
          [:div {}
-          [:div {:class "bar foo"}]
-          [:div {:class "bar foo"}]
-          [:div {:class "bar foo"}]
-          [:div {:class "bar foo"}]
-          [:div {:class "bar foo"}]
-          [:div {:class "bar foo"}]
-          [:div {:class "bar foo"}]
-          [:div {:class "bar foo"}]])))
+          [:div {:class "foo bar"}]
+          [:div {:class "foo bar"}]
+          [:div {:class "foo bar"}]
+          [:div {:class "foo bar"}]
+          [:div {:class "foo bar"}]
+          [:div {:class "foo bar"}]
+          [:div {:class "foo bar"}]
+          [:div {:class "foo bar"}]])))
 
 (deftest test-issue-90
   (is (= (html-vec [:div nil (case :a :a "a")])
          [:div {} "a"])))
+
+(deftest test-complex-scenario
+  (is (= (html-vec [:div.a {:class (list "b")} (case :a :a "a")])
+         [:div {:class "a b"} "a"])))

@@ -17,6 +17,11 @@
   (toString [this]
     (.toString (.val this))))
 
+(defmethod print-method JSValueWrapper
+  [^JSValueWrapper v, ^java.io.Writer w]
+  (.write w "#js ")
+  (.write w (pr-str (.val v))))
+
 (defn wrap-js-value [forms]
   (prewalk
    (fn [form]
@@ -78,7 +83,7 @@
          js/React.createElement "div"
          (if (clojure.core/map? attrs)
            (sablono.interpreter/attributes
-            (sablono.normalize/merge-with-class {:class #{"foo"}} attrs))
+            (sablono.normalize/merge-with-class {:class ["foo"]} attrs))
            #js {:className "foo"})
          (clojure.core/remove
           clojure.core/nil?
@@ -302,10 +307,10 @@
   (are-html-expanded
    '[:div.a {:class (if (true? true) "true" "false")}]
    '(js/React.createElement
-     "div" #js {:className (sablono.util/join-classes #{"a" (if (true? true) "true" "false")})})
+     "div" #js {:className (sablono.util/join-classes ["a" (if (true? true) "true" "false")])})
    '[:div.a.b {:class (if (true? true) ["true"] "false")}]
    '(js/React.createElement
-     "div" #js {:className (sablono.util/join-classes #{"a" "b" (if (true? true) ["true"] "false")})})))
+     "div" #js {:className (sablono.util/join-classes ["a" "b" (if (true? true) ["true"] "false")])})))
 
 (deftest test-issue-3-recursive-js-literal
   (are-html-expanded
@@ -345,7 +350,7 @@
        js/React.createElement "div"
        (if (clojure.core/map? attrs)
          (sablono.interpreter/attributes
-          (sablono.normalize/merge-with-class {:class #{"aa"}} attrs))
+          (sablono.normalize/merge-with-class {:class ["aa"]} attrs))
          #js {:className "aa"})
        (clojure.core/remove
         clojure.core/nil?
@@ -426,9 +431,20 @@
                 [(sablono.interpreter/interpret attrs)])))))))
 
 (deftest test-class-as-set
-  (are-html-expanded
-   [:div.a {:class #{"a" "b" "c"}}]
-   '(js/React.createElement "div" #js {:className "a b c"})))
+  (is (= (compile [:div.a {:class #{"a" "b" "c"}}])
+         (wrap-js-value
+          '(js/React.createElement "div" #js {:className "a b c"})))))
+
+(deftest test-class-as-list
+  (is (= (compile [:div.a {:class (list "a" "b" "c")}])
+         (wrap-js-value
+          '(js/React.createElement "div" #js {:className (sablono.util/join-classes ["a" (list "a" "b" "c")])})))))
+
+(deftest test-class-as-vector
+  (is (= (compile [:div.a {:class (vector "a" "b" "c")}])
+         (wrap-js-value
+          '(js/React.createElement
+            "div" #js {:className (sablono.util/join-classes ["a" (vector "a" "b" "c")])})))))
 
 (deftest test-class-merge-symbol
   (let [class #{"b"}]
@@ -442,3 +458,16 @@
            "div" nil nil
            (sablono.interpreter/interpret
             (case :a :a "a"))))))
+
+(deftest test-compile-attr-class
+  (are [form expected]
+      (= {:class expected} (compile-attr :class form))
+    nil nil
+    "foo" "foo"
+    '("foo" "bar" ) "foo bar"
+    ["foo" "bar"] "foo bar"
+    #{"foo" "bar"} "foo bar"
+    '(set "foo" "bar")
+    '(sablono.util/join-classes (set "foo" "bar"))
+    '[(list "foo" "bar")]
+    '(sablono.util/join-classes [(list "foo" "bar")])))
