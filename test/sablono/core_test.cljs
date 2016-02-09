@@ -10,15 +10,8 @@
             [hickory.core :as hickory]
             [goog.dom :as gdom]
             [sablono.core :as html :include-macros true]
-            [sablono.util :refer [to-str]]))
-
-(deftest test-render
-  (are [markup match]
-      (is (re-matches (re-pattern match) (html/render markup)))
-    (html [:div#a.b "c"])
-    "<div id=\"a\" class=\"b\" data-reactid=\".*\" data-react-checksum=\".*\">c</div>"
-    (html [:div (when true [:p "data"]) (if true [:p "data"] nil)])
-    "<div data-reactid=\".*\" data-react-checksum=\".*\"><p data-reactid=\".*\">data</p><p data-reactid=\".*\">data</p></div>"))
+            [sablono.util :refer [to-str]]
+            [sablono.server :as server]))
 
 (deftest test-tag-names
   (testing "basic tags"

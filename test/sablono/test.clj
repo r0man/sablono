@@ -2,7 +2,7 @@
   (:require [sablono.core]))
 
 (defmacro html-str [element]
-  `(sablono.core/render-static
+  `(sablono.server/render-static
     (sablono.core/html ~element)))
 
 (defmacro html-vec [element]
@@ -13,5 +13,5 @@
 
 (defmacro are-html [& contents]
   `(are [html# expected#]
-     (= (sablono.test/html-vec html#) expected# )
+       (= (sablono.test/html-vec html#) expected# )
      ~@contents))
