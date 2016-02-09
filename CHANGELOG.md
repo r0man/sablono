@@ -1,6 +1,6 @@
 # Changelog
 
-## Master (unreleased)
+## 0.5.4
 
 ### Changes
 
