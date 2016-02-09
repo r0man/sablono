@@ -4,11 +4,12 @@
   (:require [cljs.test :as t]
             [devcards.core :refer-macros [deftest]]
             [sablono.core :as c]
-            [sablono.interpreter :as i]))
+            [sablono.interpreter :as i]
+            [sablono.server :as server]))
 
 (defn interpret [x]
   (some->> (i/interpret x)
-           (c/render-static)
+           (server/render-static)
            (hickory.core/parse-fragment)
            (map hickory.core/as-hiccup)
            (first)))

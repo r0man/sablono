@@ -24,6 +24,13 @@ Via Clojars: https://clojars.org/sablono
 ``` clj
 [cljsjs/react "0.14.3-0"]
 [cljsjs/react-dom "0.14.3-1"]
+```
+
+If you want to do server rendering and use the `render` or
+`render-static` functions from the `sablono.server` namespace you need
+to add the following dependency as well:
+
+``` clj
 [cljsjs/react-dom-server "0.14.3-0"]
 ```
 
