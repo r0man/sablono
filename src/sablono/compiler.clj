@@ -202,8 +202,10 @@
                 ~(compile-merge-attrs tag-attrs attrs-sym)
                 ~(compile-attrs tag-attrs))
               (if (map? ~attrs-sym)
-                [~@(map compile-html content)]
-                [~@(if attrs (map compile-html (cons attrs-sym content)))])))))
+                ~(when-not (empty? content)
+                   (mapv compile-html content))
+                ~(when attrs
+                   (mapv compile-html (cons attrs-sym content))))))))
 
 (defmethod compile-element :default
   [element]
