@@ -1,0 +1,102 @@
+* ŜABLONO
+
+  [[https://travis-ci.org/r0man/sablono][https://travis-ci.org/r0man/sablono.svg]]
+  [[http://jarkeeper.com/r0man/sablono][http://jarkeeper.com/r0man/sablono/status.svg]]
+  [[https://jarkeeper.com/r0man/sablono][https://jarkeeper.com/r0man/sablono/downloads.svg]]
+
+  Lisp/Hiccup style templating for Facebook's [[http://facebook.github.io/react][React]] in [[https://github.com/clojure/clojurescript][ClojureScript]].
+
+  [[http://imgs.xkcd.com/comics/tags.png]]
+
+** Installation
+
+   [[https://clojars.org/sablono][https://clojars.org/sablono/latest-version.svg]]
+
+** Dependencies
+
+   /Ŝablono/ doesn't declare a dependency on React anymore. Use the
+   React dependencies from one of the ClojureScript wrappers or
+   provide the dependencies yourself like this:
+
+   #+BEGIN_SRC clojure :exports code :results silent
+    [cljsjs/react "0.14.3-0"]
+    [cljsjs/react-dom "0.14.3-1"]
+   #+END_SRC
+
+   If you want to do server rendering and use the =render= or
+   =render-static= functions from the =sablono.server= namespace you
+   need to add the following dependency as well:
+
+   #+BEGIN_SRC clojure :exports code :results silent
+    [cljsjs/react-dom-server "0.14.3-0"]
+   #+END_SRC
+
+** Usage
+
+   Most functions from [[https://github.com/weavejester/hiccup][Hiccup]] are provided in the =sablono.core=
+   namespace. The library can be used with [[https://github.com/swannodette/om][Om]] like this:
+
+   #+BEGIN_SRC clojure :exports code :results silent
+    (ns example
+      (:require [om.core :as om :include-macros true]
+                [sablono.core :as html :refer-macros [html]]))
+
+    (defn widget [data]
+      (om/component
+       (html [:div "Hello world!"
+              [:ul (for [n (range 1 10)]
+                     [:li {:key n} n])]
+              (html/submit-button "React!")])))
+
+    (om/root widget {} {:target (. js/document (getElementById "my-app"))})
+   #+END_SRC
+
+** HTML Tags
+
+   /Ŝablono/ only supports tags and attributes that can be handled by
+   React. This means you can't have your own custom tags and
+   attributes at the moment. For more details take a look at the [[http://facebook.github.io/react/docs/tags-and-attributes.html][Tags
+   and Attributes]] section in the React documentation.
+
+** HTML Attributes
+
+   HTML attributes in [[http://facebook.github.io/react/docs/tags-and-attributes.html#html-attributes][React]] are camel-cased and the =class= and =for=
+   attributes are treated special. /Ŝablono/ renames attributes with
+   dashes in their name to the camel-cased version and handles the
+   =class= and =for= special case. This is more consistent with [[https://github.com/weavejester/hiccup][Hiccup]]
+   and naming conventions used in Clojure.
+
+   An =input= element with event listeners attached to it would look
+   like this in /Ŝablono/:
+
+   #+BEGIN_SRC clojure :exports code :results silent
+    (html [:input
+           {:auto-complete "off"
+            :class "autocomplete"
+            :on-change #(on-change %1)
+            :on-key-down #(on-key-down %1)
+            :type "text"}])
+   #+END_SRC
+
+** Setting innerHTML of a DOM node
+
+   It is not recommended to directly set the innerHTML of DOM nodes,
+   but in some cases it is necessary. i.e. injecting a HTML string
+   that was generated from Markdown.
+
+   #+BEGIN_SRC clojure :exports code :results silent
+    (html [:div {:dangerouslySetInnerHTML {:__html "<div>hello world</div>" }}])
+   #+END_SRC
+
+   You can read more at [[http://facebook.github.io/react/docs/special-non-dom-attributes.html][React's special attributes]].
+
+** Thanks
+
+   This library is based on James Reeves excellent [[https://github.com/weavejester/hiccup][Hiccup]] library.
+
+** License
+
+   Copyright © 2013-2016 [[https://github.com/r0man][r0man]]
+
+   Distributed under the Eclipse Public License either version 1.0 or
+   (at your option) any later version.
