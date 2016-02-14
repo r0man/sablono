@@ -1,17 +1,17 @@
 (ns sablono.core-test
   (:refer-clojure :exclude [replace])
-  (:require-macros [cljs.test :refer [are is testing]]
-                   [sablono.core :refer [html with-group]]
+  (:require-macros [sablono.core :refer [html with-group]]
                    [sablono.test :refer [html-str html-vec]])
   (:require [cljs.pprint :refer [pprint]]
-            [cljs.test :as t :refer-macros [are is deftest testing]]
+            [cljs.test :as t :refer-macros [are is testing]]
             [clojure.string :refer [replace]]
-            [devcards.core :refer-macros [deftest]]
-            [hickory.core :as hickory]
+            [devcards.core :refer-macros [defcard deftest]]
             [goog.dom :as gdom]
-            [sablono.core :as html :include-macros true]
-            [sablono.util :refer [to-str]]
-            [sablono.server :as server]))
+            [hickory.core :as hickory]
+            [rum.core :as rum]
+            [sablono.core :as html]
+            [sablono.server :as server]
+            [sablono.util :refer [to-str]]))
 
 (deftest test-tag-names
   (testing "basic tags"
@@ -523,11 +523,6 @@
   (is (= (html-vec [:div (vector"A" "B")])
          [:div {} "AB"])))
 
-(deftest test-class-as-set
-  (is (= (html-vec [:div.a {:class #{"a" "b" "c"}}])
-         [:div {:class "a b c"}])))
-
-
 (deftest test-class-duplication
   (is (= (html-vec [:div.a.a.b.b.c {:class "c"}])
          [:div {:class "a b c"}]))  )
@@ -590,3 +585,28 @@
 (deftest test-complex-scenario
   (is (= (html-vec [:div.a {:class (list "b")} (case :a :a "a")])
          [:div {:class "a b"} "a"])))
+
+(deftest test-issue-57
+  (let [payload {:username "john" :likes 2}]
+    (is (= (html-vec
+            (let [{:keys [username likes]} payload]
+              [:div
+               [:div (str username " (" likes ")")]
+               [:div "!Pixel Scout"]]))
+           [:div {}
+            [:div {} "john (2)"]
+            [:div {} "!Pixel Scout"]]))))
+
+(rum/defc issue-57-rum [text]
+  (html
+   (let [text-add (str text " warning")]
+     [:div
+      [:h1 text]
+      [:h1 text-add]])))
+
+(deftest test-issue-57-rum
+  (is (= (html-vec (issue-57-rum "This gives"))
+         [:div
+          {}
+          [:h1 {} "This gives"]
+          [:h1 {} "This gives warning"]])))
