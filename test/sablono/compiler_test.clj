@@ -3,7 +3,7 @@
   (:require [clojure.test :refer :all]
             [clojure.walk :refer [prewalk]]
             [sablono.compiler :refer :all]
-            [sablono.core :refer [html html-expand]]
+            [sablono.core :refer [attrs html html-expand]]
             [sablono.interpreter :as interpreter])
   (:import cljs.tagged_literals.JSValue))
 
@@ -45,6 +45,44 @@
        (is (= (wrap-js-value expected#)
               (wrap-js-value (replace-gensyms (html-expand form#)))))
      ~@body))
+
+(deftest test-compile-attrs
+  (are [attrs expected]
+      (= (wrap-js-value expected)
+         (wrap-js-value (compile-attrs attrs)))
+    nil nil
+    {:class "my-class"}
+    #js {:className "my-class"}
+    {:class '(identity "my-class")}
+    #js {:className (sablono.util/join-classes (identity "my-class"))}
+    {:class "my-class"
+     :style {:background-color "black"}}
+    #js {:className "my-class"
+         :style #js {:backgroundColor "black"}}
+    {:class '(identity "my-class")
+     :style {:background-color '(identity "black")}}
+    #js {:className (sablono.util/join-classes (identity "my-class"))
+         :style #js {:backgroundColor (identity "black")}}))
+
+(deftest test-attrs
+  (are [form expected]
+      (= (wrap-js-value expected)
+         (wrap-js-value (attrs form)))
+    nil nil
+    {:class "my-class"}
+    #js {:className "my-class"}
+    {:class ["a" "b"]}
+    #js {:className "a b"}
+    {:class '(identity "my-class")}
+    #js {:className (sablono.util/join-classes '(identity "my-class"))}
+    {:class "my-class"
+     :style {:background-color "black"}}
+    #js {:className "my-class"
+         :style #js {:backgroundColor "black"}}
+    {:class '(identity "my-class")
+     :style {:background-color '(identity "black")}}
+    #js {:className (sablono.util/join-classes '(identity "my-class"))
+         :style #js {:backgroundColor '(identity "black")}}))
 
 (deftest test-to-js
   (let [v (to-js [])]
