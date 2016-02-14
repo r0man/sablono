@@ -233,53 +233,6 @@
     (let [string "x"]
       (are-html-expanded
        '[:span ^String string] '(js/React.createElement "span" nil string))))
-  (testing "optimized forms"
-    (are-html-expanded
-     '[:ul (for [n (range 3)] [:li n])]
-     '(js/React.createElement
-       "ul" nil
-       (into-array
-        (clojure.core/for [n (range 3)]
-          (clojure.core/let
-              [attrs n]
-            (clojure.core/apply
-             js/React.createElement "li"
-             (if (clojure.core/map? attrs)
-               (sablono.interpreter/attributes attrs)
-               nil)
-             (clojure.core/remove
-              clojure.core/nil?
-              (if (clojure.core/map? attrs)
-                [] [(sablono.interpreter/interpret attrs)])))))))
-     '[:div (if true [:span "foo"] [:span "bar"])]
-     '(let* [attrs (if true [:span "foo"] [:span "bar"])]
-        (clojure.core/apply
-         js/React.createElement "div"
-         (if (clojure.core/map? attrs)
-           (sablono.interpreter/attributes attrs)
-           nil)
-         (clojure.core/remove
-          clojure.core/nil?
-          (if (clojure.core/map? attrs)
-            [] [(sablono.interpreter/interpret attrs)]))))
-     ;; TODO: Need to use ClojureScript macroexpansion for this to work.
-     ;; (html (let [] (when true [:span "foo"])))
-     ;; '(let* [] (if true (do (js/React.createElement "span" nil "foo"))))
-     ;; '(letfn [(foo [] true)]
-     ;;    (when (foo)
-     ;;      [:span "bar"]))
-     ;; '(letfn* [foo (clojure.core/fn foo [] true)]
-     ;;          (if (foo) (do (js/React.createElement "span" nil "bar"))))
-     ;; '(do [:div "should not be optimized"]
-     ;;      (let []
-     ;;        (when true
-     ;;          [:div "should be optimized"])))
-     ;; '(do [:div "should not be optimized"]
-     ;;      (let* []
-     ;;        (if true
-     ;;          (do (js/React.createElement "div" nil
-     ;;                                      "should be optimized")))))
-     ))
   (testing "values are evaluated only once"
     (let [times-called (atom 0)
           foo #(swap! times-called inc)]
@@ -471,3 +424,31 @@
     '(sablono.util/join-classes (set "foo" "bar"))
     '[(list "foo" "bar")]
     '(sablono.util/join-classes [(list "foo" "bar")])))
+
+(deftest test-optimize-let-form
+  (is (= (compile (let [x "x"] [:div "x"]))
+         '(let* [x "x"] (js/React.createElement "div" nil "x")))))
+
+(deftest test-optimize-for-loop
+  (is (= (compile [:ul (for [n (range 3)] [:li n])])
+         '(js/React.createElement
+           "ul" nil
+           (into-array
+            (clojure.core/for [n (range 3)]
+              (clojure.core/let
+                  [attrs n]
+                (clojure.core/apply
+                 js/React.createElement "li"
+                 (if (clojure.core/map? attrs)
+                   (sablono.interpreter/attributes attrs)
+                   nil)
+                 (clojure.core/remove
+                  clojure.core/nil?
+                  (if (clojure.core/map? attrs)
+                    [] [(sablono.interpreter/interpret attrs)]))))))))))
+
+(deftest test-optimize-if
+  (is (= (compile (if true [:span "foo"] [:span "bar"]) )
+         '(if true
+            (js/React.createElement "span" nil "foo")
+            (js/React.createElement "span" nil "bar")))))

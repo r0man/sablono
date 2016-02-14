@@ -102,6 +102,10 @@
   [[_ & forms]]
   `(do ~@(butlast forms) ~(compile-html (last forms))))
 
+(defmethod compile-form "let"
+  [[_ bindings & body]]
+  `(let ~bindings ~@(butlast body) ~(compile-html (last body))))
+
 (defmethod compile-form "let*"
   [[_ bindings & body]]
   `(let* ~bindings ~@(butlast body) ~(compile-html (last body))))
@@ -218,8 +222,7 @@
     (literal? content) content
     (hint? content String) content
     (hint? content Number) content
-    (seq? content) (compile-form content)
-    :else `(sablono.interpreter/interpret ~content)))
+    :else (compile-form content)))
 
 ;; TODO: Remove when landed in ClojureScript.
 (defmethod print-method JSValue
