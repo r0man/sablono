@@ -1,15 +1,16 @@
 * Changelog
 
-** 0.6.1 (unreleased)
+** 0.6.1
 
--  [[https://github.com/r0man/sablono/issues/103][#103]] Optimize =let= forms.
+- [[https://github.com/r0man/sablono/pull/105][#105]] Remove duplicate class names with =distinct=, not =dedupe=.
+- [[https://github.com/r0man/sablono/issues/103][#103]] Optimize =let= forms.
 
 ** 0.6.0
 
--  [[https://github.com/r0man/sablono/issues/100][#100]] Move the =render= and =render-static= functions into the
-   =sablono.server= namespace, to make the dependency on
-   =react-dom-server= optional.
+- [[https://github.com/r0man/sablono/issues/100][#100]] Move the =render= and =render-static= functions into the
+  =sablono.server= namespace, to make the dependency on
+  =react-dom-server= optional.
 
 ** 0.5.4
 
--  [[https://github.com/r0man/sablono/issues/98][#98]] Preserve CSS class order
+- [[https://github.com/r0man/sablono/issues/98][#98]] Preserve CSS class order
