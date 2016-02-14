@@ -2,13 +2,18 @@
   (:require [clojure.walk :refer [postwalk-replace]]
             [sablono.compiler :as compiler]))
 
+(defmacro attrs
+  "Compile `attributes` map into a JavaScript literal."
+  [attributes]
+  (sablono.compiler/compile-attrs attributes))
+
 (defmacro html
-  "Render Clojure data structures via Facebook's React."
+  "Compile the Hiccup `content` into a React DOM node."
   [content]
   (sablono.compiler/compile-html content))
 
 (defmacro html-expand
-  "Returns the expanded HTML generation forms."
+  "Macro expand the Hiccup `content`."
   [form]
   `(macroexpand `(html ~~form)))
 

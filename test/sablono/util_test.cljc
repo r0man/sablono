@@ -6,6 +6,17 @@
             #?(:cljs [devcards.core :refer-macros [deftest]]))
   #?(:cljs (:import goog.Uri)))
 
+(deftest test-camel-case
+  (are [attr expected]
+      (= expected (u/camel-case attr))
+    nil nil
+    "" ""
+    :data :data
+    :data-toggle :data-toggle
+    :http-equiv :httpEquiv
+    :aria-checked :aria-checked
+    '(identity :class) '(identity :class)))
+
 (deftest test-camel-case-keys
   (are [attrs expected]
       (= expected (u/camel-case-keys attrs))
@@ -18,7 +29,11 @@
     {:style {:z-index 1000}}
     {:style {:zIndex 1000}}
     {:on-click '(fn [e] (let [m {:a-b "c"}]))}
-    {:onClick '(fn [e] (let [m {:a-b "c"}]))}))
+    {:onClick '(fn [e] (let [m {:a-b "c"}]))}
+    {'(identity :class) "my-class"
+     :style {:background-color "black"}}
+    {'(identity :class) "my-class"
+     :style {:backgroundColor "black"}}))
 
 (deftest test-html-to-dom-attrs
   (are [attrs expected]
@@ -32,7 +47,11 @@
     {:style {:z-index 1000}}
     {:style {:zIndex 1000}}
     {:on-click '(fn [e] (let [m {:a-b "c"}]))}
-    {:onClick '(fn [e] (let [m {:a-b "c"}]))}))
+    {:onClick '(fn [e] (let [m {:a-b "c"}]))}
+    {'(identity :class) "my-class"
+     :style {:background-color "black"}}
+    {'(identity :class) "my-class"
+     :style {:backgroundColor "black"}}))
 
 (deftest test-element?
   (is (u/element? [:div]))
@@ -61,16 +80,6 @@
        ["a" :b 3] "ab3"
        [(Uri. "/foo")] "/foo"
        [(Uri. "localhost:3000/foo")] "localhost:3000/foo")))
-
-(deftest test-camel-case
-  (are [attr expected]
-      (= expected (u/camel-case attr))
-    nil nil
-    "" ""
-    :data :data
-    :data-toggle :data-toggle
-    :http-equiv :httpEquiv
-    :aria-checked :aria-checked))
 
 #?(:cljs
    (deftest test-to-uri
