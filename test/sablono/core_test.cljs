@@ -523,11 +523,6 @@
   (is (= (html-vec [:div (vector"A" "B")])
          [:div {} "AB"])))
 
-(deftest test-class-as-set
-  (is (= (html-vec [:div.a {:class #{"a" "b" "c"}}])
-         [:div {:class "a b c"}])))
-
-
 (deftest test-class-duplication
   (is (= (html-vec [:div.a.a.b.b.c {:class "c"}])
          [:div {:class "a b c"}]))  )
