@@ -201,9 +201,9 @@
               (if (map? ~attrs-sym)
                 ~(compile-merge-attrs tag-attrs attrs-sym)
                 ~(compile-attrs tag-attrs))
-              (remove nil? (if (map? ~attrs-sym)
-                             [~@(map compile-html content)]
-                             [~@(if attrs (map compile-html (cons attrs-sym content)))]))))))
+              (if (map? ~attrs-sym)
+                [~@(map compile-html content)]
+                [~@(if attrs (map compile-html (cons attrs-sym content)))])))))
 
 (defmethod compile-element :default
   [element]
