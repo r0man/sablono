@@ -67,7 +67,6 @@
                :else (seq %))
             classes)
        (flatten)
-       (distinct)
        (join " ")))
 
 (defn wrapped-type?

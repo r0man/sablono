@@ -68,7 +68,7 @@
     ["a" "b"] "a b"
     #{"a" "b"} "a b"
     ["a" ["b"]] "a b"
-    ["a" (set ["a" "b" "c"])] "a b c"))
+    ["a" (set ["a" "b" "c"])] "a a b c"))
 
 #?(:cljs
    (deftest test-as-str

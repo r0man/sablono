@@ -2,6 +2,7 @@
 
 ** unreleased
 
+- [[https://github.com/r0man/sablono/pull/105][#105]] Don't remove/sort duplicate class names.
 - [[https://github.com/r0man/sablono/issues/56][#56]] Add =attrs= macro to compile Clojure maps into JavaScript
   literals.
 

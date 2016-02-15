@@ -525,7 +525,7 @@
 
 (deftest test-class-duplication
   (is (= (html-vec [:div.a.a.b.b.c {:class "c"}])
-         [:div {:class "a b c"}]))  )
+         [:div {:class "a a b b c c"}]))  )
 
 (deftest test-class-order
   (is (= (html-vec [:div.a.b.c {:class "d"}])
@@ -534,21 +534,21 @@
          [:div {:class "a b c foo bar"}])))
 
 (deftest test-class-as-set
-  (is (= (html-vec [:div.a {:class #{"a" "b" "c"}}])
+  (is (= (html-vec [:div {:class #{"a" "b" "c"}}])
          [:div {:class "a b c"}]))
-  (is (= (html-vec [:div.a {:class (set ["a" "b" "c"])}])
+  (is (= (html-vec [:div {:class (set ["a" "b" "c"])}])
          [:div {:class "a b c"}])))
 
 (deftest test-class-as-list
-  (is (= (html-vec [:div.a {:class '("a" "b" "c")}])
+  (is (= (html-vec [:div {:class '("a" "b" "c")}])
          [:div {:class "a b c"}]))
-  (is (= (html-vec [:div.a {:class (list "a" "b" "c")}])
+  (is (= (html-vec [:div {:class (list "a" "b" "c")}])
          [:div {:class "a b c"}])))
 
 (deftest test-class-as-vector
-  (is (= (html-vec [:div.a {:class ["a" "b" "c"]}])
+  (is (= (html-vec [:div {:class ["a" "b" "c"]}])
          [:div {:class "a b c"}]))
-  (is (= (html-vec [:div.a {:class (vector "a" "b" "c")}])
+  (is (= (html-vec [:div {:class (vector "a" "b" "c")}])
          [:div {:class "a b c"}])))
 
 (deftest test-issue-80

@@ -63,16 +63,20 @@
   (is (= (interpret [:div (vector"A" "B")])
          [:div {} "AB"])))
 
+(deftest test-class-duplication
+  (is (= (interpret [:div.a.a.b.b.c {:class "c"}])
+         [:div {:class "a a b b c c"}]))  )
+
 (deftest test-class-as-set
-  (is (= (interpret [:div.a {:class #{"a" "b" "c"}}])
+  (is (= (interpret [:div {:class #{"a" "b" "c"}}])
          [:div {:class "a b c"}])))
 
 (deftest test-class-as-list
-  (is (= (interpret [:div.a {:class (list "a" "b" "c")}])
+  (is (= (interpret [:div {:class (list "a" "b" "c")}])
          [:div {:class "a b c"}])))
 
 (deftest test-class-as-vector
-  (is (= (interpret [:div.a {:class (vector "a" "b" "c")}])
+  (is (= (interpret [:div {:class (vector "a" "b" "c")}])
          [:div {:class "a b c"}])))
 
 (deftest test-issue-80
