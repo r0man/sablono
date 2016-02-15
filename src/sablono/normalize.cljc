@@ -67,7 +67,7 @@
   [& maps]
   (let [maps (map attributes maps)
         classes (map :class maps)
-        classes (vec (distinct (apply concat classes)))]
+        classes (vec (apply concat classes))]
     (cond-> (apply merge maps)
       (not (empty? classes))
       (assoc :class classes))))

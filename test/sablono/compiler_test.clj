@@ -408,7 +408,7 @@
 (deftest test-class-as-set
   (is (= (compile [:div.a {:class #{"a" "b" "c"}}])
          (wrap-js-value
-          '(js/React.createElement "div" #js {:className "a b c"})))))
+          '(js/React.createElement "div" #js {:className "a a b c"})))))
 
 (deftest test-class-as-list
   (is (= (compile [:div.a {:class (list "a" "b" "c")}])
