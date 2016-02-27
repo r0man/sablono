@@ -57,7 +57,7 @@
   [attrs]
   (rename-keys (camel-case-keys attrs)
                {:class :className
-                :for   :htmlFor})
+                :for :htmlFor})
 
 (defn join-classes
   "Join the `classes` with a whitespace."
