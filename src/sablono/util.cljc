@@ -5,7 +5,6 @@
             [clojure.string :refer [blank? capitalize join split replace]]))
 
 (def ^:dynamic *base-url* nil)
-(def ^:dynamic *update-attrs* nil)
 
 (defprotocol ToString
   (to-str [x] "Convert a value into a string."))
@@ -56,10 +55,9 @@
 (defn html-to-dom-attrs
   "Converts all HTML attributes to their DOM equivalents."
   [attrs]
-  (-> (if *update-attrs* (*update-attrs* attrs) attrs)
-      camel-case-keys
-      (rename-keys {:class :className
-                    :for   :htmlFor})))
+  (rename-keys (camel-case-keys attrs)
+               {:class :className
+                :for   :htmlFor})
 
 (defn join-classes
   "Join the `classes` with a whitespace."
