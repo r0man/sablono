@@ -125,8 +125,8 @@
     (throw (ex-info (str tag " is not a valid element name.") {:tag tag :content content})))
   (let [[tag id class] (match-tag tag)
         tag-attrs (compact-map {:id id :class class})
-        map-attrs (first content)
-        map-attrs (if (map? map-attrs) (*update-attrs* map-attrs) map-attrs)]
+        map-attrs (cond-> (first content)
+                          (map? (first content)) (*update-attrs*))]
 
     (if (map? map-attrs)
       [tag
