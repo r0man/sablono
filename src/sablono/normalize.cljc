@@ -4,6 +4,8 @@
             [clojure.string :as str]
             [sablono.util :as util]))
 
+(def ^:dynamic *update-attrs* identity)
+
 (defn compact-map
   "Removes all map entries where the value of the entry is empty."
   [m]
@@ -123,7 +125,9 @@
     (throw (ex-info (str tag " is not a valid element name.") {:tag tag :content content})))
   (let [[tag id class] (match-tag tag)
         tag-attrs (compact-map {:id id :class class})
-        map-attrs (first content)]
+        map-attrs (first content)
+        map-attrs (if (map? map-attrs) (*update-attrs* map-attrs) map-attrs)]
+
     (if (map? map-attrs)
       [tag
        (merge-with-class tag-attrs map-attrs)
