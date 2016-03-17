@@ -1,16 +1,13 @@
 * ŜABLONO
 
+  [[https://clojars.org/sablono][https://img.shields.io/clojars/v/sablono.svg]]
   [[https://travis-ci.org/r0man/sablono][https://travis-ci.org/r0man/sablono.svg]]
   [[http://jarkeeper.com/r0man/sablono][http://jarkeeper.com/r0man/sablono/status.svg]]
   [[https://jarkeeper.com/r0man/sablono][https://jarkeeper.com/r0man/sablono/downloads.svg]]
 
   Lisp/Hiccup style templating for Facebook's [[http://facebook.github.io/react][React]] in [[https://github.com/clojure/clojurescript][ClojureScript]].
 
-  [[http://imgs.xkcd.com/comics/tags.png]]
-
-** Installation
-
-   [[https://clojars.org/sablono][https://clojars.org/sablono/latest-version.svg]]
+  [[https://xkcd.com/1144][http://imgs.xkcd.com/comics/tags.png]]
 
 ** Dependencies
 
