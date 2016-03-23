@@ -62,7 +62,9 @@
     {:class '(identity "my-class")
      :style {:background-color '(identity "black")}}
     #js {:className (sablono.util/join-classes (identity "my-class"))
-         :style #js {:backgroundColor (identity "black")}}))
+         :style #js {:backgroundColor (identity "black")}}
+    {:id :XY}
+    #js {:id "XY"}))
 
 (deftest test-attrs
   (are [form expected]
@@ -472,3 +474,8 @@
          '(if true
             (js/React.createElement "span" nil "foo")
             (js/React.createElement "span" nil "bar")))))
+
+(deftest test-issue-115
+  (is (= (compile [:a {:id :XY}])
+         (wrap-js-value
+          '(js/React.createElement "a" #js {:id "XY"})))))

@@ -610,3 +610,9 @@
           {}
           [:h1 {} "This gives"]
           [:h1 {} "This gives warning"]])))
+
+(deftest test-issue-115
+  (is (= (html-vec [:a {:id :XY}])
+         [:a {:id "XY"}]))
+  (is (= (html-vec [:a (identity {:id :XY})])
+         [:a {:id "XY"}])))

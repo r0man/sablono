@@ -20,9 +20,6 @@
      (to-js value)
      `(~'clj->js ~value))})
 
-(defn compile-string-attr [name value]
-  {name value})
-
 (defmulti compile-attr (fn [name value] name))
 
 (defmethod compile-attr :class [name value]
@@ -42,7 +39,7 @@
   (compile-map-attr name (camel-case-keys value)))
 
 (defmethod compile-attr :default [name value]
-  (compile-string-attr name value))
+  {name (to-js value)})
 
 (defn compile-attrs
   "Compile a HTML attribute map."
@@ -248,12 +245,17 @@
   (compile-react [this]
     nil))
 
-(defn- to-js-map [x]
+(defn- to-js-map
+  "Convert a map into a JavaScript object."
+  [m]
   (JSValue.
-   (zipmap (map to-js (keys x))
-           (map to-js (vals x)))))
+   (zipmap (keys m)
+           (map to-js (vals m)))))
 
 (extend-protocol IJSValue
+  clojure.lang.Keyword
+  (to-js [x]
+    (name x))
   clojure.lang.PersistentArrayMap
   (to-js [x]
     (to-js-map x))

@@ -1,5 +1,7 @@
 * Changelog
 
+- [[https://github.com/r0man/sablono/issues/115][#115]] Fix keyword compilation in attributes
+
 ** 0.6.2
 
 - [[https://github.com/r0man/sablono/pull/105][#105]] Don't remove/sort duplicate class names.

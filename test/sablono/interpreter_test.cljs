@@ -22,7 +22,8 @@
     {:className "aa"} {"className" "aa"}
     {:className "aa bb"} {"className" "aa bb"}
     {:className ["aa bb"]} {"className" "aa bb"}
-    {:className '("aa bb")} {"className" "aa bb"}))
+    {:className '("aa bb")} {"className" "aa bb"}
+    {:id :XY} {"id" "XY"}))
 
 (deftest test-interpret-shorthand-div-forms
   (is (= (interpret [:#test.klass1])
