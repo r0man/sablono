@@ -7,9 +7,9 @@
   (are [markup match]
       (re-matches (re-pattern match) (server/render markup))
     (html [:div#a.b "c"])
-    "<div id=\"a\" class=\"b\" data-reactid=\".*\" data-react-checksum=\".*\">c</div>"
+    "<div id=\"a\" class=\"b\" data-reactroot=\"\" data-reactid=\".*\" data-react-checksum=\".*\">c</div>"
     (html [:div (when true [:p "data"]) (if true [:p "data"] nil)])
-    "<div data-reactid=\".*\" data-react-checksum=\".*\"><p data-reactid=\".*\">data</p><p data-reactid=\".*\">data</p></div>"))
+    "<div data-reactroot=\"\" data-reactid=\".*\" data-react-checksum=\".*\"><p data-reactid=\".*\">data</p><p data-reactid=\".*\">data</p></div>"))
 
 (deftest test-render-static
   (are [markup expected]
