@@ -88,7 +88,7 @@
   [:input {:type type
            :name (make-name name)
            :id (make-id name)
-           :value value}])
+           :value (or value js/undefined)}])
 
 (gen-input-fields)
 
@@ -102,7 +102,7 @@
    [:input {:type "checkbox"
             :name (make-name name)
             :id   (make-id name)
-            :value value
+            :value (or value js/undefined)
             :checked checked?}]))
 
 (defelem radio-button
@@ -113,7 +113,7 @@
    [:input {:type "radio"
             :name (make-name group)
             :id   (make-id (str (as-str group) "-" (as-str value)))
-            :value value
+            :value (or value js/undefined)
             :checked checked?}]))
 
 (defn- hash-key [x]
@@ -157,7 +157,7 @@
    [:textarea
     {:name (make-name name)
      :id (make-id name)
-     :value value}]))
+     :value (or value js/undefined)}]))
 
 (defelem label
   "Creates a label for an input field with the supplied name."

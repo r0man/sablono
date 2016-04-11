@@ -40,7 +40,7 @@
             (let [props #js {}]
               (gobject/extend
                   props (.-props this)
-                  #js {:value (aget (.-state this) "value")
+                  #js {:value (or (aget (.-state this) "value") js/undefined)
                        :onChange (aget this "onChange")
                        :children (aget (.-props this) "children")})
               (ctor props))))}))))
