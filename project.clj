@@ -67,4 +67,5 @@
              :repl {:dependencies [[com.cemerick/piggieback "0.2.1"]]
                     :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}}
   :test-selectors {:benchmark :benchmark
-                   :default (complement :benchmark)})
+                   :default (complement :benchmark)}
+  :pedantic? :abort)
