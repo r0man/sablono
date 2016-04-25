@@ -149,20 +149,27 @@
       (not (unevaluated? x))
       (not-hint? x java.util.Map)))
 
+(defn- attrs-hint?
+  "True if x has :attrs metadata. Treat x as a implicit map"
+  [x]
+  (-> x meta :attrs))
+
 (defn- element-compile-strategy
   "Returns the compilation strategy to use for a given element."
   [[tag attrs & content :as element]]
   (cond
     (every? literal? element)
-    ::all-literal                    ; e.g. [:span "foo"]
+    ::all-literal                       ; e.g. [:span "foo"]
     (and (literal? tag) (map? attrs))
-    ::literal-tag-and-attributes     ; e.g. [:span {} x]
+    ::literal-tag-and-attributes        ; e.g. [:span {} x]
     (and (literal? tag) (not-implicit-map? attrs))
-    ::literal-tag-and-no-attributes  ; e.g. [:span ^String x]
+    ::literal-tag-and-no-attributes     ; e.g. [:span ^String x]
+    (and (literal? tag) (attrs-hint? attrs))
+    ::literal-tag-and-hinted-attributes ; e.g. [:span ^:attrs y]
     (literal? tag)
-    ::literal-tag                    ; e.g. [:span x]
+    ::literal-tag                       ; e.g. [:span x]
     :else
-    ::default))                      ; e.g. [x]
+    ::default))                         ; e.g. [x]
 
 (declare compile-html)
 
@@ -187,6 +194,17 @@
 (defmethod compile-element ::literal-tag-and-no-attributes
   [[tag & content]]
   (compile-element (apply vector tag {} content)))
+
+(defmethod compile-element ::literal-tag-and-hinted-attributes
+  [[tag attrs & content]]
+  (let [[tag tag-attrs _] (normalize/element [tag])
+        attrs-sym (gensym "attrs")]
+    `(let [~attrs-sym ~attrs]
+       (apply ~(react-fn tag)
+              ~(name tag)
+              ~(compile-merge-attrs tag-attrs attrs-sym)
+              ~(when-not (empty? content)
+                 (mapv compile-html content))))))
 
 (defmethod compile-element ::literal-tag
   [[tag attrs & content]]
