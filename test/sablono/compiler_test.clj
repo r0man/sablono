@@ -226,8 +226,9 @@
      '(js/React.createElement "div" #js {:data-toggle "modal", :data-target "#modal"}))))
 
 (deftest compiled-tags
-  (testing "tag content can be vars"
-    (let [x "foo"]
+  (testing "tag content can be vars, and vars can be type-hinted with some metadata"
+    (let [x "foo"
+          y {:id "id"}]
       (are-html-expanded
        '[:span x]
        '(let* [attrs x]
@@ -237,8 +238,13 @@
              (sablono.interpreter/attributes attrs)
              nil)
            (if (clojure.core/map? attrs)
-             nil [(sablono.interpreter/interpret attrs)]))))))
-  (testing "tag content can be forms"
+             nil [(sablono.interpreter/interpret attrs)])))
+       '[:span ^:attrs y]
+       '(let* [attrs y]
+          (clojure.core/apply
+           js/React.createElement "span"
+           (sablono.interpreter/attributes attrs) nil)))))
+  (testing "tag content can be forms, and forms can be type-hinted with some metadata"
     (are-html-expanded
      '[:span (str (+ 1 1))]
      '(let* [attrs (str (+ 1 1))]
@@ -249,7 +255,12 @@
            nil)
          (if (clojure.core/map? attrs)
            nil [(sablono.interpreter/interpret attrs)])))
-     [:span ({:foo "bar"} :foo)] '(js/React.createElement "span" nil "bar")))
+     [:span ({:foo "bar"} :foo)] '(js/React.createElement "span" nil "bar")
+     '[:span ^:attrs (merge {:type "button"} attrs)]
+     '(let* [attrs (merge {:type "button"} attrs)]
+        (clojure.core/apply
+         js/React.createElement "span"
+         (sablono.interpreter/attributes attrs) nil))))
   (testing "attributes can contain vars"
     (let [id "id"]
       (are-html-expanded
@@ -459,15 +470,23 @@
            "ul" nil
            (into-array
             (clojure.core/for [n (range 3)]
-              (clojure.core/let
-                  [attrs n]
+              (clojure.core/let [attrs n]
                 (clojure.core/apply
                  js/React.createElement "li"
                  (if (clojure.core/map? attrs)
                    (sablono.interpreter/attributes attrs)
                    nil)
                  (if (clojure.core/map? attrs)
-                   nil [(sablono.interpreter/interpret attrs)])))))))))
+                   nil [(sablono.interpreter/interpret attrs)]))))))))
+  (is (= (compile [:ul (for [n (range 3)] [:li ^:attrs n])])
+         '(js/React.createElement
+           "ul" nil
+           (into-array
+            (clojure.core/for [n (range 3)]
+              (clojure.core/let [attrs n]
+                (clojure.core/apply
+                 js/React.createElement "li"
+                 (sablono.interpreter/attributes attrs) nil))))))))
 
 (deftest test-optimize-if
   (is (= (compile (if true [:span "foo"] [:span "bar"]) )
