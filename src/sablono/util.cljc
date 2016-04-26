@@ -1,8 +1,7 @@
 (ns sablono.util
   #?(:cljs (:import goog.Uri))
-  (:refer-clojure :exclude [replace])
   (:require [clojure.set :refer [rename-keys]]
-            [clojure.string :refer [blank? capitalize join split replace]]))
+            [clojure.string :as str]))
 
 (def ^:dynamic *base-url* nil)
 
@@ -23,13 +22,13 @@
   (if (or (keyword? k)
           (string? k)
           (symbol? k))
-    (let [[first-word & words] (split (name k) #"-")]
+    (let [[first-word & words] (str/split (name k) #"-")]
       (if (or (empty? words)
               (= "aria" first-word)
               (= "data" first-word))
-        k (-> (map capitalize words)
+        k (-> (map str/capitalize words)
               (conj first-word)
-              join
+              str/join
               keyword)))
     k))
 
@@ -67,7 +66,7 @@
                :else (seq %))
             classes)
        (flatten)
-       (join " ")))
+       (str/join " ")))
 
 (defn wrapped-type?
   "Return true if the element `type` needs to be wrapped."
