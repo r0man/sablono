@@ -9,7 +9,7 @@
                  [cljsjs/react-dom "15.0.1-1" :scope "provided"]
                  [cljsjs/react-dom-server "15.0.1-1" :scope "provided"]
                  [org.clojure/clojure "1.8.0" :scope "provided"]
-                 [org.clojure/clojurescript "1.8.40" :scope "provided"]]
+                 [org.clojure/clojurescript "1.8.51" :scope "provided"]]
   :aliases {"ci" ["do"
                   ["clean"]
                   ["test" ":default"]
@@ -59,7 +59,7 @@
                                   [figwheel-sidecar "0.5.2"]
                                   [hickory "0.6.0"]
                                   [reagent "0.6.0-alpha"]
-                                  [rum "0.8.0"]]
+                                  [rum "0.8.2"]]
                    :plugins [[lein-cljsbuild "1.1.3"]
                              [lein-doo "0.1.6"]
                              [lein-figwheel "0.5.2"]]
