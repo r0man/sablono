@@ -1,5 +1,9 @@
 * Changelog
 
+** 0.7.1
+
+- [[https://github.com/r0man/sablono/pull/118][#118]] Add type hint support for attributes.
+
 ** 0.7.0
 
 - [[https://github.com/r0man/sablono/pull/117][#117]] Switch to React 15.0.
