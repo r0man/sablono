@@ -80,15 +80,28 @@
          (set! (.-className attrs) class))
        attrs)))
 
+(defn- interpret-seq
+  "Interpret the seq `x` as HTML elements."
+  [x]
+  (into [] (map interpret) x))
+
+#?(:cljs
+   (defn- interpret-vec
+     "Interpret the vector `x` as an HTML element or a the children of
+  an element."
+     [x]
+     (if (util/element? x)
+       (element x)
+       (interpret-seq x))))
+
 #?(:cljs
    (defn element
      "Render an element vector as a HTML element."
      [element]
      (let [[type attrs content] (normalize/element element)]
-       (apply create-element type (attributes attrs) (map interpret content)))))
-
-(defn- interpret-seq [s]
-  (map interpret s))
+       (apply create-element type
+              (attributes attrs)
+              (interpret-seq content)))))
 
 #?(:cljs
    (extend-protocol IInterpreter
@@ -109,12 +122,10 @@
        (interpret-seq this))
      Subvec
      (interpret [this]
-       (element this))
+       (interpret-vec this))
      PersistentVector
      (interpret [this]
-       (if (util/element? this)
-         (element this)
-         (interpret (seq this))))
+       (interpret-vec this))
      default
      (interpret [this]
        this)
