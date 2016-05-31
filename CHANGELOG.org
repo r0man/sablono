@@ -1,4 +1,5 @@
 * Changelog
+** 0.7.2
 
 - [[https://github.com/r0man/sablono/issues/119][#119]] Force lazy sequences to make dynamic binding work properly.
 
