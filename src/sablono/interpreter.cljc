@@ -86,15 +86,6 @@
   (into [] (map interpret) x))
 
 #?(:cljs
-   (defn- interpret-vec
-     "Interpret the vector `x` as an HTML element or a the children of
-  an element."
-     [x]
-     (if (util/element? x)
-       (element x)
-       (interpret-seq x))))
-
-#?(:cljs
    (defn element
      "Render an element vector as a HTML element."
      [element]
@@ -102,6 +93,15 @@
        (apply create-element type
               (attributes attrs)
               (interpret-seq content)))))
+
+#?(:cljs
+   (defn- interpret-vec
+     "Interpret the vector `x` as an HTML element or a the children of
+  an element."
+     [x]
+     (if (util/element? x)
+       (element x)
+       (interpret-seq x))))
 
 #?(:cljs
    (extend-protocol IInterpreter
