@@ -27,7 +27,7 @@
                  :optimizations :none
                  :pretty-print true
                  :source-map true
-                 :verbose true}
+                 :verbose false}
                 :figwheel {:devcards true}
                 :source-paths ["src" "test"]}
                {:id "none"
@@ -39,7 +39,7 @@
                  :optimizations :none
                  :pretty-print true
                  :source-map true
-                 :verbose true}
+                 :verbose false}
                 :source-paths ["src" "test"]}
                {:id "advanced"
                 :compiler
@@ -48,7 +48,7 @@
                  :output-to "target/advanced/sablono.js"
                  :optimizations :advanced
                  :pretty-print true
-                 :verbose true}
+                 :verbose false}
                 :source-paths ["src" "test"]}]}
   :deploy-repositories [["releases" :clojars]]
   :profiles {:dev {:dependencies [[cljsjs/jquery "2.2.2-0"]
