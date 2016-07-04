@@ -8,16 +8,14 @@
 (defprotocol IInterpreter
   (interpret [this] "Interpret a Clojure data structure as a React fn call."))
 
-;; Taken from om, to hack around form elements.
-;; https://github.com/swannodette/om/blob/master/src/om/dom.cljs
+;; A hack to force input elements to always update itself immediately, without
+;; waiting for requestAnimationFrame
 
 #?(:cljs
-   (defn wrap-form-element [ctor display-name]
-     (js/React.createFactory
-      (js/React.createClass
+   (defn wrap-form-element [element]
+     (js/React.createClass
        #js
-       {:getDisplayName
-        (fn [] (name display-name))
+       {:displayName (str "wrapped-" element)
         :getInitialState
         (fn []
           (this-as this
@@ -43,32 +41,31 @@
                   #js {:value (or (aget (.-state this) "value") js/undefined)
                        :onChange (aget this "onChange")
                        :children (aget (.-props this) "children")})
-              (ctor props))))}))))
+              (js/React.createElement element props))))})))
 
-#?(:cljs (def input (wrap-form-element js/React.DOM.input "input")))
-#?(:cljs (def option (wrap-form-element js/React.DOM.option "option")))
-#?(:cljs (def select (wrap-form-element js/React.DOM.select "select")))
-#?(:cljs (def textarea (wrap-form-element js/React.DOM.textarea "textarea")))
-
-#?(:cljs
-   (defn element-factory
-     "Return a function that creates a React element for the HTML tag `type`."
-     [type]
-     (if (util/wrapped-type? type)
-       (get {:input sablono.interpreter/input
-             :option sablono.interpreter/option
-             :select sablono.interpreter/select
-             :textarea sablono.interpreter/textarea}
-            (keyword type))
-       (partial js/React.createElement (name type)))))
+#?(:cljs (def wrapped-input (wrap-form-element "input")))
+#?(:cljs (def wrapped-select (wrap-form-element "select")))
+#?(:cljs (def wrapped-textarea (wrap-form-element "textarea")))
 
 #?(:cljs
    (defn create-element [type props & children]
-     (let [factory (element-factory type)
+     (let [class (case type
+                   :input    (cond
+                               (exists? (.-checked props)) wrapped-input
+                               (exists? (.-defaultChecked props)) "input"
+                               (exists? (.-value props)) wrapped-input
+                               :else "input")
+                   :select   (if (exists? (.-value props))
+                               wrapped-select
+                               "select")
+                   :textarea (if (exists? (.-value props))
+                               wrapped-textarea
+                               "textarea")
+                   (name type))
            children (remove nil? children)]
        (if (empty? children)
-         (factory props)
-         (apply factory props children)))))
+         (js/React.createElement class props)
+         (apply js/React.createElement class props children)))))
 
 #?(:cljs
    (defn attributes [attrs]
