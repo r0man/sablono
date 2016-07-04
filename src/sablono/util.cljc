@@ -68,15 +68,10 @@
        (flatten)
        (str/join " ")))
 
-(defn wrapped-type?
-  "Return true if the element `type` needs to be wrapped."
-  [type]
-  (contains? #{:input :option :textarea} (keyword type)))
-
 (defn react-fn
   "Return the symbol of a fn that build a React element. "
   [type]
-  (if (wrapped-type? type)
+  (if (contains? #{:input :select :textarea} (keyword type))
     'sablono.interpreter/create-element
     'js/React.createElement))
 
