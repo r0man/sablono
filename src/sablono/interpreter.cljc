@@ -49,18 +49,17 @@
 
 #?(:cljs
    (defn create-element [type props & children]
-     (let [class (case type
-                   :input    (cond
-                               (exists? (.-checked props)) wrapped-input
-                               (exists? (.-defaultChecked props)) "input"
-                               (exists? (.-value props)) wrapped-input
-                               :else "input")
-                   :select   (if (exists? (.-value props))
-                               wrapped-select
-                               "select")
-                   :textarea (if (exists? (.-value props))
-                               wrapped-textarea
-                               "textarea")
+     (let [class (case (keyword type)
+                   :input
+                   (if (and props (or (exists? (.-checked props))
+                                      (exists? (.-value props))))
+                     wrapped-input "input")
+                   :select
+                   (if (and props (exists? (.-value props)))
+                     wrapped-select "select")
+                   :textarea
+                   (if (and props (exists? (.-value props)))
+                     wrapped-textarea "textarea")
                    (name type))
            children (remove nil? children)]
        (if (empty? children)

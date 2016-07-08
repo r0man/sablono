@@ -321,6 +321,7 @@
             [:option {:value "op2"} "op2"]]))))
 
 (deftest test-text-area
+  (is (= (html-vec (html [:textarea])) [:textarea {}]))
   (is (= (html-vec (html/text-area :foo))
          [:textarea {:name "foo" :id "foo"}]))
   (is (= (html-vec (html/text-area :foo ""))
