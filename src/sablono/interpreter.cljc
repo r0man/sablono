@@ -19,29 +19,41 @@
         :getInitialState
         (fn []
           (this-as this
-            #js {:value (aget (.-props this) "value")}))
+            #js {"state_value" (aget (.-props this) "value")}))
         :onChange
         (fn [e]
           (this-as this
             (let [handler (aget (.-props this) "onChange")]
               (when-not (nil? handler)
                 (handler e)
-                (.setState this #js {:value (.. e -target -value)})))))
+                (.setState this #js {"state_value" (.. e -target -value)})))))
         :componentWillReceiveProps
         (fn [new-props]
           (this-as this
-            (.setState this #js {:value (aget new-props "value")})))
+            (let [state-value   (aget (.-state this) "state_value")
+                  element       (js/ReactDOM.findDOMNode this)
+                  element-value (.-value element)]
+              ;; on IE, onChange event might come after actual value of an element
+              ;; have changed. We detect this and render element as-is, hoping that
+              ;; next onChange will eventually come and bring our modifications anyways.
+              ;; Ignoring this causes skipped letters in controlled components
+              ;; https://github.com/reagent-project/reagent/issues/253
+              ;; https://github.com/tonsky/rum/issues/86
+              (if (not= state-value element-value)
+                (.setState this #js {"state_value" element-value})
+                (.setState this #js {"state_value" (aget new-props "value")})))))
         :render
         (fn []
           (this-as this
             ;; NOTE: if switch to macro we remove a closure allocation
-            (let [props #js {}]
+            (let [element-props #js {}]
               (gobject/extend
-                  props (.-props this)
-                  #js {:value (or (aget (.-state this) "value") js/undefined)
-                       :onChange (aget this "onChange")
-                       :children (aget (.-props this) "children")})
-              (js/React.createElement element props))))})))
+                element-props
+                (.-props this)
+                #js {:value    (or (aget (.-state this) "state_value") js/undefined)
+                     :onChange (aget this "onChange")
+                     :children (aget (.-props this) "children")})
+              (js/React.createElement element element-props))))})))
 
 #?(:cljs (def wrapped-input (wrap-form-element "input")))
 #?(:cljs (def wrapped-select (wrap-form-element "select")))
