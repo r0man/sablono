@@ -1,4 +1,11 @@
 * Changelog
+** 0.7.3
+
+- [[https://github.com/r0man/sablono/pull/128][#128]] Update React to 15.2.1-1.
+- [[https://github.com/r0man/sablono/pull/125][#125]] and [[https://github.com/r0man/sablono/pull/126][#126]] Update dependencies used for development.
+- [[https://github.com/r0man/sablono/pull/127][#127]] Fixed skipped keys in controlled components on IE.
+- [[https://github.com/r0man/sablono/pull/123][#123]] and [[https://github.com/r0man/sablono/pull/124][#124]] Don't wrap uncontrolled input elements.
+
 ** 0.7.2
 
 - [[https://github.com/r0man/sablono/issues/119][#119]] Force lazy sequences to make dynamic binding work properly.
