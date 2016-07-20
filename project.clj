@@ -19,9 +19,9 @@
                              [lein-doo "0.1.7"]
                              [lein-figwheel "0.5.4-7"]]
                    :resource-paths ["test-resources" "target"]}
-             :provided {:dependencies [[cljsjs/react "15.2.1-0"]
-                                       [cljsjs/react-dom "15.2.1-0"]
-                                       [cljsjs/react-dom-server "15.2.1-0"]
+             :provided {:dependencies [[cljsjs/react "15.2.1-1"]
+                                       [cljsjs/react-dom "15.2.1-1"]
+                                       [cljsjs/react-dom-server "15.2.1-1"]
                                        [org.clojure/clojurescript "1.9.93"]]}
              :repl {:dependencies [[com.cemerick/piggieback "0.2.1"]]
                     :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}}
