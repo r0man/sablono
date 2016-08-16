@@ -12,14 +12,14 @@
 ;; waiting for requestAnimationFrame
 
 #?(:cljs
-   (defn wrap-form-element [element]
+   (defn wrap-value-input [element]
      (js/React.createClass
        #js
        {:displayName (str "wrapped-" element)
         :getInitialState
         (fn []
           (this-as this
-            #js {"state_value" (aget (.-props this) "value")}))
+            #js {"state_value" (str (aget (.-props this) "value"))}))
         :onChange
         (fn [e]
           (this-as this
@@ -31,8 +31,7 @@
         (fn [new-props]
           (this-as this
             (let [state-value   (aget (.-state this) "state_value")
-                  element       (js/ReactDOM.findDOMNode this)
-                  element-value (.-value element)]
+                  element-value (.-value (js/ReactDOM.findDOMNode this))]
               ;; on IE, onChange event might come after actual value of an element
               ;; have changed. We detect this and render element as-is, hoping that
               ;; next onChange will eventually come and bring our modifications anyways.
@@ -41,7 +40,7 @@
               ;; https://github.com/tonsky/rum/issues/86
               (if (not= state-value element-value)
                 (.setState this #js {"state_value" element-value})
-                (.setState this #js {"state_value" (aget new-props "value")})))))
+                (.setState this #js {"state_value" (str (aget new-props "value"))})))))
         :render
         (fn []
           (this-as this
@@ -50,28 +49,80 @@
               (gobject/extend
                 element-props
                 (.-props this)
-                #js {:value    (or (aget (.-state this) "state_value") js/undefined)
+                #js {:value    (aget (.-state this) "state_value")
                      :onChange (aget this "onChange")
                      :children (aget (.-props this) "children")})
               (js/React.createElement element element-props))))})))
 
-#?(:cljs (def wrapped-input (wrap-form-element "input")))
-#?(:cljs (def wrapped-select (wrap-form-element "select")))
-#?(:cljs (def wrapped-textarea (wrap-form-element "textarea")))
+#?(:cljs
+   (defn wrap-checked-input [element]
+     (js/React.createClass
+       #js
+       {:displayName (str "wrapped-" element)
+        :getInitialState
+        (fn []
+          (this-as this
+            #js {"state_checked" (boolean (aget (.-props this) "checked"))}))
+        :onChange
+        (fn [e]
+          (this-as this
+            (let [handler (aget (.-props this) "onChange")]
+              (when-not (nil? handler)
+                (handler e)
+                (.setState this #js {"state_value" (.. e -target -checked)})))))
+        :componentWillReceiveProps
+        (fn [new-props]
+          (this-as this
+            (let [state-checked   (aget (.-state this) "state_checked")
+                  element-checked (.-checked (js/ReactDOM.findDOMNode this))]
+              ;; on IE, onChange event might come after actual value of an element
+              ;; have changed. We detect this and render element as-is, hoping that
+              ;; next onChange will eventually come and bring our modifications anyways.
+              ;; Ignoring this causes skipped letters in controlled components
+              ;; https://github.com/reagent-project/reagent/issues/253
+              ;; https://github.com/tonsky/rum/issues/86
+              (if (not= state-checked element-checked)
+                (.setState this #js {"state_checked" element-checked})
+                (.setState this #js {"state_checked" (boolean (aget new-props "checked"))})))))
+        :render
+        (fn []
+          (this-as this
+            ;; NOTE: if switch to macro we remove a closure allocation
+            (let [element-props #js {}]
+              (gobject/extend
+                element-props
+                (.-props this)
+                #js {:checked  (aget (.-state this) "state_checked")
+                     :onChange (aget this "onChange")
+                     :children (aget (.-props this) "children")})
+              (js/React.createElement element element-props))))})))
+
+#?(:cljs (def wrapped-input    (wrap-value-input   "input")))
+#?(:cljs (def wrapped-checked  (wrap-checked-input "input")))
+#?(:cljs (def wrapped-select   (wrap-value-input   "select")))
+#?(:cljs (def wrapped-textarea (wrap-value-input   "textarea")))
 
 #?(:cljs
    (defn create-element [type props & children]
      (let [class (case (keyword type)
                    :input
-                   (if (and props (or (exists? (.-checked props))
-                                      (exists? (.-value props))))
-                     wrapped-input "input")
+                   (cond (or (nil? props)
+                             (undefined? props))
+                           "input"
+                         (or (= "radio"    (.-type props))
+                             (= "checkbox" (.-type props)))
+                           (if (exists? (.-checked props)) wrapped-checked "input")
+                         (exists? (.-value props))
+                           wrapped-input
+                         :else
+                           "input")
                    :select
                    (if (and props (exists? (.-value props)))
                      wrapped-select "select")
                    :textarea
                    (if (and props (exists? (.-value props)))
                      wrapped-textarea "textarea")
+                   ;; else
                    (name type))
            children (remove nil? children)]
        (if (empty? children)
