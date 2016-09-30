@@ -25,7 +25,10 @@
     [{:a 1 :class :a} {:b 2 :class "b"} {:c 3 :class (seq ["c"])}]
     {:a 1 :b 2 :c 3 :class ["a" "b" "c"]}
     ['{:a 1 :class ["a"]} '{:b 2 :class [(if true "b")]}]
-    '{:a 1 :class ["a" (if true "b")] :b 2}))
+    '{:a 1 :class ["a" (if true "b")] :b 2}
+    ;; Map lookup. Issue #130
+    ['{:class (:table-cell csslib)} {}]
+    '{:class [(:table-cell csslib)]}))
 
 (deftest test-strip-css
   (are [x expected]

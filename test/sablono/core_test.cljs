@@ -617,3 +617,8 @@
          [:a {:id "XY"}]))
   (is (= (html-vec [:a (identity {:id :XY})])
          [:a {:id "XY"}])))
+
+(deftest test-issue-130
+  (let [css {:table-cell "bg-blue"}]
+    (is (= (html-vec [:div {:class (:table-cell css)} [:span "abc"]])
+           [:div {:class "bg-blue"} [:span {} "abc"]]))))
