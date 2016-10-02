@@ -66,6 +66,7 @@
                :else (seq %))
             classes)
        (flatten)
+       (remove nil?)
        (str/join " ")))
 
 (defn react-fn
