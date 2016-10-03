@@ -10,7 +10,7 @@
 (defn props
   "Return the properties of a React element."
   [attributes children]
-  (JSValue. (assoc attributes :children (JSValue. children))))
+  (JSValue. (assoc attributes :children (JSValue. (or children [])))))
 
 (defn create
   "Create a React element."

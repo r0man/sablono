@@ -14,8 +14,8 @@
 (defn props
   "Return the properties of a React element."
   [attributes children]
-  (let [props (clj->js attributes)]
-    (gobj/set props "children" (clj->js children))
+  (let [props (clj->js (or attributes {}))]
+    (gobj/set props "children" (clj->js (or children [])))
     props))
 
 (defn create
