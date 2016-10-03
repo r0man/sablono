@@ -95,10 +95,10 @@
 
 ;; TODO: Make :benchmark test selector working in ClojureScript
 
-(deftest ^:benchmark perf-test []
-  (let [data (doall (gen-data))]
-    (prn (->> (for [i (range 3)]
-                (into {} (time-test data)))
-              (reduce (partial merge-with +))
-              (map (fn [[k v]] [k (/ v 3)]))
-              (into {})))))
+;; (deftest ^:benchmark perf-test []
+;;   (let [data (doall (gen-data))]
+;;     (prn (->> (for [i (range 3)]
+;;                 (into {} (time-test data)))
+;;               (reduce (partial merge-with +))
+;;               (map (fn [[k v]] [k (/ v 3)]))
+;;               (into {})))))
