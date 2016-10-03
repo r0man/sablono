@@ -498,3 +498,12 @@
   (is (= (compile [:a {:id :XY}])
          (wrap-js-value
           '(js/React.createElement "a" #js {:id "XY"})))))
+
+(deftest test-issue-130
+  (let [css {:table-cell "bg-blue"}]
+    (is (= (compile [:div {:class (:table-cell css)} [:span "abc"]])
+           (wrap-js-value
+            '(js/React.createElement
+              "div"
+              #js {:className (sablono.util/join-classes [(:table-cell css)])}
+              (js/React.createElement "span" nil "abc")))))))

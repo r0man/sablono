@@ -21,12 +21,20 @@
     (keyword? x) (name x)
     :else x))
 
+(defn map-lookup?
+  "Returns true if `x` is a map lookup form, otherwise false."
+  [x]
+  (and (list? x) (keyword? (first x))))
+
 (defn class
   "Normalize `class` into a vector of classes."
   [class]
   (cond
     (nil? class)
     nil
+
+    (map-lookup? class)
+    [class]
 
     (list? class)
     (if (symbol? (first class))
