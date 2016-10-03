@@ -14,15 +14,17 @@
                                   [figwheel-sidecar "0.5.4-7"]
                                   [hickory "0.6.0"]
                                   [reagent "0.6.0-alpha2"]
-                                  [rum "0.10.4"]]
+                                  [rum "0.10.4"]
+                                  [org.clojure/test.check "0.9.0"]]
                    :plugins [[lein-cljsbuild "1.1.3"]
                              [lein-doo "0.1.7"]
-                             [lein-figwheel "0.5.4-7"]]
+                             [lein-figwheel "0.5.4-7"]
+                             [lein-npm "0.6.2"]]
                    :resource-paths ["test-resources" "target"]}
              :provided {:dependencies [[cljsjs/react "15.2.1-1"]
                                        [cljsjs/react-dom "15.2.1-1"]
                                        [cljsjs/react-dom-server "15.2.1-1"]
-                                       [org.clojure/clojurescript "1.9.93"]]}
+                                       [org.clojure/clojurescript "1.9.267"]]}
              :repl {:dependencies [[com.cemerick/piggieback "0.2.1"]]
                     :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}}
   :aliases {"ci" ["do"
@@ -45,6 +47,18 @@
                  :verbose false}
                 :figwheel {:devcards true}
                 :source-paths ["src" "test"]}
+               {:id "nodejs"
+                :compiler
+                {:asset-path "target/nodejs/out"
+                 :main sablono.test
+                 :optimizations :none
+                 :output-dir "target/nodejs/out"
+                 :output-to "target/nodejs/sablono.js"
+                 :pretty-print true
+                 :source-map true
+                 :target :nodejs
+                 :verbose false}
+                :source-paths ["src" "test"]}
                {:id "none"
                 :compiler
                 {:asset-path "target/none/out"
@@ -66,5 +80,7 @@
                  :verbose false}
                 :source-paths ["src" "test"]}]}
   :deploy-repositories [["releases" :clojars]]
+  :npm {:dependencies [[react "15.2.1"]
+                       [react-dom "15.2.1"]]}
   :test-selectors {:benchmark :benchmark
                    :default (complement :benchmark)})
