@@ -90,7 +90,12 @@
 
 #?(:cljs
    (defn attributes [attrs]
-     (let [attrs (clj->js (util/html-to-dom-attrs attrs))
+     ;; TODO: Check performance
+     (let [attrs (reduce (fn [obj [k v]]
+                           (aset obj (name k) v)
+                           obj)
+                         (js-obj)
+                         (util/html-to-dom-attrs attrs))
            class (.-className attrs)
            class (if (array? class) (join " " class) class)]
        (if (blank? class)
@@ -101,7 +106,7 @@
 (defn- interpret-seq
   "Interpret the seq `x` as HTML elements."
   [x]
-  (into [] (map interpret) x))
+  (mapv interpret x))
 
 #?(:cljs
    (defn element

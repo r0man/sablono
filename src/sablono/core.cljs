@@ -16,8 +16,10 @@
     (if (map? (first args))
       (let [[tag & body] (apply func (rest args))]
         (if (map? (first body))
-          (apply vector tag (merge (first body) (first args)) (rest body))
-          (apply vector tag (first args) body)))
+          (into [tag (merge (first body) (first args))]
+                (rest body))
+          (into [tag (first args)]
+                body)))
       (apply func args))))
 
 (defn- update-arglists [arglists]

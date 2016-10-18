@@ -14,7 +14,7 @@
 (defn as-str
   "Converts its arguments into a string using to-str."
   [& xs]
-  (apply str (map to-str xs)))
+  (str/join (map to-str xs)))
 
 (defn camel-case
   "Returns camel case version of the key, e.g. :http-equiv becomes :httpEquiv."
@@ -36,12 +36,12 @@
   "Recursively transforms all map keys into camel case."
   [m]
   (if (map? m)
-    (let [ks (keys m)
-          kmap (zipmap ks (map camel-case ks))]
-      (-> (rename-keys m kmap)
-          (cond->
-              (map? (:style m))
-            (update-in [:style] camel-case-keys))))
+    (let [kmap (into {}
+                     (map (fn [k] [k (camel-case k)]))
+                     (keys m))]
+      (cond-> (rename-keys m kmap)
+        (map? (:style m))
+        (update-in [:style] camel-case-keys)))
     m))
 
 (defn element?
@@ -61,12 +61,10 @@
 (defn join-classes
   "Join the `classes` with a whitespace."
   [classes]
-  (->> (map #(cond
-               (string? %) %
-               :else (seq %))
-            classes)
-       (flatten)
-       (remove nil?)
+  (->> classes
+       (into [] (comp
+                 (mapcat (fn [x] (if (string? x) [x] (seq x))))
+                 (remove nil?)))
        (str/join " ")))
 
 (defn react-fn

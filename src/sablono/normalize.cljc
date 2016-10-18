@@ -7,12 +7,10 @@
 (defn compact-map
   "Removes all map entries where the value of the entry is empty."
   [m]
-  (reduce
-   (fn [m k]
-     (let [v (get m k)]
-       (if (empty? v)
-         (dissoc m k) m)))
-   m (keys m)))
+  (when m
+    (into {}
+          (remove (fn [[_ v]] (empty? v)))
+          m)))
 
 (defn class-name
   [x]
@@ -74,15 +72,17 @@
   "Like clojure.core/merge but concatenate :class entries."
   [& maps]
   (let [maps (map attributes maps)
-        classes (map :class maps)
-        classes (vec (apply concat classes))]
-    (cond-> (apply merge maps)
-      (not (empty? classes))
-      (assoc :class classes))))
+        classes (mapcat :class maps)]
+    (when (seq maps)
+      (cond-> (reduce into {} maps)
+        (not (empty? classes))
+        (assoc :class (vec classes))))))
 
 (defn strip-css
   "Strip the # and . characters from the beginning of `s`."
-  [s] (if s (str/replace s #"^[.#]" "")))
+  [s]
+  (when s
+    (str/replace s #"^[.#]" "")))
 
 (defn match-tag
   "Match `s` as a CSS tag and return a vector of tag name, CSS id and
@@ -92,13 +92,17 @@
         [tag-name names]
         (cond (empty? matches)
               (throw (ex-info (str "Can't match CSS tag: " s) {:tag s}))
+
               (#{\# \.} (ffirst matches)) ;; shorthand for div
               ["div" matches]
+
               :default
               [(first matches) (rest matches)])]
     [tag-name
-     (first (map strip-css (filter #(= \# (first %1)) names)))
-     (vec (map strip-css (filter #(= \. (first %1)) names)))]))
+     (strip-css (some #(when (= \# (first %1)) %1)  names))
+     (into []
+           (comp (filter #(= \. (first %1))) (map strip-css))
+           names)]))
 
 (defn children
   "Normalize the children of a HTML element."
@@ -106,28 +110,36 @@
   (->> (cond
          (string? x)
          (list x)
+
          (util/element? x)
          (list x)
+
          (and (list? x)
               (symbol? x))
          (list x)
+
          (list? x)
          x
+
          (and (sequential? x)
+              (= (count x) 1)
               (sequential? (first x))
               (not (string? (first x)))
-              (not (util/element? (first x)))
-              (= (count x) 1))
+              (not (util/element? (first x))))
          (children (first x))
+
          (sequential? x)
          x
+
          :else (list x))
        (remove nil?)))
 
 (defn element
   "Ensure an element vector is of the form [tag-name attrs content]."
   [[tag & content]]
-  (when (not (or (keyword? tag) (symbol? tag) (string? tag)))
+  (when-not (or (keyword? tag)
+                (symbol? tag)
+                (string? tag))
     (throw (ex-info (str tag " is not a valid element name.") {:tag tag :content content})))
   (let [[tag id class] (match-tag tag)
         tag-attrs (compact-map {:id id :class class})
