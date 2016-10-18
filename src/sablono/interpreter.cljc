@@ -101,7 +101,7 @@
 (defn- interpret-seq
   "Interpret the seq `x` as HTML elements."
   [x]
-  (into [] (map interpret) x))
+  (map interpret x))
 
 #?(:cljs
    (defn element
