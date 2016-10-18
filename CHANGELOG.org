@@ -2,6 +2,7 @@
 
 ** Unreleased
 
+- [[https://github.com/r0man/sablono/pull/133][#133]] Improve performance by using transducers.
 - [[https://github.com/r0man/sablono/issues/141][#141]] Fix =^:inline= hint for elements without attributes.
 
 ** 0.7.6
