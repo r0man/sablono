@@ -90,18 +90,15 @@
 
 #?(:cljs
    (defn attributes [attrs]
-     ;; TODO: Check performance
-     (let [attrs (reduce (fn [obj [k v]]
-                           (aset obj (name k) v)
-                           obj)
-                         (js-obj)
-                         (util/html-to-dom-attrs attrs))
-           class (.-className attrs)
-           class (if (array? class) (join " " class) class)]
-       (if (blank? class)
-         (js-delete attrs "className")
-         (set! (.-className attrs) class))
-       attrs)))
+     (let [attr-obj (js-obj)]
+       (doseq [[k v] (-> attrs
+                         (update :class #(if (coll? %) (join " " %) %))
+                         (util/html-to-dom-attrs))]
+         ;; Don't run `aset` for blank `className`
+         (when (or (not= k :className)
+                   (not (blank? v)))
+           (aset attr-obj (name k) v)))
+       attr-obj)))
 
 (defn- interpret-seq
   "Interpret the seq `x` as HTML elements."
