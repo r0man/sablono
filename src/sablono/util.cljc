@@ -22,26 +22,27 @@
   (if (or (keyword? k)
           (string? k)
           (symbol? k))
-    (let [[first-word & words] (str/split (name k) #"-")]
+    (let [[first-word & words] (.split (name k) "-")]
       (if (or (empty? words)
               (= "aria" first-word)
               (= "data" first-word))
-        k (-> (map str/capitalize words)
-              (conj first-word)
-              str/join
-              keyword)))
+        k
+        (-> (map str/capitalize words)
+            (conj first-word)
+            str/join
+            keyword)))
     k))
 
 (defn camel-case-keys
   "Recursively transforms all map keys into camel case."
   [m]
   (if (map? m)
-    (let [kmap (into {}
-                     (map (fn [k] [k (camel-case k)]))
-                     (keys m))]
-      (cond-> (rename-keys m kmap)
+    (let [m (into {}
+                  (map (fn [[k v]] [(camel-case k) v]))
+                  m)]
+      (cond-> m
         (map? (:style m))
-        (update-in [:style] camel-case-keys)))
+        (update :style camel-case-keys)))
     m))
 
 (defn element?

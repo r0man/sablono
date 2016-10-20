@@ -90,20 +90,18 @@
 
 #?(:cljs
    (defn attributes [attrs]
-     (let [attr-obj (js-obj)]
-       (doseq [[k v] (-> attrs
-                         (update :class #(if (coll? %) (join " " %) %))
-                         (util/html-to-dom-attrs))]
-         ;; Don't run `aset` for blank `className`
-         (when (or (not= k :className)
-                   (not (blank? v)))
-           (aset attr-obj (name k) v)))
-       attr-obj)))
+     (let [attrs (clj->js (util/html-to-dom-attrs attrs))
+           class (.-className attrs)
+           class (if (array? class) (join " " class) class)]
+       (if (blank? class)
+         (js-delete attrs "className")
+         (set! (.-className attrs) class))
+       attrs)))
 
 (defn- interpret-seq
   "Interpret the seq `x` as HTML elements."
   [x]
-  (mapv interpret x))
+  (map interpret x))
 
 #?(:cljs
    (defn element
