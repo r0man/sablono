@@ -5,13 +5,6 @@
   `(sablono.server/render-static
     (sablono.core/html ~element)))
 
-(defmacro html-vec [element]
-  `(some->> (sablono.test/html-str ~element)
-            (hickory.core/parse-fragment)
-            (map hickory.core/as-hiccup)
-            (first)))
-
-(defmacro are-html [& contents]
-  `(are [html# expected#]
-       (= (sablono.test/html-vec html#) expected# )
-     ~@contents))
+(defmacro html-data [element]
+  `(some-> (sablono.test/html-str ~element)
+           (tubax.core/xml->clj)))

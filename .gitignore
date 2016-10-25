@@ -13,3 +13,4 @@ pom.xml.asc
 /.repl-*
 /figwheel_server.log
 /.cljs_node_repl
+/node_modules

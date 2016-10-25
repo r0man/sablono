@@ -1,5 +1,6 @@
 (ns sablono.benchmark
-  (:require [cljsjs.jquery]
+  (:require [doo.runner :refer-macros [doo-tests]]
+            [cljsjs.jquery]
             [cljsjs.react]
             [cljsjs.react.dom]
             [cljs.test :refer-macros [is deftest testing]]
@@ -102,3 +103,5 @@
               (reduce (partial merge-with +))
               (map (fn [[k v]] [k (/ v 3)]))
               (into {})))))
+
+(doo-tests 'sablono.benchmark)

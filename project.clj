@@ -6,34 +6,46 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.8.0"]]
-  :profiles {:dev {:dependencies [[cljsjs/jquery "2.2.2-0"]
+  :profiles {:dev {:dependencies [[cljsjs/jquery "2.2.4-0"]
                                   [crate "0.2.5"]
                                   [criterium "0.4.4"]
-                                  [devcards "0.2.1-7" :exclusions [sablono]]
+                                  [devcards "0.2.2" :exclusions [sablono]]
                                   [doo "0.1.7"]
-                                  [figwheel-sidecar "0.5.4-7"]
-                                  [hickory "0.6.0"]
-                                  [reagent "0.6.0-alpha2"]
-                                  [rum "0.10.4"]]
-                   :plugins [[lein-cljsbuild "1.1.3"]
+                                  [figwheel-sidecar "0.5.8"]
+                                  [funcool/tubax "0.2.0"]
+                                  [reagent "0.6.0"]
+                                  [rum "0.10.7"]]
+                   :plugins [[lein-cljsbuild "1.1.4"]
                              [lein-doo "0.1.7"]
-                             [lein-figwheel "0.5.4-7"]]
+                             [lein-figwheel "0.5.8"]
+                             [lein-npm "0.6.2"]]
                    :resource-paths ["test-resources" "target"]}
-             :provided {:dependencies [[cljsjs/react "15.2.1-1"]
-                                       [cljsjs/react-dom "15.2.1-1"]
-                                       [cljsjs/react-dom-server "15.2.1-1"]
-                                       [org.clojure/clojurescript "1.9.93"]]}
+             :provided {:dependencies [[cljsjs/react "15.3.1-0"]
+                                       [cljsjs/react-dom "15.3.1-0"]
+                                       [cljsjs/react-dom-server "15.3.1-0"]
+                                       [org.clojure/clojurescript "1.9.293"]]}
              :repl {:dependencies [[com.cemerick/piggieback "0.2.1"]]
                     :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}}
   :aliases {"ci" ["do"
                   ["clean"]
                   ["test" ":default"]
+                  ["doo" "node" "nodejs" "once"]
                   ["doo" "phantom" "none" "once"]
-                  ["doo" "phantom" "advanced" "once"]]
+                  ["doo" "phantom" "advanced" "once"]
+                  ["doo" "phantom" "benchmark" "once"]]
             "deploy" ["do" "clean," "deploy" "clojars"]}
   :clean-targets ^{:protect false} [:target-path]
   :cljsbuild {:builds
-              [{:id "devcards"
+              [{:id "benchmark"
+                :compiler
+                {:asset-path "target/benchmark/out"
+                 :main sablono.benchmark
+                 :output-to "target/benchmark/sablono.js"
+                 :optimizations :advanced
+                 :pretty-print true
+                 :verbose false}
+                :source-paths ["src" "benchmark"]}
+               {:id "devcards"
                 :compiler
                 {:asset-path "devcards"
                  :main sablono.test
@@ -44,6 +56,18 @@
                  :source-map true
                  :verbose false}
                 :figwheel {:devcards true}
+                :source-paths ["src" "test"]}
+               {:id "nodejs"
+                :compiler
+                {:asset-path "target/nodejs/out"
+                 :main sablono.test
+                 :optimizations :none
+                 :output-dir "target/nodejs/out"
+                 :output-to "target/nodejs/sablono.js"
+                 :pretty-print true
+                 :source-map true
+                 :target :nodejs
+                 :verbose false}
                 :source-paths ["src" "test"]}
                {:id "none"
                 :compiler
@@ -66,5 +90,7 @@
                  :verbose false}
                 :source-paths ["src" "test"]}]}
   :deploy-repositories [["releases" :clojars]]
+  :npm {:dependencies [[react "15.3.1"]
+                       [react-dom "15.3.1"]]}
   :test-selectors {:benchmark :benchmark
                    :default (complement :benchmark)})
