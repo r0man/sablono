@@ -1,6 +1,5 @@
 (ns sablono.test
   (:require [doo.runner :refer-macros [doo-tests]]
-            [sablono.benchmark]
             [sablono.core-test]
             [sablono.interpreter-test]
             [sablono.normalize-test]
@@ -11,5 +10,4 @@
            'sablono.interpreter-test
            'sablono.normalize-test
            'sablono.server-test
-           'sablono.util-test
-           'sablono.benchmark)
+           'sablono.util-test)
