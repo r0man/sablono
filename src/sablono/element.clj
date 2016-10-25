@@ -2,22 +2,27 @@
   (:refer-clojure :exclude [symbol type])
   (:import cljs.tagged_literals.JSValue))
 
-(defn symbol
+(defn- symbol
   "Return a JavaScript symbol."
   [name]
-  nil)
+  'sablono.element.react)
 
-(defn props
-  "Return the properties of a React element."
+(defn- make-children
+  "Build the children of a React element."
+  [children]
+  (JSValue. (vec (or children []))))
+
+(defn- make-props
+  "Build the properties of a React element."
   [attributes children]
-  (JSValue. (assoc attributes :children (JSValue. (or children [])))))
+  (JSValue. (assoc attributes :children (make-children children))))
 
 (defn create
   "Create a React element."
   [type attributes children]
   (JSValue.
    {:$$typeof (symbol "react.element")
-    :props (props attributes children)
+    :props (make-props attributes children)
     :type type}))
 
 (defn type
@@ -25,6 +30,17 @@
   [element]
   (:type (.val element)))
 
+(defn children
+  "Return the children of `element`."
+  [element]
+  (some-> (.val element) :props .val :children))
+
+(defn attributes
+  "Return the attributes of `element`."
+  [element]
+  (some-> (.val element) :props .val
+          (dissoc :children)))
+
 (comment
-  (type (create "div" {:className "x"} ["a"]))
+  (type (create "div" {:className "x"} ["a"])s)
   (create "div" {:className "x"} ["a"]))

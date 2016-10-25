@@ -1,8 +1,8 @@
 (ns sablono.element
   (:refer-clojure :exclude [symbol type])
   (:require [cljsjs.react]
-            ;; [cljsjs.react.dom.server]
             [cljsjs.react.dom]
+            [cljsjs.react.dom.server]
             [goog.object :as gobj]
             [sablono.server :as server]))
 
@@ -15,7 +15,7 @@
   "Return the properties of a React element."
   [attributes children]
   (let [props (clj->js (or attributes {}))]
-    (gobj/set props "children" (clj->js (or children [])))
+    (gobj/set props "children" (clj->js (vec (or children []))))
     props))
 
 (defn create
@@ -31,13 +31,6 @@
   (gobj/get element "type"))
 
 (comment
-  (type (create "div" {:className "x"} ["a"]))
-
-  (prn (js/React.createElement "div" #js {:className "x"} "a"))
-  (prn (create "div" {} []))
-
-  (= (server/render-static (js/React.createElement "div" #js {:className "x"} #js ["a"]))
-     (server/render-static (create "div" {:className "x"} ["a"])))
-
-
-  (js/ReactDOM.(js/React.createElement "div")))
+  (js/ReactDOMServer.renderToStaticMarkup (create "div" {:className "x"} ["a"]))
+  (create "div" {:className "x"} ["a"])
+  (create "div" {:className "x"} ["a"]))

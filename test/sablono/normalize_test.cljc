@@ -2,7 +2,8 @@
   (:require [sablono.normalize :as normalize]
             #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [are is]])
-            #?(:cljs [devcards.core :refer-macros [deftest]])))
+            #?(:cljs [devcards.core :refer-macros [deftest]])
+            [sablono.element :as element]))
 
 (deftest test-compact-map
   (are [x expected]
@@ -100,3 +101,8 @@
     [:div.a.b] ["div" {:class ["a" "b"]} '()]
     [:div.a.b {:class "c"}] ["div" {:class ["a" "b" "c"]} '()]
     [:div.a.b {:class nil}] ["div" {:class ["a" "b"]} '()]))
+
+(prn (normalize/element [:div.a.b {:class "c"} "a" "b"]))
+
+(element/children (normalize/element [:div.a.b {:class "c"} "a" "b"]))
+(element/attributes (normalize/element [:div.a.b {:class "c"} "a" "b"]))

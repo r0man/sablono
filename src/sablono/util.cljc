@@ -44,6 +44,15 @@
             (update-in [:style] camel-case-keys))))
     m))
 
+(defn hyphenate [x]
+  (some-> x name
+          (str/replace #"::" "/")
+          (str/replace #"([A-Z]+)([A-Z][a-z])" "$1-$2")
+          (str/replace #"([a-z\d])([A-Z])" "$1-$2")
+          (str/replace #"\s+" "-")
+          (str/replace #"_" "-")
+          (str/lower-case)))
+
 (defn element?
   "Return true if `x` is an HTML element. True when `x` is a vector
   and the first element is a keyword, e.g. `[:div]` or `[:div [:span \"x\"]`."
