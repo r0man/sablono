@@ -5,7 +5,7 @@
   :min-lein-version "2.0.0"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.8.0"]]
+  :dependencies [[org.clojure/clojure "1.9.0-alpha14"]]
   :profiles {:dev {:dependencies [[cljsjs/jquery "2.2.4-0"]
                                   [crate "0.2.5"]
                                   [criterium "0.4.4"]
@@ -14,7 +14,8 @@
                                   [figwheel-sidecar "0.5.8"]
                                   [funcool/tubax "0.2.0"]
                                   [reagent "0.6.0"]
-                                  [rum "0.10.7"]]
+                                  [rum "0.10.7"]
+                                  [org.clojure/test.check "0.9.0"]]
                    :plugins [[lein-cljsbuild "1.1.4"]
                              [lein-doo "0.1.7"]
                              [lein-figwheel "0.5.8"]
