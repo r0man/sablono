@@ -3,7 +3,7 @@
 
 (def MOD 65521)
 
-(defn char-code-at
+(defn- char-code-at
   "Return the character as an integer at the specified index of `sb`."
   [^StringBuffer sb index]
   #?(:clj (int (.charAt sb index))
