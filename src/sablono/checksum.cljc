@@ -7,7 +7,7 @@
   "Return the character as an integer at the specified index of `sb`."
   [^StringBuffer sb index]
   #?(:clj (int (.charAt sb index))
-     :cljs (int (.charCodeAt sb index))))
+     :cljs (.charCodeAt sb index)))
 
 (defn adler32
   "Return the Adler-32 checksum of `sb`."
