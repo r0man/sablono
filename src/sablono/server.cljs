@@ -1,5 +1,7 @@
 (ns sablono.server
-  (:require [cljsjs.react.dom.server]))
+  (:require [cljsjs.react]
+            [cljsjs.react.dom]
+            [cljsjs.react.dom.server]))
 
 (defn render
   "Render `element` as HTML string."
