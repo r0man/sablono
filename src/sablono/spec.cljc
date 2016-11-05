@@ -131,32 +131,55 @@
     :video
     :wbr})
 
+;; (s/def ::html-sequence
+;;   (s/cat
+;;    :type ::html-type
+;;    :attrs ::html-attributes
+;;    :children (s/spec (s/* ::html-content))))
+
+;; (defn html-element?
+;;   "Returns true if `x` is an HTML element."
+;;   [x]
+;;   (and (vector? x) (keyword? (first x))))
+
+;; (s/def ::html-element
+;;   (s/with-gen html-element?
+;;     #(gen/fmap vec (s/gen ::html-sequence))))
+
+;; (s/def ::html-content
+;;   (s/or
+;;    :string string?
+;;    :number number?
+;;    :element ::html-element))
+
+(s/def ::html-children
+  (s/coll-of (s/spec (s/* ::html-element))))
+
 (s/def ::html-attributes map?)
 
-(s/def ::html-sequence
-  (s/cat
-   :type ::html-type
-   :attrs ::html-attributes
-   :children (s/spec (s/* ::html-content))))
+(s/def ::html-element-without-attributes
+  (s/tuple ::html-type ::html-children))
 
-(defn html-element?
-  "Returns true if `x` is an HTML element."
-  [x]
-  (and (vector? x) (keyword? (first x))))
+(s/def ::html-element-with-attributes
+  (s/tuple ::html-type ::html-attributes ::html-children))
 
+;; (s/def ::html-element
+;;   (s/tuple ::html-type ::html-attributes ::html-children))
+
+;; http://dev.clojure.org/jira/browse/CLJ-1980
 (s/def ::html-element
-  (s/with-gen html-element?
-    #(gen/fmap vec (s/gen ::html-sequence))))
-
-(s/def ::html-content
   (s/or
-   :string string?
-   :number number?
-   :element ::html-element))
+   :with-attributes ::html-element-with-attributes
+   :without-attributes ::html-element-without-attributes))
 
-(gen/sample (s/gen ::html-element) 10)
+
+(prn (gen/sample (s/gen ::html-element) 2))
+(prn (gen/sample (s/gen ::html-element-with-attributes) 2))
+(prn (gen/sample (s/gen ::html-element-without-attributes) 2))
+
 
 (comment
+  (gen/sample (s/gen ::html-element) 10)
   (gen/fmap vec (s/gen ::html-sequence))
   (gen/sample (s/gen ::html-content))
   (gen/sample (gen/fmap vec (s/gen ::html-sequence)) 10)
