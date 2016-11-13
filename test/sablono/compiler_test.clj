@@ -276,7 +276,7 @@
     (let [string "x"]
       (are-html-expanded
        '[:span ^String string] '(js/React.createElement "span" nil string)
-       '[:span {} ^:! string] '(js/React.createElement "span" nil string))))
+       '[:span {} ^:inline string] '(js/React.createElement "span" nil string))))
   (testing "values are evaluated only once"
     (let [times-called (atom 0)
           foo #(swap! times-called inc)]

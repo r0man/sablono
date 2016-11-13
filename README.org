@@ -48,6 +48,16 @@
     (om/root widget {} {:target (. js/document (getElementById "my-app"))})
    #+END_SRC
 
+   By default, /Ŝablono/ will wrap any forms in the body of hiccup with a call to
+   =sablono.interpreter/interpret=. If your code returns a React element, then you can
+   skip the call to this function by marking the s-expression with the metadata tag =:inline=.
+   For example:
+
+   #+BEGIN_SRC clojure :exports code :results silent
+    [:div {}
+     ^:inline (function-that-returns-react-component)]
+      #+END_SRC
+
 ** HTML Tags
 
    /Ŝablono/ only supports tags and attributes that can be handled by

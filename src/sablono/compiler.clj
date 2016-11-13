@@ -239,7 +239,7 @@
     (literal? content) content
     (hint? content String) content
     (hint? content Number) content
-    (-> content meta :!) content
+    (-> content meta :inline) content
     :else (compile-form content)))
 
 ;; TODO: Remove when landed in ClojureScript.
