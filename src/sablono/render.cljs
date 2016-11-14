@@ -1,6 +1,7 @@
 (ns sablono.render
   (:require [clojure.string :as str]
-            [sablono.checksum :as chk])
+            [sablono.checksum :as chk]
+            [sablono.normalize :as normalize])
   ;; (:import [clojure.lang IPersistentVector ISeq Named Numbers Ratio Keyword])
   (:import [goog.string StringBuffer]))
 
@@ -54,147 +55,12 @@
   #{"area" "base" "br" "col" "command" "embed" "hr" "img" "input" "keygen" "link"
     "meta" "param" "source" "track" "wbr"})
 
-(def normalized-attrs
-  { ;; special cases
-   :default-checked "checked"
-   :default-value "value"
-
-   ;; https://github.com/facebook/react/blob/master/src/renderers/dom/shared/HTMLDOMPropertyConfig.js
-   :accept-charset "accept-charset"
-   :access-key "accesskey"
-   :allow-full-screen "allowfullscreen"
-   :allow-transparency "allowtransparency"
-   :auto-complete "autocomplete"
-   :auto-play "autoplay"
-   :cell-padding "cellpadding"
-   :cell-spacing "cellspacing"
-   :char-set "charset"
-   :class-id "classid"
-   :col-span "colspan"
-   :content-editable "contenteditable"
-   :context-menu "contextmenu"
-   :cross-origin "crossorigin"
-   :date-time "datetime"
-   :enc-type "enctype"
-   :form-action "formaction"
-   :form-enc-type "formenctype"
-   :form-method "formmethod"
-   :form-no-validate "formnovalidate"
-   :form-target "formtarget"
-   :frame-border "frameborder"
-   :href-lang "hreflang"
-   :http-equiv "http-equiv"
-   :input-mode "inputmode"
-   :key-params "keyparams"
-   :key-type "keytype"
-   :margin-height "marginheight"
-   :margin-width "marginwidth"
-   :max-length "maxlength"
-   :media-group "mediagroup"
-   :min-length "minlength"
-   :no-validate "novalidate"
-   :radio-group "radiogroup"
-   :referrer-policy "referrerpolicy"
-   :read-only "readonly"
-   :row-span "rowspan"
-   :spell-check "spellcheck"
-   :src-doc "srcdoc"
-   :src-lang "srclang"
-   :src-set "srcset"
-   :tab-index "tabindex"
-   :use-map "usemap"
-   :auto-capitalize "autocapitalize"
-   :auto-correct "autocorrect"
-   :auto-save "autosave"
-   :item-prop "itemprop"
-   :item-scope "itemscope"
-   :item-type "itemtype"
-   :item-id "itemid"
-   :item-ref "itemref"
-
-   ;; https://github.com/facebook/react/blob/master/src/renderers/dom/shared/SVGDOMPropertyConfig.js
-   :allow-reorder "allowReorder"
-   :attribute-name "attributeName"
-   :attribute-type "attributeType"
-   :auto-reverse "autoReverse"
-   :base-frequency "baseFrequency"
-   :base-profile "baseProfile"
-   :calc-mode "calcMode"
-   :clip-path-units "clipPathUnits"
-   :content-script-type "contentScriptType"
-   :content-style-type "contentStyleType"
-   :diffuse-constant "diffuseConstant"
-   :edge-mode "edgeMode"
-   :external-resources-required "externalResourcesRequired"
-   :filter-res "filterRes"
-   :filter-units "filterUnits"
-   :glyph-ref "glyphRef"
-   :gradient-transform "gradientTransform"
-   :gradient-units "gradientUnits"
-   :kernel-matrix "kernelMatrix"
-   :kernel-unit-length "kernelUnitLength"
-   :key-points "keyPoints"
-   :key-splines "keySplines"
-   :key-times "keyTimes"
-   :length-adjust "lengthAdjust"
-   :limiting-cone-angle "limitingConeAngle"
-   :marker-height "markerHeight"
-   :marker-units "markerUnits"
-   :marker-width "markerWidth"
-   :mask-content-units "maskContentUnits"
-   :mask-units "maskUnits"
-   :num-octaves "numOctaves"
-   :path-length "pathLength"
-   :pattern-content-units "patternContentUnits"
-   :pattern-transform "patternTransform"
-   :pattern-units "patternUnits"
-   :points-at-x "pointsAtX"
-   :points-at-y "pointsAtY"
-   :points-at-z "pointsAtZ"
-   :preserve-alpha "preserveAlpha"
-   :preserve-aspect-ratio "preserveAspectRatio"
-   :primitive-units "primitiveUnits"
-   :ref-x "refX"
-   :ref-y "refY"
-   :repeat-count "repeatCount"
-   :repeat-dur "repeatDur"
-   :required-extensions "requiredExtensions"
-   :required-features "requiredFeatures"
-   :specular-constant "specularConstant"
-   :specular-exponent "specularExponent"
-   :spread-method "spreadMethod"
-   :start-offset "startOffset"
-   :std-deviation "stdDeviation"
-   :stitch-tiles "stitchTiles"
-   :surface-scale "surfaceScale"
-   :system-language "systemLanguage"
-   :table-values "tableValues"
-   :target-x "targetX"
-   :target-y "targetY"
-   :view-box "viewBox"
-   :view-target "viewTarget"
-   :x-channel-selector "xChannelSelector"
-   :xlink-actuate "xlink:actuate"
-   :xlink-arcrole "xlink:arcrole"
-   :xlink-href "xlink:href"
-   :xlink-role "xlink:role"
-   :xlink-show "xlink:show"
-   :xlink-title "xlink:title"
-   :xlink-type "xlink:type"
-   :xml-base "xml:base"
-   :xmlns-xlink "xmlns:xlink"
-   :xml-lang "xml:lang"
-   :xml-space "xml:space"
-   :y-channel-selector "yChannelSelector"
-   :zoom-and-pan "zoomAndPan"})
-
-
 (defn get-value [attrs]
   (or (:value attrs)
       (:default-value attrs)))
 
 (defn normalize-attr-key ^String [key]
-  (or (normalized-attrs key)
+  (or (normalize/attribute-mapping key)
       (name key)))
 
 (defn escape-html [^String s]
@@ -443,6 +309,10 @@
   (-render-html [this parent *key sb]
     (append! sb (name this)))
 
+  number
+  (-render-html [this parent *key sb]
+    (-render-html (str this) parent *key sb))
+  
   ;; String
   string
   (-render-html [this parent *key sb]
