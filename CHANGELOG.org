@@ -1,4 +1,22 @@
 * Changelog
+
+** Unreleased
+
+** 0.7.6
+
+- [[https://github.com/r0man/sablono/pull/135][#135]] Skip interpretation when using the =:inline= type hint.
+- [[https://github.com/r0man/sablono/pull/134][#134]] Use the Tubax library to parse HTML in the tests and run them
+  on Node.
+
+** 0.7.5
+
+- [[https://github.com/r0man/sablono/pull/132][#132]] Don’t join nil classes into classes string (#132)
+- [[https://github.com/r0man/sablono/pull/131][#131]] Fix class compilation of keyword map lookup.
+
+** 0.7.4
+
+- [[https://github.com/r0man/sablono/pull/129][#129]] Fixed wrapped inputs with non-string values & checkboxes.
+
 ** 0.7.3
 
 - [[https://github.com/r0man/sablono/pull/128][#128]] Update React to 15.2.1-1.
