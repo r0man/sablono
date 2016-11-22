@@ -20,9 +20,9 @@
                              [lein-figwheel "0.5.8"]
                              [lein-npm "0.6.2"]]
                    :resource-paths ["test-resources" "target"]}
-             :provided {:dependencies [[cljsjs/react "15.3.1-0"]
-                                       [cljsjs/react-dom "15.3.1-0"]
-                                       [cljsjs/react-dom-server "15.3.1-0"]
+             :provided {:dependencies [[cljsjs/react "15.4.0-0"]
+                                       [cljsjs/react-dom "15.4.0-0"]
+                                       [cljsjs/react-dom-server "15.4.0-0"]
                                        [org.clojure/clojurescript "1.9.293"]]}
              :repl {:dependencies [[com.cemerick/piggieback "0.2.1"]]
                     :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}}
@@ -90,7 +90,7 @@
                  :verbose false}
                 :source-paths ["src" "test"]}]}
   :deploy-repositories [["releases" :clojars]]
-  :npm {:dependencies [[react "15.3.1"]
-                       [react-dom "15.3.1"]]}
+  :npm {:dependencies [[react "15.4.0"]
+                       [react-dom "15.4.0"]]}
   :test-selectors {:benchmark :benchmark
                    :default (complement :benchmark)})
