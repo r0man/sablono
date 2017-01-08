@@ -40,6 +40,7 @@
                 :compiler
                 {:asset-path "target/benchmark/out"
                  :main sablono.benchmark
+                 :output-dir "target/benchmark/out"
                  :output-to "target/benchmark/sablono.js"
                  :optimizations :advanced
                  :pretty-print true
@@ -84,6 +85,7 @@
                 :compiler
                 {:asset-path "target/advanced/out"
                  :main sablono.test
+                 :output-dir "target/advanced/out"
                  :output-to "target/advanced/sablono.js"
                  :optimizations :advanced
                  :pretty-print true
