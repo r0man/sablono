@@ -104,15 +104,6 @@
     [:div ["a" "b"]] ["div" {} ["a" "b"]]))
 
 (deftest test-element-meta
-  (let [[tag attrs content]
-        (normalize/element
-         '[:span
-           ^:inline (constantly 1)
-           2
-           ^:inline (constantly 3)])]
-    (is (= (map (comp  :inline meta) content) [true nil true]))))
-
-(deftest test-element-meta
   (are [element expected]
       (= (->> (nth (normalize/element element) 2)
               (map (comp map? meta))))
