@@ -104,12 +104,13 @@
   "Normalize the children of a HTML element."
   [x]
   (->> (cond
+         (nil? x)
+         '()
          (string? x)
          (list x)
          (util/element? x)
          (list x)
-         (and (list? x)
-              (symbol? x))
+         (and (list? x) (symbol? (first x)))
          (list x)
          (list? x)
          x

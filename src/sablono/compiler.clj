@@ -121,7 +121,8 @@
 
 (defmethod compile-form :default
   [expr]
-  `(sablono.interpreter/interpret ~expr))
+  (if (:inline (meta expr))
+    expr `(sablono.interpreter/interpret ~expr)))
 
 (defn- not-hint?
   "True if x is not hinted to be the supplied type."
@@ -154,22 +155,42 @@
   [x]
   (-> x meta :attrs))
 
+(defn- inline-hint?
+  "True if x has :inline metadata. Treat x as a implicit map"
+  [x]
+  (-> x meta :inline))
+
 (defn- element-compile-strategy
   "Returns the compilation strategy to use for a given element."
   [[tag attrs & content :as element]]
   (cond
+    ;; e.g. [:span "foo"]
     (every? literal? element)
-    ::all-literal                       ; e.g. [:span "foo"]
+    ::all-literal
+
+    ;; e.g. [:span {} x]
     (and (literal? tag) (map? attrs))
-    ::literal-tag-and-attributes        ; e.g. [:span {} x]
+    ::literal-tag-and-attributes
+
+    ;; e.g. [:span ^String x]
     (and (literal? tag) (not-implicit-map? attrs))
-    ::literal-tag-and-no-attributes     ; e.g. [:span ^String x]
+    ::literal-tag-and-no-attributes
+
+    ;; e.g. [:span ^:attrs y]
     (and (literal? tag) (attrs-hint? attrs))
-    ::literal-tag-and-hinted-attributes ; e.g. [:span ^:attrs y]
+    ::literal-tag-and-hinted-attributes
+
+    ;; e.g. [:span ^:inline (y)]
+    (and (literal? tag) (inline-hint? attrs))
+    ::literal-tag-and-inline-content
+
+    ;; ; e.g. [:span x]
     (literal? tag)
-    ::literal-tag                       ; e.g. [:span x]
+    ::literal-tag
+
+    ;; e.g. [x]
     :else
-    ::default))                         ; e.g. [x]
+    ::default))
 
 (declare compile-html)
 
@@ -192,6 +213,10 @@
       ~@(map compile-html content))))
 
 (defmethod compile-element ::literal-tag-and-no-attributes
+  [[tag & content]]
+  (compile-element (apply vector tag {} content)))
+
+(defmethod compile-element ::literal-tag-and-inline-content
   [[tag & content]]
   (compile-element (apply vector tag {} content)))
 
@@ -239,7 +264,6 @@
     (literal? content) content
     (hint? content String) content
     (hint? content Number) content
-    (-> content meta :inline) content
     :else (compile-form content)))
 
 ;; TODO: Remove when landed in ClojureScript.
