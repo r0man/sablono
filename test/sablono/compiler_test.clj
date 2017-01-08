@@ -275,8 +275,7 @@
   (testing "type hints"
     (let [string "x"]
       (are-html-expanded
-       '[:span ^String string] '(js/React.createElement "span" nil string)
-       '[:span {} ^:inline string] '(js/React.createElement "span" nil string))))
+       '[:span ^String string] '(js/React.createElement "span" nil string))))
   (testing "values are evaluated only once"
     (let [times-called (atom 0)
           foo #(swap! times-called inc)]
@@ -508,3 +507,11 @@
               "div"
               #js {:className (sablono.util/join-classes [(:table-cell css)])}
               (js/React.createElement "span" nil "abc")))))))
+
+(deftest test-issue-141-inline
+  (testing "with attributes"
+    (is (= (compile [:span {} ^:inline (constantly 1)])
+           '(js/React.createElement "span" nil (constantly 1)))))
+  (testing "without attributes"
+    (is (= (compile [:span ^:inline (constantly 1)])
+           '(js/React.createElement "span" nil (constantly 1))))))

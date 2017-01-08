@@ -99,4 +99,23 @@
     [:div.foo] ["div" {:class ["foo"]} '()]
     [:div.a.b] ["div" {:class ["a" "b"]} '()]
     [:div.a.b {:class "c"}] ["div" {:class ["a" "b" "c"]} '()]
-    [:div.a.b {:class nil}] ["div" {:class ["a" "b"]} '()]))
+    [:div.a.b {:class nil}] ["div" {:class ["a" "b"]} '()]
+    [:div "a" "b"] ["div" {} ["a" "b"]]
+    [:div ["a" "b"]] ["div" {} ["a" "b"]]))
+
+(deftest test-element-meta
+  (let [[tag attrs content]
+        (normalize/element
+         '[:span
+           ^:inline (constantly 1)
+           2
+           ^:inline (constantly 3)])]
+    (is (= (map (comp  :inline meta) content) [true nil true]))))
+
+(deftest test-element-meta
+  (are [element expected]
+      (= (->> (nth (normalize/element element) 2)
+              (map (comp map? meta))))
+    '[:span (constantly 1)] [false]
+    '[:span ^:inline (constantly 1)] [true]
+    '[:span ^:inline (constantly 1) nil ^:inline (constantly 2)] [true false true]))
