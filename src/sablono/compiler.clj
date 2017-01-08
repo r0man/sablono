@@ -14,39 +14,36 @@
 (defprotocol IJSValue
   (to-js [x]))
 
-(defn compile-map-attr [name value]
-  {name
-   (if (map? value)
-     (to-js value)
-     `(~'clj->js ~value))})
-
 (defmulti compile-attr (fn [name value] name))
 
-(defmethod compile-attr :class [name value]
-  {:class
-   (cond
-     (or (nil? value)
-         (keyword? value)
-         (string? value))
-     value
-     (and (or (sequential? value)
-              (set? value))
-          (every? string? value))
-     (join-classes value)
-     :else `(sablono.util/join-classes ~value))})
+(defmethod compile-attr :class [_ value]
+  (cond
+    (or (nil? value)
+        (keyword? value)
+        (string? value))
+    value
+    (and (or (sequential? value)
+             (set? value))
+         (every? string? value))
+    (join-classes value)
+    :else `(sablono.util/join-classes ~value)))
 
-(defmethod compile-attr :style [name value]
-  (compile-map-attr name (camel-case-keys value)))
+(defmethod compile-attr :style [_ value]
+  (let [value (camel-case-keys value)]
+    (if (map? value)
+      (to-js value)
+      `(~'clj->js ~value))))
 
-(defmethod compile-attr :default [name value]
-  {name (to-js value)})
+(defmethod compile-attr :default [_ value]
+  (to-js value))
 
 (defn compile-attrs
   "Compile a HTML attribute map."
   [attrs]
   (->> (seq attrs)
-       (map #(apply compile-attr %1))
-       (apply merge)
+       (reduce (fn [attrs [name value]]some
+                 (assoc attrs name (compile-attr name value) ))
+               nil)
        (html-to-dom-attrs)
        (to-js)))
 
@@ -268,8 +265,9 @@
   "Convert a map into a JavaScript object."
   [m]
   (JSValue.
-   (zipmap (keys m)
-           (map to-js (vals m)))))
+   (into {}
+         (map (fn [[k v]] [k (to-js v)]))
+         m)))
 
 (extend-protocol IJSValue
   clojure.lang.Keyword
@@ -283,7 +281,7 @@
     (to-js-map x))
   clojure.lang.PersistentVector
   (to-js [x]
-    (JSValue. (vec (map to-js x))))
+    (JSValue. (mapv to-js x)))
   Object
   (to-js [x]
     x)

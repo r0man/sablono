@@ -450,7 +450,7 @@
 
 (deftest test-compile-attr-class
   (are [form expected]
-      (= {:class expected} (compile-attr :class form))
+      (= expected (compile-attr :class form))
     nil nil
     "foo" "foo"
     '("foo" "bar" ) "foo bar"
