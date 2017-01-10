@@ -41,7 +41,7 @@
   "Compile a HTML attribute map."
   [attrs]
   (->> (seq attrs)
-       (reduce (fn [attrs [name value]]some
+       (reduce (fn [attrs [name value]]
                  (assoc attrs name (compile-attr name value) ))
                nil)
        (html-to-dom-attrs)
