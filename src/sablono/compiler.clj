@@ -288,10 +288,9 @@
 (defn- to-js-map
   "Convert a map into a JavaScript object."
   [m]
-  (JSValue.
-   (into {}
-         (map (fn [[k v]] [k (to-js v)]))
-         m)))
+  (if (every? literal? (keys m))
+    (JSValue. (into {} (map (fn [[k v]] [k (to-js v)])) m))
+    `(sablono.interpreter/attributes ~m)))
 
 (extend-protocol IJSValue
   clojure.lang.Keyword

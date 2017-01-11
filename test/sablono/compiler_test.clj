@@ -515,3 +515,9 @@
   (testing "without attributes"
     (is (= (compile [:span ^:inline (constantly 1)])
            '(js/React.createElement "span" nil (constantly 1))))))
+
+(deftest test-compile-attributes-non-literal-key
+  (is (= (compile [:input {(case :checkbox :checkbox :checked :value) "x"}])
+         '(sablono.interpreter/create-element
+           "input" (sablono.interpreter/attributes
+                    {(case :checkbox :checkbox :checked :value) "x"})))))

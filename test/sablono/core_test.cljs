@@ -123,10 +123,11 @@
            {:tag :img
             :attributes {:id "foo"}
             :content []}))
-    (is (= (html-data [:img {'id "foo"}])
-           {:tag :img
-            :attributes {:id "foo"}
-            :content []})))
+    (let [id :id]
+      (is (= (html-data [:img {id "foo"}])
+             {:tag :img
+              :attributes {:id "foo"}
+              :content []}))))
 
   (testing "attribute values are escaped"
     (is (= (html-data [:div {:id "\""}])
