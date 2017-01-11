@@ -1,5 +1,9 @@
 * Changelog
 ** Unreleased
+
+- [[https://github.com/r0man/sablono/issues/140][#140]] Don't loose focus when switching from an uncontrolled to a
+  controlled input.
+
 ** 0.7.7
 
 - [[https://github.com/r0man/sablono/pull/133][#133]] Improve performance by using transducers.
