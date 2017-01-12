@@ -1,6 +1,7 @@
 * Changelog
 ** Unreleased
 
+- [[https://github.com/r0man/sablono/pull/146][#146]] Keep state and props of inputs synchronized.
 - [[https://github.com/r0man/sablono/issues/140][#140]] Don't loose focus when switching from an uncontrolled to a
   controlled input.
 
