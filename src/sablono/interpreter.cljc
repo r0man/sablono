@@ -8,25 +8,22 @@
 (defprotocol IInterpreter
   (interpret [this] "Interpret a Clojure data structure as a React fn call."))
 
-;; A hack to force input elements to always update itself immediately,
-;; without waiting for requestAnimationFrame.
-
 #?(:cljs (defn initial-state [component property]
            (let [props #js {}]
-             (object/extend
-                 props (.-props component)
-                 #js {:onChange (.-onChange component)
-                      :children (.-children (.-props component))})
+             (object/extend props (.-props component) #js {:children (.-children (.-props component))})
              (when (nil? (object/get props property))
                (object/set props property js/undefined))
              props)))
 
-#?(:cljs (defn update-state [component property value]
-           (let [props (initial-state component property)]
-             (when (and (.hasOwnProperty (.-props component) property)
-                        (not (undefined? (object/get (.-props component) property))))
-               (object/set props property (if (nil? value) js/undefined value)))
-             (.setState component props))))
+#?(:cljs (defn update-state [component next-props property value]
+           (let [next-state #js {}]
+             (object/extend next-state next-props #js {:onChange (.-onChange component)})
+             (when (.hasOwnProperty (.-props component) property)
+               (object/set next-state property (if (nil? value) js/undefined value)))
+             (.setState component next-state))))
+
+;; A hack to force input elements to always update itself immediately,
+;; without waiting for requestAnimationFrame.
 
 #?(:cljs
    (defn wrap-form-element [element property]
@@ -40,9 +37,9 @@
        :onChange
        (fn [event]
          (this-as this
-           (when-let [handler (object/getValueByKeys this "props" "onChange")]
+           (when-let [handler (.-onChange (.-props this))]
              (handler event)
-             (update-state this property (object/getValueByKeys event "target" property)))))
+             (update-state this (.-props this) property (object/getValueByKeys event "target" property)))))
        :componentWillReceiveProps
        (fn [new-props]
          (this-as this
@@ -55,8 +52,8 @@
              ;; https://github.com/reagent-project/reagent/issues/253
              ;; https://github.com/tonsky/rum/issues/86
              (if (not= state-value element-value)
-               (update-state this property element-value)
-               (update-state this property (object/get new-props property))))))
+               (update-state this new-props property element-value)
+               (update-state this new-props property (object/get new-props property))))))
        :render
        (fn []
          (this-as this
