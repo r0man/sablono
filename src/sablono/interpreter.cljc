@@ -105,7 +105,10 @@
 (defn- interpret-seq
   "Interpret the seq `x` as HTML elements."
   [x]
-  (map interpret x))
+  ;; Forces the seq x to be realized to avoid a problem caused by a combination
+  ;; of lazy seq and binding (e.g. implementation of om.core/build-all).
+  ;; https://github.com/r0man/sablono/issues/147
+  (into [] (map interpret) x))
 
 #?(:cljs
    (defn element
