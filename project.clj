@@ -11,10 +11,10 @@
                                   [criterium "0.4.4"]
                                   [devcards "0.2.2" :exclusions [sablono]]
                                   [doo "0.1.7"]
-                                  [figwheel-sidecar "0.5.8"]
+                                  [figwheel-sidecar "0.5.9"]
                                   [funcool/tubax "0.2.0"]
                                   [reagent "0.6.0"]
-                                  [rum "0.10.7"]]
+                                  [rum "0.10.8"]]
                    :plugins [[lein-cljsbuild "1.1.4"]
                              [lein-doo "0.1.7"]
                              [lein-figwheel "0.5.8"]
@@ -23,7 +23,7 @@
              :provided {:dependencies [[cljsjs/react "15.3.1-0"]
                                        [cljsjs/react-dom "15.3.1-0"]
                                        [cljsjs/react-dom-server "15.3.1-0"]
-                                       [org.clojure/clojurescript "1.9.293"]]}
+                                       [org.clojure/clojurescript "1.9.456"]]}
              :repl {:dependencies [[com.cemerick/piggieback "0.2.1"]]
                     :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}}
   :aliases {"ci" ["do"
