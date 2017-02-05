@@ -61,8 +61,10 @@
         docstring (str "Creates a " input-type " input field.")]
     `(defelem ~fn-name
        ~docstring
-       ([name#] (~fn-name name# nil))
-       ([name# value#] (sablono.core/input-field* (str '~input-type) name# value#)))))
+       ([name#]
+        (sablono.core/input-field* (str '~input-type) name#))
+       ([name# value#]
+        (sablono.core/input-field* (str '~input-type) name# value#)))))
 
 (def input-fields
   "The types of HTML input fields."
