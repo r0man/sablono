@@ -135,16 +135,6 @@
             :attributes {:id "\""}
             :content []})))
 
-  (testing "boolean attributes"
-    (is (= (html-data [:input {:type "checkbox" :checked true}])
-           {:tag :input
-            :attributes {:type "checkbox" :checked ""}
-            :content []}))
-    (is (= (html-data [:input {:type "checkbox" :checked false}])
-           {:tag :input
-            :attributes {:type "checkbox"}
-            :content []})))
-
   (testing "nil attributes"
     (is (= (html-data [:span {:class nil} "foo"])
            {:tag :span
@@ -169,6 +159,16 @@
            {:tag :div
             :attributes {:data-toggle "modal" :data-target "#modal"}
             :content []}))))
+
+(deftest test-tag-attributes-boolean
+  (is (= (html-data [:div {:aria-hidden true}])
+         {:tag :div
+          :attributes {:aria-hidden "true"}
+          :content []}))
+  (is (= (html-data [:div {:aria-hidden false}])
+         {:tag :div
+          :attributes {:aria-hidden "false"}
+          :content []})))
 
 (deftest test-compiled-tags
   (testing "tag content can be vars"
@@ -271,7 +271,7 @@
           :attributes {}
           :content []})))
 
-(deftest test-input-with-extra-atts
+(deftest test-input-with-extra-attrs
   (is (= (html-data [:input {:class "classy"}])
          {:tag :input
           :attributes {:class "classy"}
@@ -287,7 +287,7 @@
            :value "bar"}
           :content []})))
 
-(deftest test-hidden-field-with-extra-atts
+(deftest test-hidden-field-with-extra-attrs
   (is (= (html-data (html/hidden-field {:class "classy"} :foo "bar"))
          {:tag :input
           :attributes
@@ -298,15 +298,17 @@
            :class "classy"}
           :content []})))
 
-(deftest test-text-field
+(deftest test-text-field-uncontrolled
   (is (= (html-data (html/text-field :foo))
          {:tag :input
           :attributes
           {:type "text"
            :name "foo"
            :id "foo"}
-          :content []}))
-  (is (= (html-data (html/text-field :foo ""))
+          :content []})))
+
+(deftest test-text-field-controlled
+  (is (= (html-data (html/text-field {:on-change identity} :foo ""))
          {:tag :input
           :attributes
           {:type "text"
@@ -314,7 +316,7 @@
            :id "foo"
            :value ""}
           :content []}))
-  (is (= (html-data (html/text-field :foo "bar"))
+  (is (= (html-data (html/text-field {:on-change identity} :foo "bar"))
          {:tag :input
           :attributes
           {:type "text"
@@ -323,8 +325,10 @@
            :value "bar"}
           :content []})))
 
-(deftest test-text-field-with-extra-atts
-  (is (= (html-data (html/text-field {:class "classy"} :foo "bar"))
+(deftest test-text-field-with-extra-attrs
+  (is (= (html-data (html/text-field
+                     {:class "classy"
+                      :on-change identity} :foo "bar"))
          {:tag :input
           :attributes
           {:type "text"
@@ -334,31 +338,66 @@
            :class "classy"}
           :content []})))
 
-(deftest test-check-box
-  (is (= (html-data (html/check-box :foo true))
+(deftest test-check-box-uncontrolled
+  (is (= (html-data (html/check-box :foo))
+         {:tag :input
+          :attributes
+          {:type "checkbox"
+           :name "foo"
+           :id "foo"}
+          :content []})))
+
+(deftest test-check-box-controlled-checked
+  (is (= (html-data (html/check-box {:on-change identity} :foo true))
          {:tag :input
           :attributes
           {:type "checkbox"
            :name "foo"
            :id "foo"
-           :value "true"
            :checked ""}
           :content []})))
 
-(deftest test-check-box-with-extra-atts
-  (is (= (html-data (html/check-box {:class "classy"} :foo true 1))
+(deftest test-check-box-controlled-unchecked
+  (is (= (html-data (html/check-box {:on-change identity} :foo false))
+         {:tag :input
+          :attributes
+          {:type "checkbox"
+           :name "foo"
+           :id "foo"}
+          :content []})))
+
+(deftest test-check-box-controlled-value
+  (is (= (html-data (html/check-box {:on-change identity} :foo true "x"))
          {:tag :input
           :attributes
           {:type "checkbox"
            :name "foo"
            :id "foo"
-           :value "1"
            :checked ""
+           :value "x"}
+          :content []})))
+
+(deftest test-check-box-with-extra-attrs
+  (is (= (html-data (html/check-box {:class "classy"} :foo))
+         {:tag :input
+          :attributes
+          {:type "checkbox"
+           :name "foo"
+           :id "foo"
            :class "classy"}
           :content []})))
 
-(deftest test-password-field
-  (is (= (html-data (html/password-field :foo "bar"))
+(deftest test-password-field-uncontrolled
+  (is (= (html-data (html/password-field :foo))
+         {:tag :input
+          :attributes
+          {:type "password"
+           :name "foo"
+           :id "foo"}
+          :content []})))
+
+(deftest test-password-field-controlled
+  (is (= (html-data (html/password-field {:on-change identity} :foo "bar"))
          {:tag :input
           :attributes
           {:type "password"
@@ -367,8 +406,11 @@
            :value "bar"}
           :content []})))
 
-(deftest test-password-field-with-extra-atts
-  (is (= (html-data (html/password-field {:class "classy"} :foo "bar"))
+(deftest test-password-field-with-extra-attrs
+  (is (= (html-data (html/password-field
+                     {:class "classy"
+                      :on-change identity}
+                     :foo "bar"))
          {:tag :input
           :attributes
           {:type "password"
@@ -378,8 +420,17 @@
            :class "classy"}
           :content []})))
 
-(deftest test-email-field
-  (is (= (html-data (html/email-field :foo "bar"))
+(deftest test-email-field-uncontrolled
+  (is (= (html-data (html/email-field :foo))
+         {:tag :input
+          :attributes
+          {:type "email"
+           :name "foo"
+           :id "foo"}
+          :content []})))
+
+(deftest test-email-field-controlled
+  (is (= (html-data (html/email-field {:on-change identity} :foo "bar"))
          {:tag :input
           :attributes
           {:type "email"
@@ -388,8 +439,17 @@
            :value "bar"}
           :content []})))
 
-(deftest test-search-field
-  (is (= (html-data (html/search-field :foo "bar"))
+(deftest test-search-field-uncontrolled
+  (is (= (html-data (html/search-field :foo))
+         {:tag :input
+          :attributes
+          {:type "search"
+           :name "foo"
+           :id "foo"}
+          :content []})))
+
+(deftest test-search-field-controlled
+  (is (= (html-data (html/search-field {:on-change identity} :foo "bar"))
          {:tag :input
           :attributes
           {:type "search"
@@ -398,8 +458,17 @@
            :value "bar"}
           :content []})))
 
-(deftest test-url-field
-  (is (= (html-data (html/url-field :foo "bar"))
+(deftest test-url-field-uncontrolled
+  (is (= (html-data (html/url-field :foo))
+         {:tag :input
+          :attributes
+          {:type "url"
+           :name "foo"
+           :id "foo"}
+          :content []})))
+
+(deftest test-url-field-controlled
+  (is (= (html-data (html/url-field {:on-change identity} :foo "bar"))
          {:tag :input
           :attributes
           {:type "url"
@@ -409,7 +478,7 @@
           :content []})))
 
 (deftest test-tel-field
-  (is (= (html-data (html/tel-field :foo "bar"))
+  (is (= (html-data (html/tel-field {:on-change identity} :foo "bar"))
          {:tag :input
           :attributes
           {:type "tel"
@@ -419,7 +488,7 @@
           :content []})))
 
 (deftest test-number-field
-  (is (= (html-data (html/number-field :foo "bar"))
+  (is (= (html-data (html/number-field {:on-change identity} :foo "bar"))
          {:tag :input
           :attributes
           {:type "number"
@@ -429,7 +498,7 @@
           :content []})))
 
 (deftest test-range-field
-  (is (= (html-data (html/range-field :foo "bar"))
+  (is (= (html-data (html/range-field {:on-change identity} :foo "bar"))
          {:tag :input
           :attributes
           {:type "range"
@@ -439,7 +508,7 @@
           :content []})))
 
 (deftest test-date-field
-  (is (= (html-data (html/date-field :foo "bar"))
+  (is (= (html-data (html/date-field {:on-change identity} :foo "bar"))
          {:tag :input
           :attributes
           {:type "date"
@@ -449,7 +518,7 @@
           :content []})))
 
 (deftest test-month-field
-  (is (= (html-data (html/month-field :foo "bar"))
+  (is (= (html-data (html/month-field {:on-change identity} :foo "bar"))
          {:tag :input
           :attributes
           {:type "month"
@@ -459,7 +528,7 @@
           :content []})))
 
 (deftest test-week-field
-  (is (= (html-data (html/week-field :foo "bar"))
+  (is (= (html-data (html/week-field {:on-change identity} :foo "bar"))
          {:tag :input
           :attributes
           {:type "week"
@@ -469,7 +538,7 @@
           :content []})))
 
 (deftest test-time-field
-  (is (= (html-data (html/time-field :foo "bar"))
+  (is (= (html-data (html/time-field {:on-change identity} :foo "bar"))
          {:tag :input
           :attributes
           {:type "time"
@@ -479,7 +548,7 @@
           :content []})))
 
 (deftest test-datetime-field
-  (is (= (html-data (html/datetime-field :foo "bar"))
+  (is (= (html-data (html/datetime-field {:on-change identity} :foo "bar"))
          {:tag :input
           :attributes
           {:type "datetime"
@@ -489,7 +558,7 @@
           :content []})))
 
 (deftest test-datetime-local-field
-  (is (= (html-data (html/datetime-local-field :foo "bar"))
+  (is (= (html-data (html/datetime-local-field {:on-change identity} :foo "bar"))
          {:tag :input
           :attributes
           {:type "datetime-local"
@@ -499,7 +568,7 @@
           :content []})))
 
 (deftest test-color-field
-  (is (= (html-data (html/color-field :foo "bar"))
+  (is (= (html-data (html/color-field {:on-change identity} :foo "bar"))
          {:tag :input
           :attributes
           {:type "color"
@@ -508,8 +577,11 @@
            :value "bar"}
           :content []})))
 
-(deftest test-email-field-with-extra-atts
-  (is (= (html-data (html/email-field {:class "classy"} :foo "bar"))
+(deftest test-email-field-with-extra-attrs
+  (is (= (html-data (html/email-field
+                     {:class "classy"
+                      :on-change identity}
+                     :foo "bar"))
          {:tag :input
           :attributes
           {:type "email"
@@ -520,7 +592,7 @@
           :content []})))
 
 (deftest test-radio-button
-  (is (= (html-data (html/radio-button :foo true 1))
+  (is (= (html-data (html/radio-button {:on-change identity} :foo true 1))
          {:tag :input
           :attributes
           {:type "radio"
@@ -530,8 +602,11 @@
            :checked ""}
           :content []})))
 
-(deftest test-radio-button-with-extra-atts
-  (is (= (html-data (html/radio-button {:class "classy"} :foo true 1))
+(deftest test-radio-button-with-extra-attrs
+  (is (= (html-data (html/radio-button
+                     {:class "classy"
+                      :on-change identity}
+                     :foo true 1))
          {:tag :input
           :attributes
           {:type "radio"
@@ -631,7 +706,7 @@
               :attributes {:value "op2"}
               :content ["op2"]}]}))))
 
-(deftest test-drop-down-with-extra-atts
+(deftest test-drop-down-with-extra-attrs
   (let [options ["op1" "op2"], selected "op1"
         select-options (html/select-options options)]
     (is (= (html-data (html/drop-down {:class "classy"} :foo options selected))
@@ -659,21 +734,23 @@
           {:name "foo"
            :id "foo"}
           :content []}))
-  (is (= (html-data (html/text-area :foo ""))
+  (is (= (html-data (html/text-area {:on-change identity} :foo ""))
          {:tag :textarea
           :attributes
           {:name "foo"
            :id "foo"}
           :content []}))
-  (is (= (html-data (html/text-area :foo "bar"))
+  (is (= (html-data (html/text-area {:on-change identity} :foo "bar"))
          {:tag :textarea
           :attributes
           {:name "foo"
            :id "foo"}
           :content ["bar"]})))
 
-(deftest test-text-area-field-with-extra-atts
-  (is (= (html-data (html/text-area {:class "classy"} :foo "bar"))
+(deftest test-text-area-field-with-extra-attrs
+  (is (= (html-data (html/text-area
+                     {:class "classy"
+                      :on-change identity} :foo "bar"))
          {:tag :textarea
           :attributes
           {:name "foo"
@@ -682,7 +759,7 @@
           :content ["bar"]})))
 
 (deftest test-text-area-escapes
-  (is (= (html-data (html/text-area :foo "bar</textarea>"))
+  (is (= (html-data (html/text-area {:on-change identity} :foo "bar</textarea>"))
          {:tag :textarea
           :attributes
           {:name "foo"
@@ -698,7 +775,7 @@
            :id "foo"}
           :content []})))
 
-(deftest test-file-field-with-extra-atts
+(deftest test-file-field-with-extra-attrs
   (is (= (html-data (html/file-upload {:class "classy"} :foo))
          {:tag :input
           :attributes
@@ -714,7 +791,7 @@
           :attributes {:for "foo"}
           :content ["bar"]})))
 
-(deftest test-label-with-extra-atts
+(deftest test-label-with-extra-attrs
   (is (= (html-data (html/label {:class "classy"} :foo "bar"))
          {:tag :label
           :attributes
@@ -730,7 +807,7 @@
            :value "bar"}
           :content []})))
 
-(deftest test-submit-button-with-extra-atts
+(deftest test-submit-button-with-extra-attrs
   (is (= (html-data (html/submit-button {:class "classy"} "bar"))
          {:tag :input
           :attributes
@@ -747,7 +824,7 @@
            :value "bar"}
           :content []})))
 
-(deftest test-reset-button-with-extra-atts
+(deftest test-reset-button-with-extra-attrs
   (is (= (html-data (html/reset-button {:class "classy"} "bar"))
          {:tag :input
           :attributes
@@ -823,8 +900,7 @@
               :attributes
               {:type "checkbox"
                :name "foo[bar]"
-               :id "foo-bar"
-               :value "true"}
+               :id "foo-bar"}
               :content []}]})))
 
   (testing "password-field"
@@ -864,7 +940,7 @@
               :content []}]})))
 
   (testing "text-area"
-    (is (= (html-data [:form (with-group :foo (html/text-area {:key 0} :bar "baz"))])
+    (is (= (html-data [:form (with-group :foo (html/text-area {:key 0 :on-change identity} :bar "baz"))])
            {:tag :form
             :attributes {}
             :content

@@ -98,25 +98,45 @@
 
 (defelem check-box
   "Creates a check box."
-  ([name] (check-box name nil))
-  ([name checked?] (check-box name checked? "true"))
+  ([name]
+   [:input
+    {:type "checkbox"
+     :name (make-name name)
+     :id (make-id name)}])
+  ([name checked?]
+   [:input
+    {:type "checkbox"
+     :name (make-name name)
+     :id (make-id name)
+     :checked checked?}])
   ([name checked? value]
-   [:input {:type "checkbox"
-            :name (make-name name)
-            :id   (make-id name)
-            :value (or value js/undefined)
-            :checked checked?}]))
+   [:input
+    {:type "checkbox"
+     :name (make-name name)
+     :id (make-id name)
+     :value value
+     :checked checked?}]))
 
 (defelem radio-button
   "Creates a radio button."
-  ([group] (radio-button group nil))
-  ([group checked?] (radio-button group checked? "true"))
+  ([group]
+   [:input
+    {:type "radio"
+     :name (make-name group)
+     :id (make-id (as-str group))}])
+  ([group checked?]
+   [:input
+    {:type "radio"
+     :name (make-name group)
+     :id (make-id (as-str group))
+     :checked checked?}])
   ([group checked? value]
-   [:input {:type "radio"
-            :name (make-name group)
-            :id   (make-id (str (as-str group) "-" (as-str value)))
-            :value (or value js/undefined)
-            :checked checked?}]))
+   [:input
+    {:type "radio"
+     :name (make-name group)
+     :id (make-id (str (as-str group) "-" (as-str value)))
+     :value value
+     :checked checked?}]))
 
 (defn- hash-key [x]
   (gstring/hashCode (pr-str x)))
