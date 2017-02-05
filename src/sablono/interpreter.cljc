@@ -64,22 +64,37 @@
 #?(:cljs (def wrapped-select (wrap-form-element "select" "value")))
 #?(:cljs (def wrapped-textarea (wrap-form-element "textarea" "value")))
 
-#?(:cljs
-   (defn defined? [x]
-     (and (not (nil? x))
-          (not (undefined? x)))))
+(defn ^boolean controlled-input?
+  "Returns true if `type` and `props` are used a controlled input,
+  otherwise false."
+  [type props]
+  #?(:cljs (and (object? props)
+                (case type
+                  "input"
+                  (or (exists? (.-checked props))
+                      (exists? (.-value props)))
+                  "select"
+                  (exists? (.-value props))
+                  "textarea"
+                  (exists? (.-value props))
+                  false))))
 
 #?(:cljs
-   (defn element-class [type props]
-     (case (name type)
-       "input"
-       (case (and (object? props) (.-type props))
-         "radio" wrapped-checked
-         "checkbox" wrapped-checked
-         wrapped-input)
-       "select" wrapped-select
-       "textarea" wrapped-textarea
-       (name type))))
+   (defn element-class
+     "Returns either `type` or a wrapped element for controlled
+     inputs."
+     [type props]
+     (if (controlled-input? type props)
+       (case type
+         "input"
+         (case (and (object? props) (.-type props))
+           "radio" wrapped-checked
+           "checkbox" wrapped-checked
+           wrapped-input)
+         "select" wrapped-select
+         "textarea" wrapped-textarea
+         type)
+       type)))
 
 #?(:cljs
    (defn create-element [type props & children]
