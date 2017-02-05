@@ -1,11 +1,23 @@
 (ns sablono.interpreter-test
   (:require-macros [sablono.test :refer [html-str]])
-  (:require [clojure.test :refer [are is testing]]
+  (:require [clojure.spec :as s]
+            [clojure.spec.impl.gen :as gen]
+            [clojure.string :as str]
+            [clojure.test :refer [are is testing]]
+            [clojure.test.check.clojure-test :refer-macros [defspec]]
+            [clojure.test.check.properties :refer-macros [for-all]]
             [devcards.core :refer-macros [deftest]]
             [sablono.core :as c]
             [sablono.interpreter :as i]
             [sablono.server :as server]
+            [sablono.specs :as specs]
             [tubax.core :refer [xml->clj]]))
+
+(def gen-string-child
+  (gen/such-that not-empty (s/gen string?)))
+
+(def gen-class-names
+  (gen/not-empty (gen/list (s/gen ::specs/class-name))))
 
 (defn interpret
   "Interpret `x` as a Hiccup data structure, render it as a static
@@ -43,41 +55,35 @@
           [{:tag :div :attributes {:class "1"} :content []}
            {:tag :div :attributes {:class "2"} :content []}]})))
 
-(deftest test-interpret-div
-  (is (= (interpret [:div])
-         {:tag :div
-          :attributes {}
-          :content []})))
+(defspec test-interpret-tag-only
+  (for-all [tag (s/gen ::specs/tag)]
+           (= (interpret [tag])
+              {:tag tag
+               :attributes {}
+               :content []})))
 
-(deftest test-interpret-div-with-string
-  (is (= (interpret [:div "x"])
-         {:tag :div
-          :attributes {}
-          :content ["x"]})))
+(defspec test-interpret-tag-with-id
+  (for-all [tag (s/gen ::specs/tag)
+            id (gen/not-empty (s/gen string?))]
+           (= (interpret [(keyword (str (name tag) "#" id))])
+              {:tag tag
+               :attributes {:id id}
+               :content []})))
 
-(deftest test-interpret-div-with-number
-  (is (= (interpret [:div 1])
-         {:tag :div
-          :attributes {}
-          :content ["1"]})))
+(defspec test-interpret-tag-with-class
+  (for-all [tag (s/gen ::specs/tag)
+            class (s/gen ::specs/class-name)]
+           (= (interpret [(keyword (str (name tag) "." class))])
+              {:tag tag
+               :attributes {:class class}
+               :content []})))
 
-(deftest test-interpret-div-with-nested-lazy-seq
-  (is (= (interpret [:div (map identity ["A" "B"])])
-         {:tag :div
-          :attributes {}
-          :content ["AB"]})))
-
-(deftest test-interpret-div-with-nested-list
-  (is (= (interpret [:div (list "A" "B")])
-         {:tag :div
-          :attributes {}
-          :content ["AB"]})))
-
-(deftest test-interpret-div-with-nested-vector
-  (is (= (interpret [:div ["A" "B"]])
-         {:tag :div
-          :attributes {}
-          :content ["AB"]})))
+(defspec test-interpret-tag-with-classes
+  (for-all [tag (s/gen ::specs/tag), classes gen-class-names]
+           (is (= (interpret [(keyword (str (name tag) "." (str/join "." classes)))])
+                  {:tag tag
+                   :attributes {:class (str/join " " classes)}
+                   :content []}))))
 
 (deftest test-class-duplication
   (is (= (interpret [:div.a.a.b.b.c {:class "c"}])
@@ -85,23 +91,61 @@
           :attributes {:class "a a b b c c"}
           :content []}))  )
 
-(deftest test-class-as-set
-  (is (= (interpret [:div {:class #{"a" "b" "c"}}])
-         {:tag :div
-          :attributes {:class "a b c"}
-          :content []})))
+(defspec test-class-as-set
+  (for-all [tag (s/gen ::specs/tag), classes gen-class-names]
+           (= (interpret [tag {:class (set classes)}])
+              {:tag tag
+               :attributes {:class (str/join " " (set classes))}
+               :content []})))
 
-(deftest test-class-as-list
-  (is (= (interpret [:div {:class (list "a" "b" "c")}])
-         {:tag :div
-          :attributes {:class "a b c"}
-          :content []})))
+(defspec test-class-as-list
+  (for-all [tag (s/gen ::specs/tag), classes gen-class-names]
+           (= (interpret [tag {:class (apply list classes)}])
+              {:tag tag
+               :attributes {:class (str/join " " classes)}
+               :content []})))
 
-(deftest test-class-as-vector
-  (is (= (interpret [:div {:class (vector "a" "b" "c")}])
-         {:tag :div
-          :attributes {:class "a b c"}
-          :content []})))
+(defspec test-class-as-vector
+  (for-all [tag (s/gen ::specs/tag), classes gen-class-names]
+           (= (interpret [tag {:class (vec classes)}])
+              {:tag tag
+               :attributes {:class (str/join " " classes)}
+               :content []})))
+
+(defspec test-interpret-child-as-string
+  (for-all [child gen-string-child]
+           (= (interpret [:div child])
+              {:tag :div
+               :attributes {}
+               :content [child]})))
+
+(defspec test-interpret-child-as-number
+  (for-all [child (s/gen number?)]
+           (= (interpret [:div child])
+              {:tag :div
+               :attributes {}
+               :content [(str child)]})))
+
+(defspec test-interpret-div-with-seq-child
+  (for-all [children (gen/not-empty (gen/list gen-string-child))]
+           (= (interpret [:div (seq children)])
+              {:tag :div
+               :attributes {}
+               :content [(apply str children)]})))
+
+(defspec test-interpret-div-with-list-child
+  (for-all [children (gen/not-empty (gen/list gen-string-child))]
+           (= (interpret [:div children])
+              {:tag :div
+               :attributes {}
+               :content [(apply str children)]})))
+
+(defspec test-interpret-div-with-vector-child
+  (for-all [children (gen/not-empty (gen/vector gen-string-child))]
+           (= (interpret [:div children])
+              {:tag :div
+               :attributes {}
+               :content [(apply str children)]})))
 
 (deftest test-issue-80
   (is (= (interpret

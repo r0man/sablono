@@ -1,5 +1,7 @@
 (ns sablono.test
-  (:require [sablono.core]))
+  (:require [clojure.test.check]
+            [clojure.test.check.generators]
+            [sablono.core]))
 
 (defmacro html-str [element]
   `(sablono.server/render-static
