@@ -8,18 +8,13 @@
 (defprotocol IInterpreter
   (interpret [this] "Interpret a Clojure data structure as a React fn call."))
 
-#?(:cljs (defn initial-state [component property]
-           (let [props #js {}]
-             (object/extend props (.-props component) #js {:children (.-children (.-props component))})
-             (when (nil? (object/get props property))
-               (object/set props property js/undefined))
-             props)))
-
-#?(:cljs (defn update-state [component next-props property value]
+#?(:cljs (defn update-state
+           "Updates the state of the wrapped input element."
+           [component next-props property value]
            (let [next-state #js {}]
-             (object/extend next-state next-props #js {:onChange (.-onChange component)})
-             (when (.hasOwnProperty (.-props component) property)
-               (object/set next-state property (if (nil? value) js/undefined value)))
+             (object/extend next-state
+               next-props #js {:onChange (object/get component "onChange")})
+             (object/set next-state property value)
              (.setState component next-state))))
 
 ;; A hack to force input elements to always update itself immediately,
@@ -33,24 +28,36 @@
        :getInitialState
        (fn []
          (this-as this
-           (initial-state this property)))
+           (let [state #js {}]
+             (object/extend state
+               (.-props this)
+               #js {:onChange (object/get this "onChange")})
+             state)))
        :onChange
        (fn [event]
          (this-as this
            (when-let [handler (.-onChange (.-props this))]
              (handler event)
-             (update-state this (.-props this) property (object/getValueByKeys event "target" property)))))
+             (update-state
+              this (.-props this) property
+              (object/getValueByKeys event "target" property)))))
        :componentWillReceiveProps
        (fn [new-props]
          (this-as this
            (let [state-value (object/getValueByKeys this "state" property)
                  element-value (object/get (js/ReactDOM.findDOMNode this) property)]
-             ;; on IE, onChange event might come after actual value of an element
-             ;; have changed. We detect this and render element as-is, hoping that
-             ;; next onChange will eventually come and bring our modifications anyways.
-             ;; Ignoring this causes skipped letters in controlled components
+             ;; On IE, onChange event might come after actual value of
+             ;; an element have changed. We detect this and render
+             ;; element as-is, hoping that next onChange will
+             ;; eventually come and bring our modifications anyways.
+             ;; Ignoring this causes skipped letters in controlled
+             ;; components
+             ;; https://github.com/facebook/react/issues/7027
              ;; https://github.com/reagent-project/reagent/issues/253
              ;; https://github.com/tonsky/rum/issues/86
+             ;; TODO: Find a better solution, since this conflicts
+             ;; with controlled/uncontrolled inputs.
+             ;; https://github.com/r0man/sablono/issues/148
              (if (not= state-value element-value)
                (update-state this new-props property element-value)
                (update-state this new-props property (object/get new-props property))))))
@@ -112,9 +119,6 @@
        (if (blank? class)
          (js-delete js-attrs "className")
          (set! (.-className js-attrs) class))
-       ;; TODO: clj->js converts js/undefined to nil
-       (when (undefined? (:value attrs))
-         (set! (.-value js-attrs) js/undefined))
        js-attrs)))
 
 (defn- interpret-seq

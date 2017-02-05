@@ -72,20 +72,14 @@
   (uncontrolled-input :checkbox (atom nil)))
 
 (defcard checkbox-controlled
-  (controlled-input :checkbox (atom true)))
-
-(defcard checkbox-controlled-warn
-  (controlled-input :checkbox (atom nil)))
+  (controlled-input :checkbox (atom "")))
 
 
 (defcard text-uncontrolled
   (uncontrolled-input :text (atom nil)))
 
 (defcard text-controlled
-  (controlled-input :text (atom "Hello")))
-
-(defcard text-controlled-warn
-  (controlled-input :text (atom nil)))
+  (controlled-input :text (atom "")))
 
 
 (defcard textarea-uncontrolled
@@ -93,9 +87,6 @@
 
 (defcard textarea-controlled
   (controlled-input :textarea (atom "Hello")))
-
-(defcard textarea-controlled-warn
-  (controlled-input :textarea (atom nil)))
 
 
 (defcard select-uncontrolled

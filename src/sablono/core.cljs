@@ -86,11 +86,15 @@
 
 (defn- input-field*
   "Creates a new <input> element."
-  [type name value]
-  [:input {:type type
-           :name (make-name name)
-           :id (make-id name)
-           :value (or value js/undefined)}])
+  ([type name]
+   [:input {:type type
+            :name (make-name name)
+            :id (make-id name)}])
+  ([type name value]
+   [:input {:type type
+            :name (make-name name)
+            :id (make-id name)
+            :value (or value js/undefined)}]))
 
 (gen-input-fields)
 
@@ -154,7 +158,10 @@
 
 (defelem text-area
   "Creates a text area element."
-  ([name] (text-area name nil))
+  ([name]
+   [:textarea
+    {:name (make-name name)
+     :id (make-id name)}])
   ([name value]
    [:textarea
     {:name (make-name name)
