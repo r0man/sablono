@@ -1,6 +1,10 @@
 (ns sablono.compiler-test
   (:refer-clojure :exclude [compile])
-  (:require [clojure.test :refer :all]
+  (:require [clojure.spec :as s]
+            [clojure.spec.gen :as gen]
+            [clojure.test :refer :all]
+            [clojure.test.check.clojure-test :refer [defspec]]
+            [clojure.test.check.properties :as prop]
             [clojure.walk :refer [prewalk]]
             [sablono.compiler :refer :all]
             [sablono.core :refer [attrs html html-expand]]
@@ -106,6 +110,12 @@
           (is (instance? JSValue v))
           (is (= 2 (first (.val v))))
           (is (= [3] (.val (second (.val v))))))))))
+
+(defspec test-basic-tags
+  (prop/for-all
+   [tag (s/gen keyword?)]
+   (= (eval `(compile [~tag]))
+      `(js/React.createElement ~(name tag) nil))))
 
 (deftest tag-names
   (testing "basic tags"
