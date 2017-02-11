@@ -2,10 +2,14 @@
   (:require [clojure.walk :refer [postwalk-replace]]
             [sablono.compiler :as compiler]))
 
+(def react-element-sym
+  "The JavaScript symbol used for React elements."
+  'sablono.core/react-element-sym)
+
 (defmacro attrs
   "Compile `attributes` map into a JavaScript literal."
   [attributes]
-  (sablono.compiler/compile-attrs attributes))
+  (sablono.compiler/compile-attrs-js attributes))
 
 (defmacro html
   "Compile the Hiccup `content` into a React DOM node."

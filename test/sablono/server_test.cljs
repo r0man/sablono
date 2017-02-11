@@ -1,5 +1,5 @@
 (ns sablono.server-test
-  (:require [cljs.test :as t :refer-macros [are deftest]]
+  (:require [cljs.test :as t :refer-macros [are is deftest]]
             [sablono.core :refer-macros [html]]
             [sablono.server :as server]))
 
@@ -18,3 +18,13 @@
     "<div id=\"a\" class=\"b\">c</div>"
     (html [:div (when true [:p "data"]) (if true [:p "data"] nil)])
     "<div><p>data</p><p>data</p></div>"))
+
+(deftest test-literal-tag-child
+  (let [x "a"]
+    (is (= (server/render-static (html [:div x "b"]))
+           "<div>ab</div>"))))
+
+(deftest test-literal-tag-map
+  (let [x {:class "a"}]
+    (is (= (server/render-static (html [:div x "b"]))
+           "<div class=\"a\">b</div>"))))
