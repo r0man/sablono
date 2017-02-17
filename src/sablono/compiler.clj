@@ -230,15 +230,20 @@
   (let [[tag attrs _] (normalize/element [tag attrs])
         num-children (count children)]
     (JSValue.
-     {:$$typeof 'sablono.core/react-element-sym
-      :type (name tag)
-      :props
-      (JSValue.
-       (cond-> (or (compile-attrs attrs) {})
-         (= num-children 1)
-         (assoc :children (compile-html (first children)))
-         (> num-children 1)
-         (assoc :children (JSValue. (mapv compile-html children)))))})))
+     (cond-> {:$$typeof 'sablono.core/react-element-sym
+              :type (name tag)
+              :props
+              (JSValue.
+               (cond-> (or (compile-attrs attrs) {})
+                 (= num-children 1)
+                 (assoc :children (compile-html (first children)))
+                 (> num-children 1)
+                 (assoc :children (JSValue. (mapv compile-html children)))))}
+       (:key attrs)
+       (assoc :key (str (:key attrs)))
+
+       (:ref attrs)
+       (assoc :ref (str (:ref attrs)))))))
 
 (defmethod compile-element ::literal-tag-and-no-attributes
   [[tag & content]]

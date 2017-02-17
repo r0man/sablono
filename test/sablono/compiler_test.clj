@@ -160,19 +160,33 @@
               :type "div"
               :props (js {:id "a" :className "b c"})}))))
 
-(deftest test-tag-key
+(deftest test-tag-key-all-literal
   (is (= (compile [:div {:key 1}])
          (js {:$$typeof sablono.core/react-element-sym
               :type "div"
               :key "1"
               :props #js {}}))))
 
-(deftest test-tag-ref
+(deftest test-tag-key-literal-tag-and-attributes
+  (is (= (compile [:div {:key 1} (str "x")])
+         (js {:$$typeof sablono.core/react-element-sym
+              :type "div"
+              :props (js {:children '(sablono.interpreter/interpret (str "x"))})
+              :key "1"}))))
+
+(deftest test-tag-ref-all-literal
   (is (= (compile [:div {:ref "node"}])
          (js {:$$typeof sablono.core/react-element-sym
               :type "div"
               :ref "node"
               :props #js {}}))))
+
+(deftest test-tag-ref-literal-tag-and-attributes
+  (is (= (compile [:div {:ref "node"} (str "x")])
+         (js {:$$typeof sablono.core/react-element-sym
+              :type "div"
+              :props (js {:children '(sablono.interpreter/interpret (str "x"))})
+              :ref "node"}))))
 
 (deftest tag-tag-syntax-sugar-class-fn-child
   (with-static-gensym
