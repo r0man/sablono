@@ -69,15 +69,6 @@
       :else `(sablono.interpreter/attributes
               (sablono.normalize/merge-with-class ~attrs-1 ~attrs-2)))))
 
-(defn compile-input-element
-  "Render an element vector as a HTML element."
-  [element]
-  (let [[tag attrs content] (normalize/element element)]
-    `(~(react-fn tag)
-      ~(name tag)
-      ~(compile-attrs-js attrs)
-      ~@(if content (map compile-html content)))))
-
 (defn- unevaluated?
   "True if the expression has not been evaluated."
   [expr]
@@ -165,6 +156,11 @@
   "Returns the compilation strategy to use for a given element."
   [[tag attrs & content :as element]]
   (cond
+
+    ;; ; e.g. [:span x]
+    (input-element? tag)
+    ::input-element
+
     ;; e.g. [:span "foo"]
     (every? literal? element)
     ::all-literal
@@ -201,44 +197,48 @@
   {:private true}
   element-compile-strategy)
 
+(defmethod compile-element ::input-element
+  [element]
+  (let [[tag attrs content] (normalize/element element)]
+    `(sablono.interpreter/create-element
+      ~(name tag)
+      ~(compile-attrs-js attrs)
+      ~@(if content (map compile-html content)))))
+
 (defmethod compile-element ::all-literal
   [element]
-  (if (input-element? (first element))
-    (compile-input-element element)
-    (let [[tag attrs children] (normalize/element (eval element))
-          num-children (count children)]
-      (JSValue.
-       (cond-> {:$$typeof 'sablono.core/react-element-sym
-                :type (name tag)
-                :props
-                (JSValue.
-                 (cond-> (or (compile-attrs attrs) {})
-                   (= num-children 1)
-                   (assoc :children (compile-html (first children)))
-                   (> num-children 1)
-                   (assoc :children (JSValue. (vec (compile-react children))))))}
-         (:key attrs)
-         (assoc :key (str (:key attrs)))
+  (let [[tag attrs children] (normalize/element (eval element))
+        num-children (count children)]
+    (JSValue.
+     (cond-> {:$$typeof 'sablono.core/react-element-sym
+              :type (name tag)
+              :props
+              (JSValue.
+               (cond-> (or (compile-attrs attrs) {})
+                 (= num-children 1)
+                 (assoc :children (compile-html (first children)))
+                 (> num-children 1)
+                 (assoc :children (JSValue. (vec (compile-react children))))))}
+       (:key attrs)
+       (assoc :key (str (:key attrs)))
 
-         (:ref attrs)
-         (assoc :ref (str (:ref attrs))))))))
+       (:ref attrs)
+       (assoc :ref (str (:ref attrs)))))))
 
 (defmethod compile-element ::literal-tag-and-attributes
   [[tag attrs & children :as element]]
-  (if (input-element? tag)
-    (compile-input-element element)
-    (let [[tag attrs _] (normalize/element [tag attrs])
-          num-children (count children)]
+  (let [[tag attrs _] (normalize/element [tag attrs])
+        num-children (count children)]
+    (JSValue.
+     {:$$typeof 'sablono.core/react-element-sym
+      :type (name tag)
+      :props
       (JSValue.
-       {:$$typeof 'sablono.core/react-element-sym
-        :type (name tag)
-        :props
-        (JSValue.
-         (cond-> (or (compile-attrs attrs) {})
-           (= num-children 1)
-           (assoc :children (compile-html (first children)))
-           (> num-children 1)
-           (assoc :children (JSValue. (mapv compile-html children)))))}))))
+       (cond-> (or (compile-attrs attrs) {})
+         (= num-children 1)
+         (assoc :children (compile-html (first children)))
+         (> num-children 1)
+         (assoc :children (JSValue. (mapv compile-html children)))))})))
 
 (defmethod compile-element ::literal-tag-and-no-attributes
   [[tag & content]]
@@ -250,36 +250,32 @@
 
 (defmethod compile-element ::literal-tag-and-hinted-attributes
   [[tag attrs & children :as element]]
-  (if (input-element? tag)
-    (compile-input-element element)
-    (let [[tag tag-attrs _] (normalize/element [tag])]
-      (JSValue.
-       {:$$typeof 'sablono.core/react-element-sym
-        :type (name tag)
-        :props `(sablono.interpreter/props
-                 ~(compile-merge-attrs tag-attrs attrs)
-                 ~(when-not (empty? children)
-                    (JSValue. (mapv compile-html children))))}))))
+  (let [[tag tag-attrs _] (normalize/element [tag])]
+    (JSValue.
+     {:$$typeof 'sablono.core/react-element-sym
+      :type (name tag)
+      :props `(sablono.interpreter/props
+               ~(compile-merge-attrs tag-attrs attrs)
+               ~(when-not (empty? children)
+                  (JSValue. (mapv compile-html children))))})))
 
 (defmethod compile-element ::literal-tag
   [[tag attrs & content :as element]]
-  (if (input-element? tag)
-    (compile-input-element element)
-    (let [[tag tag-attrs _] (normalize/element [tag])
-          attrs-sym (gensym "attrs")]
-      `(let [~attrs-sym ~attrs]
-         ~(JSValue.
-           {:$$typeof 'sablono.core/react-element-sym
-            :type (name tag)
-            :props `(sablono.interpreter/props
-                     (if (map? ~attrs-sym)
-                       ~(compile-merge-attrs tag-attrs attrs-sym)
-                       ~(compile-attrs-js tag-attrs))
-                     (if (map? ~attrs-sym)
-                       ~(when-not (empty? content)
-                          (JSValue. (mapv compile-html content)))
-                       ~(when attrs
-                          (JSValue. (mapv compile-html (cons attrs-sym content))))))})))))
+  (let [[tag tag-attrs _] (normalize/element [tag])
+        attrs-sym (gensym "attrs")]
+    `(let [~attrs-sym ~attrs]
+       ~(JSValue.
+         {:$$typeof 'sablono.core/react-element-sym
+          :type (name tag)
+          :props `(sablono.interpreter/props
+                   (if (map? ~attrs-sym)
+                     ~(compile-merge-attrs tag-attrs attrs-sym)
+                     ~(compile-attrs-js tag-attrs))
+                   (if (map? ~attrs-sym)
+                     ~(when-not (empty? content)
+                        (JSValue. (mapv compile-html content)))
+                     ~(when attrs
+                        (JSValue. (mapv compile-html (cons attrs-sym content))))))}))))
 
 (defmethod compile-element :default
   [element]
