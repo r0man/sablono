@@ -68,10 +68,15 @@
                  (remove nil?)))
        (str/join " ")))
 
+(defn input-element?
+  "Returns true if `element` is an input element."
+  [tag]
+  (#{:input :select :textarea} (keyword tag)))
+
 (defn react-fn
   "Return the symbol of a fn that build a React element. "
   [type]
-  (if (contains? #{:input :select :textarea} (keyword type))
+  (if (input-element? type)
     'sablono.interpreter/create-element
     'js/React.createElement))
 

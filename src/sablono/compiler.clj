@@ -14,6 +14,8 @@
 (defprotocol IJSValue
   (to-js [x]))
 
+(declare compile-html)
+
 (defmulti compile-attr (fn [name value] name))
 
 (defmethod compile-attr :class [_ value]
@@ -40,12 +42,16 @@
 (defn compile-attrs
   "Compile a HTML attribute map."
   [attrs]
-  (->> (seq attrs)
+  (->> (seq (dissoc attrs :key :ref))
        (reduce (fn [attrs [name value]]
                  (assoc attrs name (compile-attr name value) ))
                nil)
-       (html-to-dom-attrs)
-       (to-js)))
+       (html-to-dom-attrs)))
+
+(defn compile-attrs-js
+  "Compile a HTML attribute map into a JSValue."
+  [attrs]
+  (to-js (compile-attrs attrs)))
 
 (defn compile-merge-attrs [attrs-1 attrs-2]
   (let [empty-attrs? #(or (nil? %1) (and (map? %1) (empty? %1)))]
@@ -63,15 +69,6 @@
       :else `(sablono.interpreter/attributes
               (sablono.normalize/merge-with-class ~attrs-1 ~attrs-2)))))
 
-(defn compile-react-element
-  "Render an element vector as a HTML element."
-  [element]
-  (let [[tag attrs content] (normalize/element element)]
-    `(~(react-fn tag)
-      ~(name tag)
-      ~(compile-attrs attrs)
-      ~@(if content (compile-react content)))))
-
 (defn- unevaluated?
   "True if the expression has not been evaluated."
   [expr]
@@ -84,8 +81,6 @@
   [form]
   (if (and (seq? form) (symbol? (first form)))
     (name (first form))))
-
-(declare compile-html)
 
 (defmulti compile-form
   "Pre-compile certain standard forms, where possible."
@@ -161,6 +156,11 @@
   "Returns the compilation strategy to use for a given element."
   [[tag attrs & content :as element]]
   (cond
+
+    ;; ; e.g. [:span x]
+    (input-element? tag)
+    ::input-element
+
     ;; e.g. [:span "foo"]
     (every? literal? element)
     ::all-literal
@@ -197,17 +197,48 @@
   {:private true}
   element-compile-strategy)
 
+(defmethod compile-element ::input-element
+  [element]
+  (let [[tag attrs content] (normalize/element element)]
+    `(sablono.interpreter/create-element
+      ~(name tag)
+      ~(compile-attrs-js attrs)
+      ~@(if content (map compile-html content)))))
+
 (defmethod compile-element ::all-literal
   [element]
-  (compile-react-element (eval element)))
+  (let [[tag attrs children] (normalize/element (eval element))
+        num-children (count children)]
+    (JSValue.
+     (cond-> {:$$typeof 'sablono.core/react-element-sym
+              :type (name tag)
+              :props
+              (JSValue.
+               (cond-> (or (compile-attrs attrs) {})
+                 (= num-children 1)
+                 (assoc :children (compile-html (first children)))
+                 (> num-children 1)
+                 (assoc :children (JSValue. (vec (compile-react children))))))}
+       (:key attrs)
+       (assoc :key (str (:key attrs)))
+
+       (:ref attrs)
+       (assoc :ref (str (:ref attrs)))))))
 
 (defmethod compile-element ::literal-tag-and-attributes
-  [[tag attrs & content]]
-  (let [[tag attrs _] (normalize/element [tag attrs])]
-    `(~(react-fn tag)
-      ~(name tag)
-      ~(compile-attrs attrs)
-      ~@(map compile-html content))))
+  [[tag attrs & children :as element]]
+  (let [[tag attrs _] (normalize/element [tag attrs])
+        num-children (count children)]
+    (JSValue.
+     {:$$typeof 'sablono.core/react-element-sym
+      :type (name tag)
+      :props
+      (JSValue.
+       (cond-> (or (compile-attrs attrs) {})
+         (= num-children 1)
+         (assoc :children (compile-html (first children)))
+         (> num-children 1)
+         (assoc :children (JSValue. (mapv compile-html children)))))})))
 
 (defmethod compile-element ::literal-tag-and-no-attributes
   [[tag & content]]
@@ -218,31 +249,33 @@
   (compile-element (apply vector tag {} content)))
 
 (defmethod compile-element ::literal-tag-and-hinted-attributes
-  [[tag attrs & content]]
-  (let [[tag tag-attrs _] (normalize/element [tag])
-        attrs-sym (gensym "attrs")]
-    `(let [~attrs-sym ~attrs]
-       (apply ~(react-fn tag)
-              ~(name tag)
-              ~(compile-merge-attrs tag-attrs attrs-sym)
-              ~(when-not (empty? content)
-                 (mapv compile-html content))))))
+  [[tag attrs & children :as element]]
+  (let [[tag tag-attrs _] (normalize/element [tag])]
+    (JSValue.
+     {:$$typeof 'sablono.core/react-element-sym
+      :type (name tag)
+      :props `(sablono.interpreter/props
+               ~(compile-merge-attrs tag-attrs attrs)
+               ~(when-not (empty? children)
+                  (JSValue. (mapv compile-html children))))})))
 
 (defmethod compile-element ::literal-tag
-  [[tag attrs & content]]
+  [[tag attrs & content :as element]]
   (let [[tag tag-attrs _] (normalize/element [tag])
         attrs-sym (gensym "attrs")]
     `(let [~attrs-sym ~attrs]
-       (apply ~(react-fn tag)
-              ~(name tag)
-              (if (map? ~attrs-sym)
-                ~(compile-merge-attrs tag-attrs attrs-sym)
-                ~(compile-attrs tag-attrs))
-              (if (map? ~attrs-sym)
-                ~(when-not (empty? content)
-                   (mapv compile-html content))
-                ~(when attrs
-                   (mapv compile-html (cons attrs-sym content))))))))
+       ~(JSValue.
+         {:$$typeof 'sablono.core/react-element-sym
+          :type (name tag)
+          :props `(sablono.interpreter/props
+                   (if (map? ~attrs-sym)
+                     ~(compile-merge-attrs tag-attrs attrs-sym)
+                     ~(compile-attrs-js tag-attrs))
+                   (if (map? ~attrs-sym)
+                     ~(when-not (empty? content)
+                        (JSValue. (mapv compile-html content)))
+                     ~(when attrs
+                        (JSValue. (mapv compile-html (cons attrs-sym content))))))}))))
 
 (defmethod compile-element :default
   [element]
@@ -257,23 +290,26 @@
   "Pre-compile data structures into HTML where possible."
   [content]
   (cond
-    (vector? content) (compile-element content)
-    (literal? content) content
-    (hint? content String) content
-    (hint? content Number) content
-    :else (compile-form content)))
+    (vector? content)
+    (compile-element content)
 
-;; TODO: Remove when landed in ClojureScript.
-(defmethod print-method JSValue
-  [^JSValue v, ^java.io.Writer w]
-  (.write w "#js ")
-  (.write w (pr-str (.val v))))
+    (literal? content)
+    content
+
+    (hint? content String)
+    content
+
+    (hint? content Number)
+    content
+
+    :else
+    (compile-form content)))
 
 (extend-protocol ICompile
   clojure.lang.IPersistentVector
   (compile-react [this]
     (if (element? this)
-      (compile-react-element this)
+      (compile-element this)
       (compile-react (seq this))))
   clojure.lang.ISeq
   (compile-react [this]

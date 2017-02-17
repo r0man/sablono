@@ -3,7 +3,8 @@
             [sablono.normalize :as normalize]
             [sablono.util :as util]
             #?(:cljs [goog.object :as object])
-            #?(:cljs cljsjs.react)))
+            #?(:cljs cljsjs.react))
+  #?(:clj (:import cljs.tagged_literals.JSValue)))
 
 (defprotocol IInterpreter
   (interpret [this] "Interpret a Clojure data structure as a React fn call."))
@@ -137,6 +138,25 @@
        (apply create-element type
               (attributes attrs)
               (interpret-seq content)))))
+
+(defn props
+  "Returns the React JavaScript props for `attrs` and `children`."
+  [attrs children]
+  #?(:clj (JSValue.
+           (assoc (cond
+                    (instance? JSValue attrs)
+                    (.-val attrs )
+                    (map? attrs)
+                    attrs)
+                  :children
+                  (cond
+                    (instance? JSValue children)
+                    children
+                    (sequential? children)
+                    (JSValue. children))))
+     :cljs (let [attrs (clj->js (or attrs {}))]
+             (set! (.-children attrs) (clj->js children))
+             attrs)))
 
 #?(:cljs
    (defn- interpret-vec

@@ -10,6 +10,12 @@
             [sablono.util :refer [to-str]]
             [tubax.core :refer [xml->clj]]))
 
+(js/React.createElement "div" #js {:ref "node" :key 1})
+(js/React.createElement "div")
+
+(html [:div {:ref "node" :key 1}])
+(html [:div {:ref "node"}])
+
 (deftest test-basic-tag
   (is (= (html-data [:div])
          {:tag :div
@@ -1299,3 +1305,17 @@
             [{:tag :span
               :attributes {}
               :content ["abc"]}]}))))
+
+(deftest test-map-lookup
+  (let [data {:a "a"}]
+    (is (= (html-data [:span (:a data)])
+           {:tag :span
+            :attributes {}
+            :content ["a"]}))))
+
+(deftest test-map-lookup-attrs
+  (let [data {:a "a"}]
+    (is (= (html-data [:span {:class "b"} (:a data)])
+           {:tag :span
+            :attributes {:class "b"}
+            :content ["a"]}))))

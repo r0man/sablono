@@ -198,3 +198,13 @@
              {:tag :div
               :attributes {}
               :content ["!Pixel Scout"]}]}))))
+
+(deftest test-props
+  (are [attrs-f children-f]
+      (= (js->clj (i/props (attrs-f {:a 1}) (children-f ["a" "b"]))
+                  :keywordize-keys true)
+         {:a 1 :children ["a" "b"]})
+    identity identity
+    identity clj->js
+    clj->js clj->js
+    clj->js identity))
