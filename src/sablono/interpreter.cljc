@@ -152,6 +152,9 @@
      Cons
      (interpret [this]
        (interpret-seq this))
+     ChunkedCons
+     (interpret [this]
+       (interpret-seq this))
      ChunkedSeq
      (interpret [this]
        (interpret-seq this))
