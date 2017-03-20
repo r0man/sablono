@@ -1299,3 +1299,12 @@
             [{:tag :span
               :attributes {}
               :content ["abc"]}]}))))
+
+(deftest test-issue-158
+  (let [focused? true]
+    (is (= (html-data [:div {:style (merge {:margin-left "2rem"}
+                                           (when focused? {:color "red"}))}])
+           {:tag :div
+            :attributes
+            {:style "margin-left:2rem;color:red;"}
+            :content []}))))
