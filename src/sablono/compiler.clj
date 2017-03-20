@@ -32,7 +32,7 @@
   (let [value (camel-case-keys value)]
     (if (map? value)
       (to-js value)
-      `(~'clj->js ~value))))
+      `(sablono.interpreter/attributes ~value))))
 
 (defmethod compile-attr :default [_ value]
   (to-js value))

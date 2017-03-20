@@ -1,5 +1,6 @@
 * Changelog
 ** Unreleased
+- [[https://github.com/r0man/sablono/issues/158][#158]] Fix camel-case bug in :style attributes.
 - [[https://github.com/r0man/sablono/pull/152][#152]] Don't coerce nil/undefined input :value to be consistent with React.
 - [[https://github.com/r0man/sablono/pull/149][#149]] Force lazy seq in interpret-seq to be realized.
 - [[https://github.com/r0man/sablono/pull/146][#146]] Keep state and props of inputs synchronized.

@@ -346,7 +346,9 @@
      '(js/React.createElement
        "ul" #j {:className "nav navbar-nav navbar-right pull-right"}
        (js/React.createElement
-        "li" #j {:style (clj->js (hidden (nil? username))), :className "dropdown"}
+        "li" #j {:style (sablono.interpreter/attributes
+                         (hidden (nil? username)))
+                 :className "dropdown"}
         (js/React.createElement
          "a" #j {:href "#", :role "button", :className "dropdown-toggle"}
          (sablono.interpreter/interpret (str "Welcome, " username))
@@ -540,3 +542,11 @@
          '(sablono.interpreter/create-element
            "input" (sablono.interpreter/attributes
                     {(case :checkbox :checkbox :checked :value) "x"})))))
+
+(deftest test-issue-158
+  (is (= (compile [:div {:style (merge {:margin-left "2rem"}
+                                       (when focused? {:color "red"}))}])
+         '(js/React.createElement
+           "div" #j {:style (sablono.interpreter/attributes
+                             (merge {:margin-left "2rem"}
+                                    (when focused? {:color "red"})))}))))
