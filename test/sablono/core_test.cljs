@@ -1308,3 +1308,10 @@
             :attributes
             {:style "margin-left:2rem;color:red;"}
             :content []}))))
+
+(deftest test-issue-160
+  (let [k :data-foo]
+    (is (= (html-data [:div {k "bar"}])
+           {:tag :div
+            :attributes {:data-foo "bar"}
+            :content []}))))
