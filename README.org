@@ -56,7 +56,7 @@
    #+BEGIN_SRC clojure :exports code :results silent
     [:div {}
      ^:inline (function-that-returns-react-component)]
-      #+END_SRC
+   #+END_SRC
 
 ** HTML Tags
 
@@ -96,6 +96,33 @@
    #+END_SRC
 
    You can read more at [[http://facebook.github.io/react/docs/special-non-dom-attributes.html][React's special attributes]].
+
+** FAQ
+
+*** How to run the tests?
+
+    You need to have [[https://nodejs.org/en/][Node.js]] and [[http://phantomjs.org/][PhantomJS]] installed for the
+    ClojureScript test.
+
+    To run all Clojure and ClojureScript tests run the following
+    command:
+
+    #+BEGIN_SRC sh :exports code :results silent
+      lein ci
+    #+END_SRC
+
+    For development the ClojureScript tests can be run with
+    [[https://github.com/bensu/doo][lein-doo]]. To run the tests on Node.js run the following command:
+
+    #+BEGIN_SRC sh :exports code :results silent
+      lein doo node nodejs auto
+    #+END_SRC
+
+    To run the tests on PhantomJS use this command:
+
+    #+BEGIN_SRC sh :exports code :results silent
+      lein doo phantom none auto
+    #+END_SRC
 
 ** Thanks
 
