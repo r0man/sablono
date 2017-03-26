@@ -18,8 +18,7 @@
                                   [rum "0.10.8"]]
                    :plugins [[lein-cljsbuild "1.1.4"]
                              [lein-doo "0.1.7"]
-                             [lein-figwheel "0.5.8"]
-                             [lein-npm "0.6.2"]]
+                             [lein-figwheel "0.5.8"]]
                    :resource-paths ["test-resources" "target"]}
              :provided {:dependencies [[cljsjs/react "15.4.2-2"]
                                        [cljsjs/react-dom "15.4.2-2"]
@@ -93,7 +92,5 @@
                  :verbose false}
                 :source-paths ["src" "test"]}]}
   :deploy-repositories [["releases" :clojars]]
-  :npm {:dependencies [[react "15.4.2"]
-                       [react-dom "15.4.2"]]}
   :test-selectors {:benchmark :benchmark
                    :default (complement :benchmark)})
