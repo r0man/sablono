@@ -104,6 +104,13 @@
     You need to have [[https://nodejs.org/en/][Node.js]] and [[http://phantomjs.org/][PhantomJS]] installed for the
     ClojureScript test.
 
+    Make sure you have all dependencies installed. The following
+    command installs the Maven and Node.js dependencies.
+
+    #+BEGIN_SRC sh :exports code :results silent
+      lein deps
+    #+END_SRC
+
     To run all Clojure and ClojureScript tests run the following
     command:
 
