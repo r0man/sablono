@@ -30,6 +30,7 @@
 (deftest test-attributes
   (are [attrs expected]
       (= expected (js->clj (i/attributes attrs)))
+    nil nil
     {} {}
     {:className ""} {}
     {:className "aa"}       {"className" "aa"}

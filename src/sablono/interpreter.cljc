@@ -113,13 +113,13 @@
 
 #?(:cljs
    (defn attributes [attrs]
-     (let [js-attrs (clj->js (util/html-to-dom-attrs attrs))
-           class (.-className js-attrs)
-           class (if (array? class) (join " " class) class)]
-       (if (blank? class)
-         (js-delete js-attrs "className")
-         (set! (.-className js-attrs) class))
-       js-attrs)))
+     (when-let [js-attrs (clj->js (util/html-to-dom-attrs attrs))]
+       (let [class (.-className js-attrs)
+             class (if (array? class) (join " " class) class)]
+         (if (blank? class)
+           (js-delete js-attrs "className")
+           (set! (.-className js-attrs) class))
+         js-attrs))))
 
 (defn- interpret-seq
   "Interpret the seq `x` as HTML elements."
