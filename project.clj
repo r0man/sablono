@@ -14,7 +14,7 @@
                                   [figwheel-sidecar "0.5.9"]
                                   [funcool/tubax "0.2.0"]
                                   [org.clojure/test.check "0.9.0"]
-                                  [reagent "0.6.0"]
+                                  [reagent "0.6.1"]
                                   [rum "0.10.8"]]
                    :plugins [[lein-cljsbuild "1.1.4"]
                              [lein-doo "0.1.7"]
