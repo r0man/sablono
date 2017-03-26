@@ -1307,4 +1307,11 @@
            {:tag :div
             :attributes
             {:style "margin-left:2rem;color:red;"}
+            :content []})))
+  (let [focused? false]
+    (is (= (html-data [:div {:style (merge {:margin-left "2rem"}
+                                           (when focused? {:color "red"}))}])
+           {:tag :div
+            :attributes
+            {:style "margin-left:2rem;"}
             :content []}))))
