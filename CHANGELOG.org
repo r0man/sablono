@@ -1,5 +1,10 @@
 * Changelog
 ** Unreleased
+
+- [[https://github.com/r0man/sablono/pull/167][#167]] Update React to =15.5.0-0= and get rid of =React.createClass=.
+
+** 0.8.0
+
 - [[https://github.com/r0man/sablono/pull/165][#165]] Remove lein-npm from development dependencies.
 - [[https://github.com/r0man/sablono/issues/158][#158]] Fix camel-case bug in :style attributes and handle nil in =interpreter/atributes=.
 - [[https://github.com/r0man/sablono/pull/152][#152]] Don't coerce nil/undefined input :value to be consistent with React.

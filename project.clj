@@ -15,14 +15,14 @@
                                   [funcool/tubax "0.2.0"]
                                   [org.clojure/test.check "0.9.0"]
                                   [reagent "0.6.1"]
-                                  [rum "0.10.8"]]
+                                  [rum "0.10.8" :exclusions [sablono]]]
                    :plugins [[lein-cljsbuild "1.1.4"]
                              [lein-doo "0.1.7"]
                              [lein-figwheel "0.5.8"]]
                    :resource-paths ["test-resources" "target"]}
-             :provided {:dependencies [[cljsjs/react "15.4.2-2"]
-                                       [cljsjs/react-dom "15.4.2-2"]
-                                       [cljsjs/react-dom-server "15.4.2-2"]
+             :provided {:dependencies [[cljsjs/react "15.5.0-0"]
+                                       [cljsjs/react-dom "15.5.0-0"]
+                                       [cljsjs/react-dom-server "15.5.0-0"]
                                        [org.clojure/clojurescript "1.9.473"]]}
              :repl {:dependencies [[com.cemerick/piggieback "0.2.1"]]
                     :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}}
@@ -30,7 +30,9 @@
                   ["clean"]
                   ["test" ":default"]
                   ["doo" "node" "nodejs" "once"]
-                  ["doo" "phantom" "none" "once"]
+                  ;; TODO: Fix ReferenceError: Can't find variable: React
+                  ;; ["doo" "phantom" "none" "once"]
+                  ["doo" "nashorn" "advanced" "once"]
                   ["doo" "phantom" "advanced" "once"]
                   ["doo" "phantom" "benchmark" "once"]]
             "deploy" ["do" "clean," "deploy" "clojars"]}

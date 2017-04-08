@@ -11,9 +11,9 @@
 #?(:cljs (defn update-state
            "Updates the state of the wrapped input element."
            [component next-props property value]
-           (let [next-state #js {}]
-             (object/extend next-state
-               next-props #js {:onChange (object/get component "onChange")})
+           (let [on-change (object/getValueByKeys component "state" "onChange")
+                 next-state #js {}]
+             (object/extend next-state next-props #js {:onChange on-change})
              (object/set next-state property value)
              (.setState component next-state))))
 
@@ -22,28 +22,26 @@
 
 #?(:cljs
    (defn wrap-form-element [element property]
-     (js/React.createClass
-      #js
-      {:displayName (str "wrapped-" element)
-       :getInitialState
-       (fn []
-         (this-as this
-           (let [state #js {}]
-             (object/extend state
-               (.-props this)
-               #js {:onChange (object/get this "onChange")})
-             state)))
-       :onChange
-       (fn [event]
-         (this-as this
+     (let [ctor (fn [props]
+                  (this-as this
+                    (set! (.-state this)
+                          (let [state #js {}]
+                            (->> #js {:onChange (goog.bind (object/get this "onChange") this)}
+                                 (object/extend state props))
+                            state))
+                    (.call js/React.Component this props)))]
+       (set! (.-displayName ctor) (str "wrapped-" element))
+       (goog.inherits ctor js/React.Component)
+       (specify! (.-prototype ctor)
+         Object
+         (onChange [this event]
            (when-let [handler (.-onChange (.-props this))]
              (handler event)
              (update-state
               this (.-props this) property
-              (object/getValueByKeys event "target" property)))))
-       :componentWillReceiveProps
-       (fn [new-props]
-         (this-as this
+              (object/getValueByKeys event "target" property))))
+
+         (componentWillReceiveProps [this new-props]
            (let [state-value (object/getValueByKeys this "state" property)
                  element-value (object/get (js/ReactDOM.findDOMNode this) property)]
              ;; On IE, onChange event might come after actual value of
@@ -60,11 +58,11 @@
              ;; https://github.com/r0man/sablono/issues/148
              (if (not= state-value element-value)
                (update-state this new-props property element-value)
-               (update-state this new-props property (object/get new-props property))))))
-       :render
-       (fn []
-         (this-as this
-           (js/React.createElement element (.-state this))))})))
+               (update-state this new-props property (object/get new-props property)))))
+
+         (render [this]
+           (js/React.createElement element (.-state this))))
+       ctor)))
 
 #?(:cljs (def wrapped-input (wrap-form-element "input" "value")))
 #?(:cljs (def wrapped-checked (wrap-form-element "input" "checked")))
