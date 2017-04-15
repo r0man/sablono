@@ -5,13 +5,13 @@
   :min-lein-version "2.0.0"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.9.0-alpha14"]]
+  :dependencies [[org.clojure/clojure "1.9.0-alpha15"]]
   :profiles {:dev {:dependencies [[cljsjs/jquery "2.2.4-0"]
                                   [crate "0.2.5"]
                                   [criterium "0.4.4"]
-                                  [devcards "0.2.2" :exclusions [sablono]]
+                                  [devcards "0.2.3" :exclusions [sablono]]
                                   [doo "0.1.7"]
-                                  [figwheel-sidecar "0.5.9"]
+                                  [figwheel-sidecar "0.5.10"]
                                   [funcool/tubax "0.2.0"]
                                   [org.clojure/test.check "0.9.0"]
                                   [reagent "0.6.1"]
@@ -23,7 +23,7 @@
              :provided {:dependencies [[cljsjs/react "15.5.0-0"]
                                        [cljsjs/react-dom "15.5.0-0"]
                                        [cljsjs/react-dom-server "15.5.0-0"]
-                                       [org.clojure/clojurescript "1.9.473"]]}
+                                       [org.clojure/clojurescript "1.9.521"]]}
              :repl {:dependencies [[com.cemerick/piggieback "0.2.1"]]
                     :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}}
   :aliases {"ci" ["do"
