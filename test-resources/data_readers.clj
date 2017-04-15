@@ -1,1 +1,1 @@
-{j sablono.compiler-test/read-js}
+{js cljs.tagged-literals/read-js}
