@@ -2,8 +2,7 @@
   (:require [clojure.string :refer [blank? join]]
             [sablono.normalize :as normalize]
             [sablono.util :as util]
-            #?(:cljs [goog.object :as object])
-            #?(:cljs cljsjs.react)))
+            #?(:cljs [goog.object :as object])))
 
 (defprotocol IInterpreter
   (interpret [this] "Interpret a Clojure data structure as a React fn call."))
@@ -64,10 +63,17 @@
            (js/React.createElement element (.-state this))))
        ctor)))
 
-#?(:cljs (def wrapped-input (wrap-form-element "input" "value")))
-#?(:cljs (def wrapped-checked (wrap-form-element "input" "checked")))
-#?(:cljs (def wrapped-select (wrap-form-element "select" "value")))
-#?(:cljs (def wrapped-textarea (wrap-form-element "textarea" "value")))
+#?(:cljs (def wrapped-input))
+#?(:cljs (def wrapped-checked))
+#?(:cljs (def wrapped-select))
+#?(:cljs (def wrapped-textarea))
+
+#?(:cljs (defn lazy-load-wrappers []
+           (when-not wrapped-textarea
+             (set! wrapped-input (wrap-form-element "input" "value"))
+             (set! wrapped-checked (wrap-form-element "input" "checked"))
+             (set! wrapped-select (wrap-form-element "select" "value"))
+             (set! wrapped-textarea (wrap-form-element "textarea" "value")))))
 
 (defn ^boolean controlled-input?
   "Returns true if `type` and `props` are used a controlled input,
@@ -90,15 +96,16 @@
      inputs."
      [type props]
      (if (controlled-input? type props)
-       (case type
-         "input"
-         (case (and (object? props) (.-type props))
-           "radio" wrapped-checked
-           "checkbox" wrapped-checked
-           wrapped-input)
-         "select" wrapped-select
-         "textarea" wrapped-textarea
-         type)
+       (do (lazy-load-wrappers)
+           (case type
+             "input"
+             (case (and (object? props) (.-type props))
+               "radio" wrapped-checked
+               "checkbox" wrapped-checked
+               wrapped-input)
+             "select" wrapped-select
+             "textarea" wrapped-textarea
+             type))
        type)))
 
 #?(:cljs

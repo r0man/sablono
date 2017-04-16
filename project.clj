@@ -51,7 +51,7 @@
                {:id "devcards"
                 :compiler
                 {:asset-path "devcards"
-                 :main sablono.test
+                 :main sablono.test.runner
                  :output-to "target/public/sablono.js"
                  :output-dir "target/public/devcards"
                  :optimizations :none
@@ -63,7 +63,7 @@
                {:id "nodejs"
                 :compiler
                 {:asset-path "target/nodejs/out"
-                 :main sablono.test
+                 :main sablono.test.runner
                  :optimizations :none
                  :output-dir "target/nodejs/out"
                  :output-to "target/nodejs/sablono.js"
@@ -75,7 +75,7 @@
                {:id "none"
                 :compiler
                 {:asset-path "target/none/out"
-                 :main sablono.test
+                 :main sablono.test.runner
                  :output-to "target/none/sablono.js"
                  :output-dir "target/none/out"
                  :optimizations :none
@@ -86,7 +86,7 @@
                {:id "advanced"
                 :compiler
                 {:asset-path "target/advanced/out"
-                 :main sablono.test
+                 :main sablono.test.runner
                  :output-dir "target/advanced/out"
                  :output-to "target/advanced/sablono.js"
                  :optimizations :advanced
