@@ -1,9 +1,10 @@
 (ns sablono.specs
-  (:require [#?(:clj clojure.spec.gen :cljs clojure.spec.impl.gen) :as gen]
-            [clojure.spec :as s]
+  (:require [clojure.set :as set]
+            [clojure.spec.alpha :as s]
+            [clojure.spec.gen.alpha :as gen]
             [clojure.test.check.generators :refer [recursive-gen]]))
 
-(s/def ::void-tag
+(def void-tags
   #{:area
     :base
     :br
@@ -22,7 +23,7 @@
     :track
     :wbr})
 
-(s/def ::tag
+(def tags
   #{:a
     :abbr
     :address
@@ -37,7 +38,7 @@
     :big
     :blockquote
     :body
-    :br
+    ;; :br
     :button
     :canvas
     :caption
@@ -95,7 +96,7 @@
     :mask
     :menu
     :menuitem
-    :meta
+    ;; :meta
     :meter
     :nav
     :noscript
@@ -278,6 +279,11 @@
     :xmlns-xlink
     :y-channel-selector
     :zoom-and-pan})
+
+(s/def ::void-tag void-tags)
+
+;; TODO: Test all tags. Void tags can't be parsed with the Java SAX parser.
+(s/def ::tag (set/difference tags void-tags))
 
 (s/def ::class-name
   (s/and string? not-empty))

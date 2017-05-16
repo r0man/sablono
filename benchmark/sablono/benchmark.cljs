@@ -1,107 +1,126 @@
 (ns sablono.benchmark
-  (:require [doo.runner :refer-macros [doo-tests]]
-            [cljsjs.jquery]
-            [cljsjs.react]
-            [cljsjs.react.dom]
-            [cljs.test :refer-macros [is deftest testing]]
-            [crate.core :as crate]
-            [goog.dom :as gdom]
-            [reagent.core :as reagent]
-            [sablono.core :as html :refer-macros [defhtml html]]))
+  (:require [perforate-x.core :as perf :refer [defgoal defcase]]
+            [reagent.impl.template :as reagent]
+            [sablono.core :as html :refer-macros [html]]
+            [sablono.server :refer [render-static]]
+            [cljs.nodejs :as node]))
 
-(defn body []
-  (aget (gdom/getElementsByTagNameAndClass "body") 0))
+(def dom-server
+  (node/require "react-dom/server"))
 
-(defn reagent-template [datum]
-  [:li {:key (:id datum)}
-   [:a {:href (str "#show/" (:key datum))}]
-   [:div {:id (str "item" (:key datum))
-          :className ["class1" "class2"]}
-    [:span {:className "anchor"} (:name datum)]]])
+(defn render [x]
+  (dom-server.renderToStaticMarkup x))
 
-(defn crate-template [datum]
-  (crate/html
-   [:li [:a {:href (str "#show/" (:key datum))}]
-    [:div {:id (str "item" (:key datum))
-           :class ["class1" "class2"]}
-     [:span {:class "anchor"} (:name datum)]]]))
+(defgoal :compile-tag-only
+  "Render element with tag only")
 
-(defn jquery-template [datum]
-  (-> "<li>" js/jQuery
-      (.append
-       (-> "<a>" js/jQuery
-           (.attr "href" (str "#show/" (:key datum)))
-           (.addClass "anchor")
-           (.append (-> "<div>" js/jQuery
-                        (.addClass "class1")
-                        (.addClass "class2")
-                        (.attr "id" (str "item" (:key datum)))
-                        (.append (-> "<span>" js/jQuery (.text (:name datum))))))))))
+(defcase :compile-tag-only :sablono []
+  #(render (html [:div])))
 
-(defn react-template [datum]
-  (js/React.DOM.li
-   #js {:key (:id datum)}
-   (js/React.DOM.a #js {:href (str "#show/" (:key datum))})
-   (js/React.DOM.div
-    #js {:id (str "item" (:key datum))
-         :className "class1 class2"}
-    (js/React.DOM.span #js {:className "anchor"} (:name datum)))))
+(defcase :compile-tag-only :react []
+  #(render (js/React.createElement "div")))
 
-(defhtml sablono-template [datum]
-  [:li {:key (:id datum)}
-   [:a {:href (str "#show/" (:key datum))}]
-   [:div {:id (str "item" (:key datum))
-          :class ["class1" "class2"]}
-    [:span {:class "anchor"} (:name datum)]]])
+(defcase :compile-tag-only :reagent []
+  #(render (reagent/as-element [:div])))
 
-(defn run-test [root data li-fn render-fn]
-  (let [now (js/Date.)]
-    (render-fn root (map li-fn data))
-    (/ (- (.getTime (js/Date.))
-          (.getTime now)) 1000)))
 
-(defn gen-data []
-  (for [i (range 1e4)]
-    {:id i
-     :key (rand-int 1e6)
-     :name (str "product" i)}))
 
-(defn render-append [root children]
-  (let [ul (goog.dom/createDom "ul")]
-    (doseq [child children]
-      (goog.dom/append ul child))
-    (goog.dom/append root ul)))
+(defgoal :compile-class-attribute
+  "Render element with class attribute")
 
-(defn render-reagent [root children]
-  (reagent/render-component [:ul children] root))
+(defcase :compile-class-attribute :sablono []
+  #(render (html [:div.x])))
 
-(defn render-react [root children]
-  (let [render-fn #(this-as this (html [:ul children]))
-        component (js/React.createFactory
-                   (js/React.createClass #js {:render render-fn}))]
-    (js/ReactDOM.render (component) root)))
+(defcase :compile-class-attribute :react []
+  #(render (js/React.createElement "div" #js {:className "x"})))
 
-(defn time-test [data]
-  (for [[key li-fn render-fn]
-        (shuffle
-         [[:reagent reagent-template render-reagent]
-          [:crate crate-template render-append]
-          [:jquery jquery-template render-append]
-          [:react react-template render-react]
-          [:sablono sablono-template render-react]])]
-    (let [root (goog.dom/createDom "div")
-          _ (goog.dom/append (body) root)
-          secs (run-test root data li-fn render-fn)]
-      [key secs])))
+(defcase :compile-class-attribute :reagent []
+  #(render (reagent/as-element [:div.x])))
 
-;; TODO: Make :benchmark test selector working in ClojureScript
 
-(deftest ^:benchmark perf-test []
-  (let [data (doall (gen-data))]
-    (prn (->> (for [i (range 3)]
-                (into {} (time-test data)))
-              (reduce (partial merge-with +))
-              (map (fn [[k v]] [k (/ v 3)]))
-              (into {})))))
 
-(doo-tests 'sablono.benchmark)
+(defgoal :compile-class-and-id-attributes
+  "Render element with class and id attribute")
+
+(defcase :compile-class-and-id-attributes :sablono []
+  #(render (html [:div#x.y])))
+
+(defcase :compile-class-and-id-attributes :react []
+  #(render (js/React.createElement "div" #js {:className "y" :id "x"})))
+
+(defcase :compile-class-and-id-attributes :reagent []
+  #(render (reagent/as-element [:div#x.y])))
+
+
+
+(defgoal :compile-nested-literals
+  "Render nested elements")
+
+(defcase :compile-nested-literals :sablono []
+  #(render (html [:div
+                  [:h3 "I am a component!"]
+                  [:p.someclass
+                   "I have " [:strong "bold"]
+                   [:span {:style {:color "red"}} " and red"]
+                   " text."]])))
+
+(defcase :compile-nested-literals :react []
+  #(render (js/React.createElement
+            "div" nil
+            (js/React.createElement "h3" nil "I am a component!")
+            (js/React.createElement
+             "p" #js {:className "someclass"}
+             "I have " (js/React.createElement "strong" nil "bold")
+             (js/React.createElement "span" #js {:style #js {:color "red"}} " and red")
+             " text."))))
+
+(defcase :compile-nested-literals :reagent []
+  #(render (reagent/as-element
+            [:div
+             [:h3 "I am a component!"]
+             [:p.someclass
+              "I have " [:strong "bold"]
+              [:span {:style {:color "red"}} " and red"]
+              " text."]])))
+
+
+(defgoal :interpret-attributes
+  "Render elements with interpreted attributes")
+
+(defcase :interpret-attributes :sablono []
+  #(render (html [:div ((constantly {:class "x"}))])))
+
+(defcase :interpret-attributes :react []
+  #(render (js/React.createElement "div" ((constantly #js {:className "x"})))))
+
+(defcase :interpret-attributes :reagent []
+  #(render (reagent/as-element [:div ((constantly {:class "x"}))])))
+
+
+
+(defgoal :interpret-hinted-attributes
+  "Render elements with interpreted attributes")
+
+(defcase :interpret-hinted-attributes :sablono []
+  #(render (html [:div ^:attrs ((constantly {:class "x"}))])))
+
+(defcase :interpret-hinted-attributes :react []
+  #(render (js/React.createElement "div" ((constantly #js {:className "x"})))))
+
+(defcase :interpret-hinted-attributes :reagent []
+  #(render (reagent/as-element [:div ((constantly {:class "x"}))])))
+
+
+(defgoal :compile-attributes-children
+  "Render element with literal attributes and children")
+
+(defcase :compile-attributes-children :sablono []
+  #(render (html [:div {:class "a"} "b" 1 2 3])))
+
+(defcase :compile-attributes-children :react []
+  #(render (js/React.createElement "div" #js {:className "a"} "b" 1 2 3)))
+
+(defcase :compile-attributes-children :reagent []
+  #(render (reagent/as-element [:div {:class "a"} "b" 1 2 3])))
+
+(perf/run-goals)

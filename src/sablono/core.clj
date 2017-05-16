@@ -1,16 +1,32 @@
 (ns sablono.core
   (:require [clojure.walk :refer [postwalk-replace]]
+            [sablono.interpreter :as interpreter]
             [sablono.compiler :as compiler]))
+
+(defn- cljs-env?
+  "Take the &env from a macro, and tell whether we are expanding into cljs."
+  [env]
+  (boolean (:ns env)))
 
 (defmacro attrs
   "Compile `attributes` map into a JavaScript literal."
   [attributes]
-  (sablono.compiler/compile-attrs attributes))
+  (compiler/compile-attrs attributes))
+
+(defmacro html*
+  "Compile the Hiccup `form`. Always produces code that evaluates to
+  React elements."
+  [form]
+  (compiler/compile-html form))
 
 (defmacro html
-  "Compile the Hiccup `content` into a React DOM node."
-  [content]
-  (sablono.compiler/compile-html content))
+  "Compile the Hiccup `form`. Produces code that evaluates to React
+  elements when running under ClojureScript environment, or
+  om.dom.Element records when running under Clojure."
+  [form]
+  (if (cljs-env? &env)
+    (compiler/compile-html form)
+    `(interpreter/interpret ~form)))
 
 (defmacro html-expand
   "Macro expand the Hiccup `content`."

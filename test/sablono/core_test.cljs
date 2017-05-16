@@ -14,16 +14,6 @@
   (is (= (html-data [:div])
          {:tag :div
           :attributes {}
-          :content []}))
-  ;; TODO: Deprecate string
-  (is (= (html-data ["div"])
-         {:tag :div
-          :attributes {}
-          :content []}))
-  ;; TODO: Deprecate symbol
-  (is (= (html-data ['div])
-         {:tag :div
-          :attributes {}
           :content []})))
 
 (deftest test-tag-syntax-sugar-id

@@ -1,8 +1,10 @@
 (ns sablono.interpreter
-  (:require [clojure.string :refer [blank? join]]
+  (:require #?(:clj [om.dom :as dom])
+            #?(:cljs [goog.object :as object])
+            [clojure.string :as str]
+            [clojure.string :refer [blank? join]]
             [sablono.normalize :as normalize]
-            [sablono.util :as util]
-            #?(:cljs [goog.object :as object])))
+            [sablono.util :as util]))
 
 (defprotocol IInterpreter
   (interpret [this] "Interpret a Clojure data structure as a React fn call."))
@@ -108,79 +110,95 @@
              type))
        type)))
 
-#?(:cljs
-   (defn create-element [type props & children]
-     (let [class (element-class type props)
-           children (remove nil? children)]
-       (if (empty? children)
-         (js/React.createElement class props)
-         (apply js/React.createElement class props children)))))
+(defn create-element
+  "Create a React element. Returns a JavaScript object when running
+  under ClojureScript, and a om.dom.Element record in Clojure."
+  [type props & children]
+  #?(:clj (dom/element
+           {:attrs props
+            :children children
+            :react-key nil
+            :tag type})
+     :cljs (apply js/React.createElement (element-class type props) props children)))
 
-#?(:cljs
-   (defn attributes [attrs]
-     (when-let [js-attrs (clj->js (util/html-to-dom-attrs attrs))]
-       (let [class (.-className js-attrs)
-             class (if (array? class) (join " " class) class)]
-         (if (blank? class)
-           (js-delete js-attrs "className")
-           (set! (.-className js-attrs) class))
-         js-attrs))))
+(defn attributes [attrs]
+  #?(:clj (-> (util/html-to-dom-attrs attrs)
+              (update :className #(some->> % (str/join " "))))
+     :cljs (when-let [js-attrs (clj->js (util/html-to-dom-attrs attrs))]
+             (let [class (.-className js-attrs)
+                   class (if (array? class) (join " " class) class)]
+               (if (blank? class)
+                 (js-delete js-attrs "className")
+                 (set! (.-className js-attrs) class))
+               js-attrs))))
 
 (defn- interpret-seq
-  "Interpret the seq `x` as HTML elements."
+  "Eagerly interpret the seq `x` as HTML elements."
   [x]
-  ;; Forces the seq x to be realized to avoid a problem caused by a combination
-  ;; of lazy seq and binding (e.g. implementation of om.core/build-all).
-  ;; https://github.com/r0man/sablono/issues/147
   (into [] (map interpret) x))
 
-#?(:cljs
-   (defn element
-     "Render an element vector as a HTML element."
-     [element]
-     (let [[type attrs content] (normalize/element element)]
-       (apply create-element type
-              (attributes attrs)
-              (interpret-seq content)))))
+(defn element
+  "Render an element vector as a HTML element."
+  [element]
+  (let [[type attrs content] (normalize/element element)]
+    (apply create-element type
+           (attributes attrs)
+           (interpret-seq content))))
 
-#?(:cljs
-   (defn- interpret-vec
-     "Interpret the vector `x` as an HTML element or a the children of
-  an element."
-     [x]
-     (if (util/element? x)
-       (element x)
-       (interpret-seq x))))
+(defn- interpret-vec
+  "Interpret the vector `x` as an HTML element or a the children of an
+  element."
+  [x]
+  (if (util/element? x)
+    (element x)
+    (interpret-seq x)))
 
-#?(:cljs
-   (extend-protocol IInterpreter
-     Cons
-     (interpret [this]
-       (interpret-seq this))
-     ChunkedCons
-     (interpret [this]
-       (interpret-seq this))
-     ChunkedSeq
-     (interpret [this]
-       (interpret-seq this))
-     LazySeq
-     (interpret [this]
-       (interpret-seq this))
-     List
-     (interpret [this]
-       (interpret-seq this))
-     IndexedSeq
-     (interpret [this]
-       (interpret-seq this))
-     Subvec
-     (interpret [this]
-       (interpret-vec this))
-     PersistentVector
-     (interpret [this]
-       (interpret-vec this))
-     default
-     (interpret [this]
-       this)
-     nil
-     (interpret [this]
-       nil)))
+(extend-protocol IInterpreter
+
+  #?(:clj clojure.lang.ChunkedCons
+     :cljs cljs.core.ChunkedCons)
+  (interpret [this]
+    (interpret-seq this))
+
+  #?(:clj clojure.lang.PersistentVector$ChunkedSeq
+     :cljs cljs.core.ChunkedSeq)
+  (interpret [this]
+    (interpret-seq this))
+
+  #?(:clj clojure.lang.Cons
+     :cljs cljs.core.Cons)
+  (interpret [this]
+    (interpret-seq this))
+
+  #?(:clj clojure.lang.LazySeq
+     :cljs cljs.core.LazySeq)
+  (interpret [this]
+    (interpret-seq this))
+
+  #?(:clj clojure.lang.PersistentList
+     :cljs cljs.core.List)
+  (interpret [this]
+    (interpret-seq this))
+
+  #?(:clj clojure.lang.IndexedSeq
+     :cljs cljs.core.IndexedSeq)
+  (interpret [this]
+    (interpret-seq this))
+
+  #?(:clj clojure.lang.APersistentVector$SubVector
+     :cljs cljs.core.Subvec)
+  (interpret [this]
+    (interpret-vec this))
+
+  #?(:clj clojure.lang.PersistentVector
+     :cljs cljs.core.PersistentVector)
+  (interpret [this]
+    (interpret-vec this))
+
+  #?(:clj Object :cljs default)
+  (interpret [this]
+    this)
+
+  nil
+  (interpret [this]
+    nil))

@@ -1,10 +1,14 @@
 (ns sablono.test
   (:require [cljs.compiler :as cljs]
+            [clojure.set :as set]
             [clojure.test.check]
             [clojure.test.check.generators]
             [clojure.walk :refer [prewalk]]
-            [sablono.core])
-  (:import cljs.tagged_literals.JSValue))
+            [clojure.xml :as xml]
+            [sablono.core]
+            [om.dom :as dom])
+  (:import cljs.tagged_literals.JSValue
+           java.io.StringBufferInputStream))
 
 (defmacro html-str [element]
   `(sablono.server/render-static
@@ -67,3 +71,27 @@
   (->> (map replace-js-value more)
        (map replace-gensyms)
        (apply =)))
+
+(defn- xml-map? [x]
+  (and (map? x) (= (keys x) [:tag :attrs :content])))
+
+(defn- reshape [data]
+  (prewalk
+   (fn [data]
+     (if (xml-map? data)
+       (-> (set/rename-keys (into {} data) {:attrs :attributes})
+           (update :attributes dissoc
+                   :data-react-checksum
+                   :data-reactid
+                   :data-reactroot)
+           (update :content vec))
+       data))
+   data))
+
+(defn parse-xml [s]
+  (-> (StringBufferInputStream. s)
+      (xml/parse)
+      (reshape)))
+
+(defn render-str [x]
+  (dom/render-to-str x))
