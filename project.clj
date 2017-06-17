@@ -14,7 +14,7 @@
                                   [funcool/tubax "0.2.0"]
                                   [org.clojure/test.check "0.9.0"]
                                   [perforate-x "0.1.0"]
-                                  [reagent "0.6.1"]
+                                  [reagent "0.6.2"]
                                   [rum "0.10.8" :exclusions [sablono]]]
                    :node-dependencies [[benchmark "1.0.0"]
                                        [react "15.5.4"]
@@ -25,11 +25,11 @@
                              [lein-npm "0.5.0"]
                              [perforate "0.3.4"]]
                    :resource-paths ["test-resources" "target"]}
-             :provided {:dependencies [[cljsjs/react "15.5.0-0"]
-                                       [cljsjs/react-dom "15.5.0-0"]
-                                       [cljsjs/react-dom-server "15.5.0-0"]
-                                       [org.clojure/clojurescript "1.9.542"]]}
-             :repl {:dependencies [[com.cemerick/piggieback "0.2.1"]]
+             :provided {:dependencies [[cljsjs/react "15.6.1-0"]
+                                       [cljsjs/react-dom "15.6.1-0"]
+                                       [cljsjs/react-dom-server "15.6.1-0"]
+                                       [org.clojure/clojurescript "1.9.562"]]}
+             :repl {:dependencies [[com.cemerick/piggieback "0.2.2"]]
                     :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}}
   :aliases {"ci" ["do"
                   ["clean"]
