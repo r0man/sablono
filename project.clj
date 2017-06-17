@@ -5,36 +5,42 @@
   :min-lein-version "2.0.0"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.9.0-alpha15"]]
-  :profiles {:dev {:dependencies [[cljsjs/jquery "2.2.4-0"]
-                                  [crate "0.2.5"]
-                                  [criterium "0.4.4"]
+  :dependencies [[org.clojure/clojure "1.9.0-alpha16"]
+                 [org.omcljs/om "1.0.0-alpha48"]]
+  :profiles {:dev {:dependencies [[criterium "0.4.4"]
                                   [devcards "0.2.3" :exclusions [sablono]]
                                   [doo "0.1.7"]
                                   [figwheel-sidecar "0.5.10"]
                                   [funcool/tubax "0.2.0"]
                                   [org.clojure/test.check "0.9.0"]
+                                  [perforate-x "0.1.0"]
                                   [reagent "0.6.1"]
                                   [rum "0.10.8" :exclusions [sablono]]]
+                   :node-dependencies [[benchmark "1.0.0"]
+                                       [react "15.5.4"]
+                                       [react-dom "15.5.4"]]
                    :plugins [[lein-cljsbuild "1.1.4"]
                              [lein-doo "0.1.7"]
-                             [lein-figwheel "0.5.8"]]
+                             [lein-figwheel "0.5.8"]
+                             [lein-npm "0.5.0"]
+                             [perforate "0.3.4"]]
                    :resource-paths ["test-resources" "target"]}
              :provided {:dependencies [[cljsjs/react "15.5.0-0"]
                                        [cljsjs/react-dom "15.5.0-0"]
                                        [cljsjs/react-dom-server "15.5.0-0"]
-                                       [org.clojure/clojurescript "1.9.521"]]}
+                                       [org.clojure/clojurescript "1.9.542"]]}
              :repl {:dependencies [[com.cemerick/piggieback "0.2.1"]]
                     :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}}
   :aliases {"ci" ["do"
                   ["clean"]
+                  ["npm" "install"]
                   ["test" ":default"]
                   ["doo" "node" "nodejs" "once"]
                   ;; TODO: Fix ReferenceError: Can't find variable: React
                   ;; ["doo" "phantom" "none" "once"]
                   ["doo" "nashorn" "advanced" "once"]
                   ["doo" "phantom" "advanced" "once"]
-                  ["doo" "phantom" "benchmark" "once"]]
+                  ["doo" "node" "benchmark" "once"]]
             "deploy" ["do" "clean," "deploy" "clojars"]}
   :clean-targets ^{:protect false} [:target-path]
   :cljsbuild {:builds
@@ -44,7 +50,8 @@
                  :main sablono.benchmark
                  :output-dir "target/benchmark/out"
                  :output-to "target/benchmark/sablono.js"
-                 :optimizations :advanced
+                 :optimizations :none
+                 :target :nodejs
                  :pretty-print true
                  :verbose false}
                 :source-paths ["src" "benchmark"]}
@@ -92,7 +99,19 @@
                  :optimizations :advanced
                  :pretty-print true
                  :verbose false}
-                :source-paths ["src" "test"]}]}
+                :source-paths ["src" "test"]}
+               {:id "sample"
+                :compiler
+                {:asset-path "target/sample/out"
+                 :main example.core
+                 :output-dir "target/sample/out"
+                 :output-to "target/sample/sablono.js"
+                 :optimizations :advanced
+                 :pseudo-names true
+                 :pretty-print true
+                 :verbose false}
+                :source-paths ["src" "sample"]}]}
   :deploy-repositories [["releases" :clojars]]
+  :perforate {:environments [{:namespaces [sablono.benchmark]}]}
   :test-selectors {:benchmark :benchmark
                    :default (complement :benchmark)})

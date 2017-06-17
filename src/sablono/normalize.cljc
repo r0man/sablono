@@ -1,6 +1,8 @@
 (ns sablono.normalize
   (:refer-clojure :exclude [class])
-  (:require [clojure.set :as set]
+  (:require #?(:clj [om.next.protocols :as p])
+            #?(:clj [om.dom :as dom])
+            [clojure.set :as set]
             [clojure.string :as str]
             [sablono.util :as util]))
 
@@ -134,6 +136,17 @@
          :else (list x))
        (remove nil?)))
 
+(defn- attrs?
+  "Returns true if `x` are the attributes of an HTML element,
+  otherwise false."
+  [x]
+  (and (map? x)
+       ;; Server rendered Om.next components are also maps. They
+       ;; should NOT be treated as HTML element attributes.
+       #?(:clj (and (not (instance? om.dom.Element x))
+                    (not (instance? om.next.protocols.IReactComponent x))
+                    (not (satisfies? p/IReactComponent x))))))
+
 (defn element
   "Ensure an element vector is of the form [tag-name attrs content]."
   [[tag & content]]
@@ -144,7 +157,7 @@
   (let [[tag id class] (match-tag tag)
         tag-attrs (compact-map {:id id :class class})
         map-attrs (first content)]
-    (if (map? map-attrs)
+    (if (attrs? map-attrs)
       [tag
        (merge-with-class tag-attrs map-attrs)
        (children (next content))]

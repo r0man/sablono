@@ -1,5 +1,5 @@
 (ns sablono.specs-test
-  (:require [clojure.spec :as s]
+  (:require [clojure.spec.alpha :as s]
             [clojure.test :refer [deftest is]]
             [sablono.specs :as specs]))
 

@@ -1,58 +1,58 @@
 (ns sablono.compiler-test
   (:refer-clojure :exclude [compile])
-  (:require [clojure.spec :as s]
+  (:require [clojure.spec.alpha :as s]
             [clojure.test :refer :all]
             [clojure.test.check.clojure-test :refer [defspec]]
             [clojure.test.check.properties :as prop]
-            [clojure.walk :refer [prewalk]]
             [sablono.compiler :refer :all]
-            [sablono.core :refer [attrs html html-expand]]
+            [sablono.core :refer [attrs html* html-expand]]
             [sablono.interpreter :as interpreter]
             [sablono.test :refer [=== js-value?]]))
 
 (defmacro compile [form]
-  `(macroexpand '(html ~form)))
+  `(macroexpand '(html* ~form)))
 
 (defmacro are-html [& body]
   `(are [form# expected#]
-       (is (=== (html-expand form#) expected#))
+       (=== (macroexpand `(html* ~form#))
+            expected#)
      ~@body))
 
 (deftest test-compile-attrs
   (are [attrs expected] (=== (compile-attrs attrs) expected)
     nil nil
     {:class "my-class"}
-    #js {:className "my-class"}
+    #j {:className "my-class"}
     {:class '(identity "my-class")}
-    #js {:className (sablono.util/join-classes (identity "my-class"))}
+    #j {:className (sablono.util/join-classes (identity "my-class"))}
     {:class "my-class"
      :style {:background-color "black"}}
-    #js {:className "my-class"
-         :style #js {:backgroundColor "black"}}
+    #j {:className "my-class"
+        :style #j {:backgroundColor "black"}}
     {:class '(identity "my-class")
      :style {:background-color '(identity "black")}}
-    #js {:className (sablono.util/join-classes (identity "my-class"))
-         :style #js {:backgroundColor (identity "black")}}
+    #j {:className (sablono.util/join-classes (identity "my-class"))
+        :style #j {:backgroundColor (identity "black")}}
     {:id :XY}
-    #js {:id "XY"}))
+    #j {:id "XY"}))
 
 (deftest test-attrs
   (are [form expected] (=== (attrs form) expected)
     nil nil
     {:class "my-class"}
-    #js {:className "my-class"}
+    #j {:className "my-class"}
     {:class ["a" "b"]}
-    #js {:className "a b"}
+    #j {:className "a b"}
     {:class '(identity "my-class")}
-    #js {:className (sablono.util/join-classes '(identity "my-class"))}
+    #j {:className (sablono.util/join-classes '(identity "my-class"))}
     {:class "my-class"
      :style {:background-color "black"}}
-    #js {:className "my-class"
-         :style #js {:backgroundColor "black"}}
+    #j {:className "my-class"
+        :style #j {:backgroundColor "black"}}
     {:class '(identity "my-class")
      :style {:background-color '(identity "black")}}
-    #js {:className (sablono.util/join-classes '(identity "my-class"))
-         :style #js {:backgroundColor '(identity "black")}}))
+    #j {:className (sablono.util/join-classes '(identity "my-class"))
+        :style #j {:backgroundColor '(identity "black")}}))
 
 (deftest test-to-js
   (let [v (to-js [])]
@@ -89,8 +89,8 @@
      '['div] '(js/React.createElement "div" nil)))
   (testing "tag syntax sugar"
     (are-html
-     '[:div#foo] '(js/React.createElement "div" #js {:id "foo"})
-     '[:div.foo] '(js/React.createElement "div" #js {:className "foo"})
+     '[:div#foo] '(js/React.createElement "div" #j {:id "foo"})
+     '[:div.foo] '(js/React.createElement "div" #j {:className "foo"})
      '[:div.foo (str "bar" "baz")]
      '(let* [attrs (str "bar" "baz")]
         (clojure.core/apply
@@ -98,13 +98,13 @@
          (if (clojure.core/map? attrs)
            (sablono.interpreter/attributes
             (sablono.normalize/merge-with-class {:class ["foo"]} attrs))
-           #js {:className "foo"})
+           #j {:className "foo"})
          (if (clojure.core/map? attrs)
            nil [(sablono.interpreter/interpret attrs)])))
-     '[:div.a.b] '(js/React.createElement "div" #js {:className "a b"})
-     '[:div.a.b.c] '(js/React.createElement "div" #js {:className "a b c"})
-     '[:div#foo.bar.baz] '(js/React.createElement "div" #js {:id "foo", :className "bar baz"})
-     '[:div.jumbotron] '(js/React.createElement "div" #js {:className "jumbotron"}))))
+     '[:div.a.b] '(js/React.createElement "div" #j {:className "a b"})
+     '[:div.a.b.c] '(js/React.createElement "div" #j {:className "a b c"})
+     '[:div#foo.bar.baz] '(js/React.createElement "div" #j {:id "foo", :className "bar baz"})
+     '[:div.jumbotron] '(js/React.createElement "div" #j {:className "jumbotron"}))))
 
 (deftest tag-contents
   (testing "empty tags"
@@ -142,8 +142,6 @@
            nil [(sablono.interpreter/interpret attrs)])))
      '(list [:p "a"] [:p "b"])
      '(sablono.interpreter/interpret (list [:p "a"] [:p "b"]))))
-  (testing "vecs don't expand - error if vec doesn't have tag name"
-    (is (thrown? Exception (html (vector [:p "a"] [:p "b"])))))
   (testing "tags can contain tags"
     (are-html
      '[:div [:p]]
@@ -167,37 +165,37 @@
      '[:div {}] '(js/React.createElement "div" nil)))
   (testing "tag with populated attribute map"
     (are-html
-     '[:div {:min "1", :max "2"}] '(js/React.createElement "div" #js {:min "1", :max "2"})
-     '[:img {"id" "foo"}] '(js/React.createElement "img" #js {"id" "foo"})
-     '[:img {:id "foo"}] '(js/React.createElement "img" #js {:id "foo"})))
+     '[:div {:min "1", :max "2"}] '(js/React.createElement "div" #j {:min "1", :max "2"})
+     '[:img {"id" "foo"}] '(js/React.createElement "img" #j {"id" "foo"})
+     '[:img {:id "foo"}] '(js/React.createElement "img" #j {:id "foo"})))
   (testing "attribute values are escaped"
     (are-html
-     '[:div {:id "\""}] '(js/React.createElement "div" #js {:id "\""})))
+     '[:div {:id "\""}] '(js/React.createElement "div" #j {:id "\""})))
   (testing "attributes are converted to their DOM equivalents"
     (are-html
-     '[:div {:class "classy"}] '(js/React.createElement "div" #js {:className "classy"})
-     '[:div {:data-foo-bar "baz"}] '(js/React.createElement "div" #js {:data-foo-bar "baz"})
-     '[:label {:for "foo"}] '(js/React.createElement "label" #js {:htmlFor "foo"})))
+     '[:div {:class "classy"}] '(js/React.createElement "div" #j {:className "classy"})
+     '[:div {:data-foo-bar "baz"}] '(js/React.createElement "div" #j {:data-foo-bar "baz"})
+     '[:label {:for "foo"}] '(js/React.createElement "label" #j {:htmlFor "foo"})))
   (testing "boolean attributes"
     (are-html
      '[:input {:type "checkbox" :checked true}]
-     '(sablono.interpreter/create-element "input" #js {:checked true, :type "checkbox"})
+     '(sablono.interpreter/create-element "input" #j {:checked true, :type "checkbox"})
      '[:input {:type "checkbox" :checked false}]
-     '(sablono.interpreter/create-element "input" #js {:checked false, :type "checkbox"})))
+     '(sablono.interpreter/create-element "input" #j {:checked false, :type "checkbox"})))
   (testing "nil attributes"
     (are-html
-     '[:span {:class nil} "foo"] '(js/React.createElement "span" #js {:className nil} "foo")))
+     '[:span {:class nil} "foo"] '(js/React.createElement "span" #j {:className nil} "foo")))
   (testing "empty attributes"
     (are-html
      '[:span {} "foo"] '(js/React.createElement "span" nil "foo")))
   (testing "tag with aria attributes"
     (are-html
      [:div {:aria-disabled true}]
-     '(js/React.createElement "div" #js {:aria-disabled true})))
+     '(js/React.createElement "div" #j {:aria-disabled true})))
   (testing "tag with data attributes"
     (are-html
      [:div {:data-toggle "modal" :data-target "#modal"}]
-     '(js/React.createElement "div" #js {:data-toggle "modal", :data-target "#modal"}))))
+     '(js/React.createElement "div" #j {:data-toggle "modal", :data-target "#modal"}))))
 
 (deftest compiled-tags
   (testing "tag content can be vars, and vars can be type-hinted with some metadata"
@@ -238,14 +236,14 @@
   (testing "attributes can contain vars"
     (let [id "id"]
       (are-html
-       '[:div {:id id}] '(js/React.createElement "div" #js {:id id})
-       '[:div {:id id} "bar"] '(js/React.createElement "div" #js {:id id} "bar"))))
+       '[:div {:id id}] '(js/React.createElement "div" #j {:id id})
+       '[:div {:id id} "bar"] '(js/React.createElement "div" #j {:id id} "bar"))))
   (testing "attributes are evaluated"
     (are-html
      '[:img {:src (str "/foo" "/bar")}]
-     '(js/React.createElement "img" #js {:src (str "/foo" "/bar")})
+     '(js/React.createElement "img" #j {:src (str "/foo" "/bar")})
      '[:div {:id (str "a" "b")} (str "foo")]
-     '(js/React.createElement "div" #js {:id (str "a" "b")} (sablono.interpreter/interpret (str "foo")))))
+     '(js/React.createElement "div" #j {:id (str "a" "b")} (sablono.interpreter/interpret (str "foo")))))
   (testing "type hints"
     (let [string "x"]
       (are-html
@@ -266,26 +264,26 @@
    '(js/React.createElement
      "li" nil
      (js/React.createElement
-      "a" #js {:href (str "#show/" (:key datum))})
+      "a" #j {:href (str "#show/" (:key datum))})
      (js/React.createElement
-      "div" #js {:id (str "item" (:key datum)), :className "class1 class2"}
+      "div" #j {:id (str "item" (:key datum)), :className "class1 class2"}
       (js/React.createElement
-       "span" #js {:className "anchor"}
+       "span" #j {:className "anchor"}
        (sablono.interpreter/interpret (:name datum)))))))
 
 (deftest test-issue-2-merge-class
   (are-html
    '[:div.a {:class (if (true? true) "true" "false")}]
    '(js/React.createElement
-     "div" #js {:className (sablono.util/join-classes ["a" (if (true? true) "true" "false")])})
+     "div" #j {:className (sablono.util/join-classes ["a" (if (true? true) "true" "false")])})
    '[:div.a.b {:class (if (true? true) ["true"] "false")}]
    '(js/React.createElement
-     "div" #js {:className (sablono.util/join-classes ["a" "b" (if (true? true) ["true"] "false")])})))
+     "div" #j {:className (sablono.util/join-classes ["a" "b" (if (true? true) ["true"] "false")])})))
 
 (deftest test-issue-3-recursive-js-literal
   (are-html
    '[:div.interaction-row {:style {:position "relative"}}]
-   '(js/React.createElement "div" #js {:className "interaction-row", :style #js {:position "relative"}}))
+   '(js/React.createElement "div" #j {:className "interaction-row", :style #j {:position "relative"}}))
   (let [username "foo", hidden #(if %1 {:display "none"} {:display "block"})]
     (are-html
      '[:ul.nav.navbar-nav.navbar-right.pull-right
@@ -294,28 +292,28 @@
          [:span.caret]]
         [:ul.dropdown-menu {:role "menu" :style {:left 0}}]]]
      '(js/React.createElement
-       "ul" #js {:className "nav navbar-nav navbar-right pull-right"}
+       "ul" #j {:className "nav navbar-nav navbar-right pull-right"}
        (js/React.createElement
-        "li" #js {:style (sablono.interpreter/attributes
-                          (hidden (nil? username)))
-                  :className "dropdown"}
+        "li" #j {:style (sablono.interpreter/attributes
+                         (hidden (nil? username)))
+                 :className "dropdown"}
         (js/React.createElement
-         "a" #js {:href "#", :role "button", :className "dropdown-toggle"}
+         "a" #j {:href "#", :role "button", :className "dropdown-toggle"}
          (sablono.interpreter/interpret (str "Welcome, " username))
          (js/React.createElement
-          "span" #js {:className "caret"}))
+          "span" #j {:className "caret"}))
         (js/React.createElement
-         "ul" #js {:role "menu", :style #js {:left 0}, :className "dropdown-menu"}))))))
+         "ul" #j {:role "menu", :style #j {:left 0}, :className "dropdown-menu"}))))))
 
 (deftest test-issue-22-id-after-class
   (are-html
    [:div.well#setup]
-   '(js/React.createElement "div" #js {:id "setup", :className "well"})))
+   '(js/React.createElement "div" #j {:id "setup", :className "well"})))
 
 (deftest test-issue-25-comma-separated-class
   (are-html
    '[:div.c1.c2 "text"]
-   '(js/React.createElement "div" #js {:className "c1 c2"} "text")
+   '(js/React.createElement "div" #j {:className "c1 c2"} "text")
    '[:div.aa (merge {:class "bb"})]
    '(let* [attrs (merge {:class "bb"})]
       (clojure.core/apply
@@ -323,7 +321,7 @@
        (if (clojure.core/map? attrs)
          (sablono.interpreter/attributes
           (sablono.normalize/merge-with-class {:class ["aa"]} attrs))
-         #js {:className "aa"})
+         #j {:className "aa"})
        (if (clojure.core/map? attrs)
          nil [(sablono.interpreter/interpret attrs)])))))
 
@@ -342,20 +340,20 @@
 (deftest test-issue-37-camel-case-style-attrs
   (are-html
    '[:div {:style {:z-index 1000}}]
-   '(js/React.createElement "div" #js {:style #js {:zIndex 1000}})))
+   '(js/React.createElement "div" #j {:style #j {:zIndex 1000}})))
 
 (deftest shorthand-div-forms
   (are-html
    [:#test]
-   '(js/React.createElement "div" #js {:id "test"})
+   '(js/React.createElement "div" #j {:id "test"})
    '[:.klass]
-   '(js/React.createElement "div" #js {:className "klass"})
+   '(js/React.createElement "div" #j {:className "klass"})
    '[:#test.klass]
-   '(js/React.createElement "div" #js {:id "test" :className "klass"})
+   '(js/React.createElement "div" #j {:id "test" :className "klass"})
    '[:#test.klass1.klass2]
-   '(js/React.createElement "div" #js {:id "test" :className "klass1 klass2"})
+   '(js/React.createElement "div" #j {:id "test" :className "klass1 klass2"})
    '[:.klass1.klass2#test]
-   '(js/React.createElement "div" #js {:id "test" :className "klass1 klass2"})))
+   '(js/React.createElement "div" #j {:id "test" :className "klass1 klass2"})))
 
 (deftest test-namespaced-fn-call
   (are-html
@@ -396,22 +394,22 @@
 
 (deftest test-class-as-set
   (is (=== (compile [:div.a {:class #{"a" "b" "c"}}])
-           '(js/React.createElement "div" #js {:className "a a b c"}))))
+           '(js/React.createElement "div" #j {:className "a a b c"}))))
 
 (deftest test-class-as-list
   (is (=== (compile [:div.a {:class (list "a" "b" "c")}])
-           '(js/React.createElement "div" #js {:className (sablono.util/join-classes ["a" (list "a" "b" "c")])}))))
+           '(js/React.createElement "div" #j {:className (sablono.util/join-classes ["a" (list "a" "b" "c")])}))))
 
 (deftest test-class-as-vector
   (is (=== (compile [:div.a {:class (vector "a" "b" "c")}])
            '(js/React.createElement
-             "div" #js {:className (sablono.util/join-classes ["a" (vector "a" "b" "c")])}))))
+             "div" #j {:className (sablono.util/join-classes ["a" (vector "a" "b" "c")])}))))
 
 (deftest test-class-merge-symbol
   (let [class #{"b"}]
     (are-html
      [:div.a {:class class}]
-     '(js/React.createElement "div" #js {:className "a b"}))))
+     '(js/React.createElement "div" #j {:className "a b"}))))
 
 (deftest test-issue-90
   (is (=== (compile [:div nil (case :a :a "a")])
@@ -469,14 +467,14 @@
 
 (deftest test-issue-115
   (is (=== (compile [:a {:id :XY}])
-           '(js/React.createElement "a" #js {:id "XY"}))))
+           '(js/React.createElement "a" #j {:id "XY"}))))
 
 (deftest test-issue-130
   (let [css {:table-cell "bg-blue"}]
     (is (=== (compile [:div {:class (:table-cell css)} [:span "abc"]])
              '(js/React.createElement
                "div"
-               #js {:className (sablono.util/join-classes [(:table-cell css)])}
+               #j {:className (sablono.util/join-classes [(:table-cell css)])}
                (js/React.createElement "span" nil "abc"))))))
 
 (deftest test-issue-141-inline
@@ -497,6 +495,6 @@
   (is (=== (compile [:div {:style (merge {:margin-left "2rem"}
                                          (when focused? {:color "red"}))}])
            '(js/React.createElement
-             "div" #js {:style (sablono.interpreter/attributes
-                                (merge {:margin-left "2rem"}
-                                       (when focused? {:color "red"})))}))))
+             "div" #j {:style (sablono.interpreter/attributes
+                               (merge {:margin-left "2rem"}
+                                      (when focused? {:color "red"})))}))))
