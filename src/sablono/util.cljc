@@ -73,7 +73,7 @@
   [type]
   (if (contains? #{:input :select :textarea} (keyword type))
     'sablono.interpreter/create-element
-    'js/React.createElement))
+    'react/createElement))
 
 #?(:cljs
    (extend-protocol ToString

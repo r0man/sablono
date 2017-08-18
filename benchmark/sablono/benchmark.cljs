@@ -1,5 +1,6 @@
 (ns sablono.benchmark
   (:require [perforate-x.core :as perf :refer [defgoal defcase]]
+            [react :as react]
             [reagent.impl.template :as reagent]
             [sablono.core :as html :refer-macros [html]]
             [sablono.server :refer [render-static]]
@@ -18,7 +19,7 @@
   #(render (html [:div])))
 
 (defcase :compile-tag-only :react []
-  #(render (js/React.createElement "div")))
+  #(render (react/createElement "div")))
 
 (defcase :compile-tag-only :reagent []
   #(render (reagent/as-element [:div])))
@@ -32,7 +33,7 @@
   #(render (html [:div.x])))
 
 (defcase :compile-class-attribute :react []
-  #(render (js/React.createElement "div" #js {:className "x"})))
+  #(render (react/createElement "div" #js {:className "x"})))
 
 (defcase :compile-class-attribute :reagent []
   #(render (reagent/as-element [:div.x])))
@@ -46,7 +47,7 @@
   #(render (html [:div#x.y])))
 
 (defcase :compile-class-and-id-attributes :react []
-  #(render (js/React.createElement "div" #js {:className "y" :id "x"})))
+  #(render (react/createElement "div" #js {:className "y" :id "x"})))
 
 (defcase :compile-class-and-id-attributes :reagent []
   #(render (reagent/as-element [:div#x.y])))
@@ -65,13 +66,13 @@
                    " text."]])))
 
 (defcase :compile-nested-literals :react []
-  #(render (js/React.createElement
+  #(render (react/createElement
             "div" nil
-            (js/React.createElement "h3" nil "I am a component!")
-            (js/React.createElement
+            (react/createElement "h3" nil "I am a component!")
+            (react/createElement
              "p" #js {:className "someclass"}
-             "I have " (js/React.createElement "strong" nil "bold")
-             (js/React.createElement "span" #js {:style #js {:color "red"}} " and red")
+             "I have " (react/createElement "strong" nil "bold")
+             (react/createElement "span" #js {:style #js {:color "red"}} " and red")
              " text."))))
 
 (defcase :compile-nested-literals :reagent []
@@ -91,7 +92,7 @@
   #(render (html [:div ((constantly {:class "x"}))])))
 
 (defcase :interpret-attributes :react []
-  #(render (js/React.createElement "div" ((constantly #js {:className "x"})))))
+  #(render (react/createElement "div" ((constantly #js {:className "x"})))))
 
 (defcase :interpret-attributes :reagent []
   #(render (reagent/as-element [:div ((constantly {:class "x"}))])))
@@ -105,7 +106,7 @@
   #(render (html [:div ^:attrs ((constantly {:class "x"}))])))
 
 (defcase :interpret-hinted-attributes :react []
-  #(render (js/React.createElement "div" ((constantly #js {:className "x"})))))
+  #(render (react/createElement "div" ((constantly #js {:className "x"})))))
 
 (defcase :interpret-hinted-attributes :reagent []
   #(render (reagent/as-element [:div ((constantly {:class "x"}))])))
@@ -118,7 +119,7 @@
   #(render (html [:div {:class "a"} "b" 1 2 3])))
 
 (defcase :compile-attributes-children :react []
-  #(render (js/React.createElement "div" #js {:className "a"} "b" 1 2 3)))
+  #(render (react/createElement "div" #js {:className "a"} "b" 1 2 3)))
 
 (defcase :compile-attributes-children :reagent []
   #(render (reagent/as-element [:div {:class "a"} "b" 1 2 3])))
