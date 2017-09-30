@@ -6,29 +6,29 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0-alpha16"]
-                 [org.omcljs/om "1.0.0-alpha48"]]
+                 [org.omcljs/om "1.0.0-beta1"]]
   :profiles {:dev {:dependencies [[criterium "0.4.4"]
                                   [devcards "0.2.3" :exclusions [sablono]]
                                   [doo "0.1.7"]
-                                  [figwheel-sidecar "0.5.10"]
+                                  [figwheel-sidecar "0.5.13"]
                                   [funcool/tubax "0.2.0"]
                                   [org.clojure/test.check "0.9.0"]
                                   [perforate-x "0.1.0"]
-                                  [reagent "0.6.2"]
+                                  [reagent "0.7.0"]
                                   [rum "0.10.8" :exclusions [sablono]]]
                    :node-dependencies [[benchmark "1.0.0"]
-                                       [react "15.5.4"]
-                                       [react-dom "15.5.4"]]
-                   :plugins [[lein-cljsbuild "1.1.4"]
+                                       [react "16.0.0"]
+                                       [react-dom "16.0.0"]]
+                   :plugins [[lein-cljsbuild "1.1.7"]
                              [lein-doo "0.1.7"]
-                             [lein-figwheel "0.5.8"]
-                             [lein-npm "0.5.0"]
+                             [lein-figwheel "0.5.13"]
+                             [lein-npm "0.6.2"]
                              [perforate "0.3.4"]]
                    :resource-paths ["test-resources" "target"]}
-             :provided {:dependencies [[cljsjs/react "15.6.1-0"]
-                                       [cljsjs/react-dom "15.6.1-0"]
-                                       [cljsjs/react-dom-server "15.6.1-0"]
-                                       [org.clojure/clojurescript "1.9.562"]]}
+             :provided {:dependencies [[cljsjs/react "16.0.0-0"]
+                                       [cljsjs/react-dom "16.0.0-0"]
+                                       [cljsjs/react-dom-server "16.0.0-0"]
+                                       [org.clojure/clojurescript "1.9.908"]]}
              :repl {:dependencies [[com.cemerick/piggieback "0.2.2"]]
                     :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}}
   :aliases {"ci" ["do"
