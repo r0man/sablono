@@ -11,7 +11,7 @@
                        [react "16.0.0"]
                        [react-dom "16.0.0"]]}
   :profiles {:dev {:dependencies [[criterium "0.4.4"]
-                                  [devcards "0.2.3" :exclusions [sablono]]
+                                  [devcards "0.2.4-SNAPSHOT" :exclusions [sablono]]
                                   [doo "0.1.7"]
                                   [figwheel-sidecar "0.5.13"]
                                   [funcool/tubax "0.2.0"]
