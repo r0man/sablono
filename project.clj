@@ -7,6 +7,9 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0-alpha16"]
                  [org.omcljs/om "1.0.0-beta1"]]
+  :npm {:dependencies [[benchmark "1.0.0"]
+                       [react "16.0.0"]
+                       [react-dom "16.0.0"]]}
   :profiles {:dev {:dependencies [[criterium "0.4.4"]
                                   [devcards "0.2.3" :exclusions [sablono]]
                                   [doo "0.1.7"]
@@ -16,9 +19,6 @@
                                   [perforate-x "0.1.0"]
                                   [reagent "0.7.0"]
                                   [rum "0.10.8" :exclusions [sablono]]]
-                   :node-dependencies [[benchmark "1.0.0"]
-                                       [react "16.0.0"]
-                                       [react-dom "16.0.0"]]
                    :plugins [[lein-cljsbuild "1.1.7"]
                              [lein-doo "0.1.7"]
                              [lein-figwheel "0.5.13"]
