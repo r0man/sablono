@@ -1,13 +1,12 @@
 (ns sablono.interpreter-test
-  #?(:cljs (:require-macros [devcards.core :refer [deftest]]))
-  (:require [om.dom :as dom]
+  (:require ;; [om.dom :as dom]
             [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
             [clojure.string :as str]
-            [clojure.test :refer [are is #?(:clj deftest)]]
+            [clojure.test :refer [are is deftest]]
             [clojure.test.check.clojure-test #?(:clj :refer :cljs :refer-macros) [defspec]]
             [clojure.test.check.properties #?(:clj :refer :cljs :refer-macros) [for-all]]
-            [om.next :as om :refer [defui]]
+            ;; [om.next :as om :refer [defui]]
             [sablono.core :refer [defhtml html]]
             [sablono.interpreter :as i]
             [sablono.specs :as specs]
@@ -203,41 +202,41 @@
 (defhtml element-a []
   [:div.a])
 
-(defui ElementB
-  Object
-  (render [this]
-    (html [:div.b])))
+;; (defui ElementB
+;;   Object
+;;   (render [this]
+;;     (html [:div.b])))
 
-(def element-b (om/factory ElementB))
+;; (def element-b (om/factory ElementB))
 
-(deftest test-om-render-defhtml
-  (is (= (interpret [:div (element-a)])
-         {:tag :div
-          :attributes {}
-          :content
-          [{:tag :div
-            :attributes {:class "a"}
-            :content []}]})))
+;; (deftest test-om-render-defhtml
+;;   (is (= (interpret [:div (element-a)])
+;;          {:tag :div
+;;           :attributes {}
+;;           :content
+;;           [{:tag :div
+;;             :attributes {:class "a"}
+;;             :content []}]})))
 
-(deftest test-om-render-defui
-  (is (= (interpret [:div (element-b {})])
-         {:tag :div
-          :attributes {}
-          :content
-          [{:tag :div
-            :attributes {:class "b"}
-            :content []}]})))
+;; (deftest test-om-render-defui
+;;   (is (= (interpret [:div (element-b {})])
+;;          {:tag :div
+;;           :attributes {}
+;;           :content
+;;           [{:tag :div
+;;             :attributes {:class "b"}
+;;             :content []}]})))
 
-#?(:clj (deftest test-om-render-str-defhtml
-          (is (= (dom/render-to-str (html [:div (element-a)]))
-                 (str "<div data-reactroot=\"\" data-reactid=\"1\" "
-                      "data-react-checksum=\"-1277879407\">"
-                      "<div class=\"a\" data-reactid=\"2\">"
-                      "</div></div>")))))
+;; #?(:clj (deftest test-om-render-str-defhtml
+;;           (is (= (dom/render-to-str (html [:div (element-a)]))
+;;                  (str "<div data-reactroot=\"\" data-reactid=\"1\" "
+;;                       "data-react-checksum=\"-1277879407\">"
+;;                       "<div class=\"a\" data-reactid=\"2\">"
+;;                       "</div></div>")))))
 
-#?(:clj (deftest test-om-render-str-defui
-          (is (= (dom/render-to-str (html [:div (element-b {})]))
-                 (str "<div data-reactroot=\"\" data-reactid=\"1\" "
-                      "data-react-checksum=\"-1275782254\">"
-                      "<div class=\"b\" data-reactid=\"2\">"
-                      "</div></div>")))))
+;; #?(:clj (deftest test-om-render-str-defui
+;;           (is (= (dom/render-to-str (html [:div (element-b {})]))
+;;                  (str "<div data-reactroot=\"\" data-reactid=\"1\" "
+;;                       "data-react-checksum=\"-1275782254\">"
+;;                       "<div class=\"b\" data-reactid=\"2\">"
+;;                       "</div></div>")))))

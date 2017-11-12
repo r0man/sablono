@@ -3,7 +3,7 @@
             [clojure.test.check.generators]
             [doo.runner :refer-macros [doo-tests]]
             [sablono.core-test]
-            [sablono.input-test]
+            ;; [sablono.input-test]
             [sablono.interpreter-test]
             [sablono.normalize-test]
             [sablono.server-test]

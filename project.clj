@@ -5,35 +5,44 @@
   :min-lein-version "2.0.0"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.9.0-alpha16"]
-                 [org.omcljs/om "1.0.0-beta1"]]
-  :npm {:dependencies [[benchmark "1.0.0"]
-                       [react "16.0.0"]
-                       [react-dom "16.0.0"]]}
+  :dependencies [[org.clojure/clojure "1.9.0-RC1"]
+                 [org.omcljs/om "1.0.0-beta1"
+                  :exclusions [cljsjs/react cljsjs/react-dom]]]
   :profiles {:dev {:dependencies [[criterium "0.4.4"]
-                                  [devcards "0.2.4-SNAPSHOT" :exclusions [sablono]]
-                                  [doo "0.1.7"]
-                                  [figwheel-sidecar "0.5.13"]
+                                  [devcards "0.2.4"
+                                   :exclusions [cljsjs/react
+                                                cljsjs/react-dom
+                                                sablono]]
+                                  [doo "0.1.8"]
+                                  [figwheel-sidecar "0.5.14"]
                                   [funcool/tubax "0.2.0"]
                                   [org.clojure/test.check "0.9.0"]
                                   [perforate-x "0.1.0"]
-                                  [reagent "0.7.0"]
-                                  [rum "0.10.8" :exclusions [sablono]]]
+                                  [reagent "0.8.0-alpha1"
+                                   :exclusions [cljsjs/create-react-class
+                                                cljsjs/react
+                                                cljsjs/react-dom
+                                                cljsjs/react-dom-server
+                                                devcards]]
+                                  [rum "0.10.8"
+                                   :exclusions [cljsjs/react
+                                                cljsjs/react-dom
+                                                cljsjs/react-dom-server
+                                                sablono]]]
                    :plugins [[lein-cljsbuild "1.1.7"]
-                             [lein-doo "0.1.7"]
-                             [lein-figwheel "0.5.13"]
-                             [lein-npm "0.6.2"]
+                             [lein-doo "0.1.8"]
+                             [lein-figwheel "0.5.14"]
+                             ;; [lein-npm "0.6.2"]
                              [perforate "0.3.4"]]
                    :resource-paths ["test-resources" "target"]}
-             :provided {:dependencies [[cljsjs/react "16.0.0-0"]
-                                       [cljsjs/react-dom "16.0.0-0"]
-                                       [cljsjs/react-dom-server "16.0.0-0"]
-                                       [org.clojure/clojurescript "1.9.908"]]}
+             :provided {:dependencies [;; [cljsjs/react "16.0.0-0"]
+                                       ;; [cljsjs/react-dom "16.0.0-0"]
+                                       ;; [cljsjs/react-dom-server "16.0.0-0"]
+                                       [org.clojure/clojurescript "1.9.946"]]}
              :repl {:dependencies [[com.cemerick/piggieback "0.2.2"]]
                     :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}}
   :aliases {"ci" ["do"
                   ["clean"]
-                  ["npm" "install"]
                   ["test" ":default"]
                   ["doo" "node" "nodejs" "once"]
                   ;; TODO: Fix ReferenceError: Can't find variable: React
@@ -42,11 +51,20 @@
                   ["doo" "phantom" "advanced" "once"]
                   ["doo" "node" "benchmark" "once"]]
             "deploy" ["do" "clean," "deploy" "clojars"]}
-  :clean-targets ^{:protect false} [:target-path]
+  :clean-targets
+  ^{:protect false}
+  [:target-path
+   "node_modules"
+   "out"]
   :cljsbuild {:builds
               [{:id "benchmark"
                 :compiler
                 {:asset-path "target/benchmark/out"
+                 :install-deps true
+                 :npm-deps {:benchmark "1.0.0"
+                            :create-react-class "15.6.2"
+                            :react "16.0.0"
+                            :react-dom "16.0.0"}
                  :main sablono.benchmark
                  :output-dir "target/benchmark/out"
                  :output-to "target/benchmark/sablono.js"
@@ -59,6 +77,9 @@
                 :compiler
                 {:asset-path "devcards"
                  :main sablono.test.runner
+                 :install-deps true
+                 :npm-deps {:react "16.0.0"
+                            :react-dom "16.0.0"}
                  :output-to "target/public/sablono.js"
                  :output-dir "target/public/devcards"
                  :optimizations :none
@@ -70,6 +91,9 @@
                {:id "nodejs"
                 :compiler
                 {:asset-path "target/nodejs/out"
+                 :install-deps true
+                 :npm-deps {:react "16.0.0"
+                            :react-dom "16.0.0"}
                  :main sablono.test.runner
                  :optimizations :none
                  :output-dir "target/nodejs/out"
@@ -77,11 +101,14 @@
                  :pretty-print true
                  :source-map true
                  :target :nodejs
-                 :verbose false}
+                 :verbose true}
                 :source-paths ["src" "test"]}
                {:id "none"
                 :compiler
                 {:asset-path "target/none/out"
+                 :install-deps true
+                 :npm-deps {:react "16.0.0"
+                            :react-dom "16.0.0"}
                  :main sablono.test.runner
                  :output-to "target/none/sablono.js"
                  :output-dir "target/none/out"
@@ -93,6 +120,9 @@
                {:id "advanced"
                 :compiler
                 {:asset-path "target/advanced/out"
+                 :install-deps true
+                 :npm-deps {:react "16.0.0"
+                            :react-dom "16.0.0"}
                  :main sablono.test.runner
                  :output-dir "target/advanced/out"
                  :output-to "target/advanced/sablono.js"
@@ -103,6 +133,9 @@
                {:id "sample"
                 :compiler
                 {:asset-path "target/sample/out"
+                 :install-deps true
+                 :npm-deps {:react "16.0.0"
+                            :react-dom "16.0.0"}
                  :main example.core
                  :output-dir "target/sample/out"
                  :output-to "target/sample/sablono.js"

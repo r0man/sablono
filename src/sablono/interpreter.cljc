@@ -1,6 +1,7 @@
 (ns sablono.interpreter
   (:require #?(:clj [om.dom :as dom])
             #?(:cljs [goog.object :as object])
+            #?(:cljs [react :refer [createElement]])
             [clojure.string :as str]
             [clojure.string :refer [blank? join]]
             [sablono.normalize :as normalize]
@@ -30,9 +31,9 @@
                             (->> #js {:onChange (goog.bind (object/get this "onChange") this)}
                                  (object/extend state props))
                             state))
-                    (.call js/React.Component this props)))]
+                    (.call react/Component this props)))]
        (set! (.-displayName ctor) (str "wrapped-" element))
-       (goog.inherits ctor js/React.Component)
+       (goog.inherits ctor react/Component)
        (specify! (.-prototype ctor)
          Object
          (onChange [this event]
@@ -62,7 +63,7 @@
                (update-state this new-props property (object/get new-props property)))))
 
          (render [this]
-           (js/React.createElement element (.-state this))))
+           (createElement element (.-state this))))
        ctor)))
 
 #?(:cljs (def wrapped-input))
@@ -119,7 +120,7 @@
             :children children
             :react-key nil
             :tag type})
-     :cljs (apply js/React.createElement (element-class type props) props children)))
+     :cljs (apply createElement (element-class type props) props children)))
 
 (defn attributes [attrs]
   #?(:clj (-> (util/html-to-dom-attrs attrs)

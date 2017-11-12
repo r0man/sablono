@@ -2,13 +2,13 @@
   (:require-macros [sablono.core :refer [html with-group]]
                    [sablono.test :refer [html-data]])
   (:require [clojure.pprint :refer [pprint]]
-            [clojure.test :refer [are is testing]]
-            [devcards.core :refer-macros [defcard deftest]]
-            [rum.core :as rum]
+            [clojure.test :refer [are is deftest testing]]
+            ;; [rum.core :as rum]
             [sablono.core :as html]
             [sablono.server :as server]
             [sablono.util :refer [to-str]]
-            [tubax.core :refer [xml->clj]]))
+            [tubax.core :refer [xml->clj]]
+            [react :as React :refer [createElement]]))
 
 (deftest test-basic-tag
   (is (= (html-data [:div])
@@ -1010,7 +1010,7 @@
 (deftest test-issue-3-recursive-js-value
   (is (= (html-data [:div.interaction-row {:style {:position "relative"}}])
          {:tag :div
-          :attributes {:style "position:relative;" :class "interaction-row"}
+          :attributes {:style "position:relative" :class "interaction-row"}
           :content []}))
   (let [username "foo", hidden #(if %1 {:display "none"} {:display "block"})]
     (is (= (html-data [:ul.nav.navbar-nav.navbar-right.pull-right
@@ -1022,7 +1022,7 @@
             :attributes {:class "nav navbar-nav navbar-right pull-right"}
             :content
             [{:tag :li
-              :attributes {:style "display:block;" :class "dropdown"}
+              :attributes {:style "display:block" :class "dropdown"}
               :content
               [{:tag :a
                 :attributes {:role "button" :href "#" :class "dropdown-toggle"}
@@ -1030,7 +1030,7 @@
                 ["Welcome, foo"
                  {:tag :span :attributes {:class "caret"} :content []}]}
                {:tag :ul
-                :attributes {:role "menu" :style "left:0;" :class "dropdown-menu"}
+                :attributes {:role "menu" :style "left:0" :class "dropdown-menu"}
                 :content []}]}]}))))
 
 (deftest test-issue-22-id-after-class
@@ -1134,11 +1134,11 @@
 (deftest test-issue-37-camel-case-style-attrs
   (is (= (html-data [:div {:style {:z-index 1000}}])
          {:tag :div
-          :attributes {:style "z-index:1000;"}
+          :attributes {:style "z-index:1000"}
           :content []}))
   (is (= (html-data [:div (merge {:style {:z-index 1000}})])
          {:tag :div
-          :attributes {:style "z-index:1000;"}
+          :attributes {:style "z-index:1000"}
           :content []})))
 
 (deftest test-div-with-nested-lazy-seq
@@ -1255,20 +1255,20 @@
             [{:tag :div :attributes {} :content ["john (2)"]}
              {:tag :div :attributes {} :content ["!Pixel Scout"]}]}))))
 
-(rum/defc issue-57-rum [text]
-  (html
-   (let [text-add (str text " warning")]
-     [:div
-      [:h1 text]
-      [:h1 text-add]])))
+;; (rum/defc issue-57-rum [text]
+;;   (html
+;;    (let [text-add (str text " warning")]
+;;      [:div
+;;       [:h1 text]
+;;       [:h1 text-add]])))
 
-(deftest test-issue-57-rum
-  (is (= (html-data (issue-57-rum "This gives"))
-         {:tag :div
-          :attributes {}
-          :content
-          [{:tag :h1 :attributes {} :content ["This gives"]}
-           {:tag :h1 :attributes {} :content ["This gives warning"]}]})))
+;; (deftest test-issue-57-rum
+;;   (is (= (html-data (issue-57-rum "This gives"))
+;;          {:tag :div
+;;           :attributes {}
+;;           :content
+;;           [{:tag :h1 :attributes {} :content ["This gives"]}
+;;            {:tag :h1 :attributes {} :content ["This gives warning"]}]})))
 
 (deftest test-issue-115
   (is (= (html-data [:a {:id :XY}])
@@ -1296,14 +1296,14 @@
                                            (when focused? {:color "red"}))}])
            {:tag :div
             :attributes
-            {:style "margin-left:2rem;color:red;"}
+            {:style "margin-left:2rem;color:red"}
             :content []})))
   (let [focused? false]
     (is (= (html-data [:div {:style (merge {:margin-left "2rem"}
                                            (when focused? {:color "red"}))}])
            {:tag :div
             :attributes
-            {:style "margin-left:2rem;"}
+            {:style "margin-left:2rem"}
             :content []}))))
 
 (deftest test-issue-160

@@ -1,9 +1,7 @@
 (ns sablono.util-test
-  (:require [sablono.core :refer-macros [with-base-url]]
-            [sablono.util :as u]
-            #?(:clj [clojure.test :refer :all])
-            #?(:cljs [cljs.test :refer-macros [are is testing]])
-            #?(:cljs [devcards.core :refer-macros [deftest]]))
+  (:require [clojure.test :refer [are deftest is testing]]
+            [sablono.core :refer-macros [with-base-url]]
+            [sablono.util :as u])
   #?(:cljs (:import goog.Uri)))
 
 (deftest test-camel-case

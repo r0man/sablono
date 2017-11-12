@@ -5,7 +5,11 @@
             [sablono.normalize :as normalize]
             [sablono.util :refer [as-str to-uri]]
             [sablono.interpreter :as interpreter]
-            [goog.dom :as dom]))
+            [goog.dom :as dom]
+            [react :refer [createElement]]))
+
+(defn create-element [& args]
+  (apply createElement args))
 
 (defn wrap-attrs
   "Add an optional attribute argument to a function that returns a element vector."

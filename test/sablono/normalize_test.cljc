@@ -1,8 +1,6 @@
 (ns sablono.normalize-test
-  (:require [sablono.normalize :as normalize]
-            #?(:clj [clojure.test :refer :all]
-               :cljs [cljs.test :refer-macros [are is]])
-            #?(:cljs [devcards.core :refer-macros [deftest]])))
+  (:require [clojure.test :refer [are is deftest]]
+            [sablono.normalize :as normalize]))
 
 (deftest test-compact-map
   (are [x expected]
