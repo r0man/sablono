@@ -5,11 +5,11 @@
   :min-lein-version "2.0.0"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.9.0-alpha16"]
-                 [org.omcljs/om "1.0.0-beta1"]]
+  :dependencies [[org.clojure/clojure "1.9.0"]
+                 [org.omcljs/om "1.0.0-beta2-SNAPSHOT"]]
   :npm {:dependencies [[benchmark "1.0.0"]
-                       [react "15.5.4"]
-                       [react-dom "15.5.4"]]}
+                       [react "16.2.0"]
+                       [react-dom "16.2.0"]]}
   :profiles {:dev {:dependencies [[criterium "0.4.4"]
                                   [devcards "0.2.4" :exclusions [sablono]]
                                   [doo "0.1.8"]
@@ -25,10 +25,11 @@
                              [lein-npm "0.6.2"]
                              [perforate "0.3.4"]]
                    :resource-paths ["test-resources" "target"]}
-             :provided {:dependencies [[cljsjs/react "15.6.1-0"]
-                                       [cljsjs/react-dom "15.6.1-0"]
-                                       [cljsjs/react-dom-server "15.6.1-0"]
-                                       [org.clojure/clojurescript "1.9.562"]]}
+             :provided {:dependencies [[cljsjs/create-react-class "15.6.2-0"]
+                                       [cljsjs/react "16.2.0-3"]
+                                       [cljsjs/react-dom "16.2.0-3"]
+                                       [cljsjs/react-dom-server "16.2.0-3"]
+                                       [org.clojure/clojurescript "1.9.946"]]}
              :repl {:dependencies [[com.cemerick/piggieback "0.2.2"]]
                     :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}}
   :aliases {"ci" ["do"
@@ -44,18 +45,7 @@
             "deploy" ["do" "clean," "deploy" "clojars"]}
   :clean-targets ^{:protect false} [:target-path]
   :cljsbuild {:builds
-              [{:id "benchmark"
-                :compiler
-                {:asset-path "target/benchmark/out"
-                 :main sablono.benchmark
-                 :output-dir "target/benchmark/out"
-                 :output-to "target/benchmark/sablono.js"
-                 :optimizations :none
-                 :target :nodejs
-                 :pretty-print true
-                 :verbose false}
-                :source-paths ["src" "benchmark"]}
-               {:id "devcards"
+              [{:id "devcards"
                 :compiler
                 {:asset-path "devcards"
                  :main sablono.test.runner
@@ -67,6 +57,17 @@
                  :verbose false}
                 :figwheel {:devcards true}
                 :source-paths ["src" "test"]}
+               {:id "benchmark"
+                :compiler
+                {:asset-path "target/benchmark/out"
+                 :main sablono.benchmark
+                 :output-dir "target/benchmark/out"
+                 :output-to "target/benchmark/sablono.js"
+                 :optimizations :none
+                 :target :nodejs
+                 :pretty-print true
+                 :verbose false}
+                :source-paths ["src" "benchmark"]}
                {:id "nodejs"
                 :compiler
                 {:asset-path "target/nodejs/out"
@@ -95,8 +96,14 @@
                 {:asset-path "target/advanced/out"
                  :main sablono.test.runner
                  :output-dir "target/advanced/out"
-                 :output-to "target/advanced/sablono.js"
                  :optimizations :advanced
+                 :output-to "target/advanced/sablono.js"
+                 ;; Polyfills needed for PhantomJS and Nashorn
+                 :preamble ["polyfills/symbol.js"
+                            "polyfills/symbol.iterator.js"
+                            "polyfills/map.js"
+                            "polyfills/set.js"
+                            "polyfills/number.isnan.js"]
                  :pretty-print true
                  :verbose false}
                 :source-paths ["src" "test"]}

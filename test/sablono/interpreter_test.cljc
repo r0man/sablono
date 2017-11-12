@@ -120,8 +120,15 @@
                :attributes {}
                :content [child]})))
 
-(defspec test-child-as-number
-  (for-all [child (s/gen number?)]
+(defspec test-child-as-int
+  (for-all [child (s/gen int?)]
+           (= (interpret [:div child])
+              {:tag :div
+               :attributes {}
+               :content [(str child)]})))
+
+(defspec test-child-as-double
+  (for-all [child (s/gen (s/double-in :infinite? false :NaN? false))]
            (= (interpret [:div child])
               {:tag :div
                :attributes {}

@@ -4,3 +4,5 @@ install:
   - . $HOME/.nvm/nvm.sh
   - nvm install stable
   - nvm use stable
+  - git clone https://github.com/omcljs/om.git
+  - cd om && lein install && cd ..
