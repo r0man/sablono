@@ -44,7 +44,7 @@
     :caption
     :circle
     :cite
-    :clipPath
+    :clippath
     :code
     :col
     :colgroup
@@ -88,7 +88,7 @@
     :legend
     :li
     :line
-    :linearGradient
+    :lineargradient
     :link
     :main
     :map
@@ -114,7 +114,7 @@
     :pre
     :progress
     :q
-    :radialGradient
+    :radialgradient
     :rect
     :rp
     :rt

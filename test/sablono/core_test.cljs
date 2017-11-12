@@ -1,7 +1,8 @@
 (ns sablono.core-test
   (:require-macros [sablono.core :refer [html with-group]]
-                   [sablono.test :refer [html-data]])
-  (:require [clojure.pprint :refer [pprint]]
+                   [sablono.test :refer [html-data html-str]])
+  (:require [cljsjs.create-react-class]
+            [clojure.pprint :refer [pprint]]
             [clojure.test :refer [are is testing]]
             [devcards.core :refer-macros [defcard deftest]]
             [rum.core :as rum]
@@ -1010,7 +1011,7 @@
 (deftest test-issue-3-recursive-js-value
   (is (= (html-data [:div.interaction-row {:style {:position "relative"}}])
          {:tag :div
-          :attributes {:style "position:relative;" :class "interaction-row"}
+          :attributes {:style "position:relative" :class "interaction-row"}
           :content []}))
   (let [username "foo", hidden #(if %1 {:display "none"} {:display "block"})]
     (is (= (html-data [:ul.nav.navbar-nav.navbar-right.pull-right
@@ -1022,7 +1023,7 @@
             :attributes {:class "nav navbar-nav navbar-right pull-right"}
             :content
             [{:tag :li
-              :attributes {:style "display:block;" :class "dropdown"}
+              :attributes {:style "display:block" :class "dropdown"}
               :content
               [{:tag :a
                 :attributes {:role "button" :href "#" :class "dropdown-toggle"}
@@ -1030,7 +1031,7 @@
                 ["Welcome, foo"
                  {:tag :span :attributes {:class "caret"} :content []}]}
                {:tag :ul
-                :attributes {:role "menu" :style "left:0;" :class "dropdown-menu"}
+                :attributes {:role "menu" :style "left:0" :class "dropdown-menu"}
                 :content []}]}]}))))
 
 (deftest test-issue-22-id-after-class
@@ -1134,11 +1135,11 @@
 (deftest test-issue-37-camel-case-style-attrs
   (is (= (html-data [:div {:style {:z-index 1000}}])
          {:tag :div
-          :attributes {:style "z-index:1000;"}
+          :attributes {:style "z-index:1000"}
           :content []}))
   (is (= (html-data [:div (merge {:style {:z-index 1000}})])
          {:tag :div
-          :attributes {:style "z-index:1000;"}
+          :attributes {:style "z-index:1000"}
           :content []})))
 
 (deftest test-div-with-nested-lazy-seq
@@ -1296,14 +1297,14 @@
                                            (when focused? {:color "red"}))}])
            {:tag :div
             :attributes
-            {:style "margin-left:2rem;color:red;"}
+            {:style "margin-left:2rem;color:red"}
             :content []})))
   (let [focused? false]
     (is (= (html-data [:div {:style (merge {:margin-left "2rem"}
                                            (when focused? {:color "red"}))}])
            {:tag :div
             :attributes
-            {:style "margin-left:2rem;"}
+            {:style "margin-left:2rem"}
             :content []}))))
 
 (deftest test-issue-160
@@ -1312,3 +1313,24 @@
            {:tag :div
             :attributes {:data-foo "bar"}
             :content []}))))
+
+(deftest test-fragment-only
+  (is (= (html-str [:*])
+         "")))
+
+(deftest test-fragment-child-1
+  (is (= (html-str [:* [:p]])
+         "<p></p>")))
+
+(deftest test-fragment-child-n
+  (is (= (html-str [:* [:p] [:p]])
+         "<p></p><p></p>")))
+
+(deftest test-fragment-for-loop
+  (is (= (html-str
+          [:dl (for [n (range 2)]
+                 [:* {:key n}
+                  [:dt {} (str "term " n)]
+                  [:dd {} (str "definition " n)]])])
+         (str "<dl><dt>term 0</dt><dd>definition 0</dd>"
+              "<dt>term 1</dt><dd>definition 1</dd></dl>"))))

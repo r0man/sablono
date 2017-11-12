@@ -1,6 +1,18 @@
 * Changelog
 ** Unreleased
 
+** 0.8.3
+
+- [[https://github.com/r0man/sablono/pull/181][#181]] Update React to =16.2.0=.
+
+** 0.8.2
+
+- [[https://github.com/r0man/sablono/pull/183][#183]] Allow non strings as :value.
+- [[https://github.com/r0man/sablono/pull/180][#180]] Update dependencies.
+
+** 0.8.1
+
+- [[https://github.com/r0man/sablono/pull/174][#174]] Update React to =15.6.1=.
 - [[https://github.com/r0man/sablono/pull/167][#167]] Update React to =15.5.0-0= and get rid of =React.createClass=.
 
 ** 0.8.0

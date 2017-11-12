@@ -1,6 +1,6 @@
 (ns sablono.input-test
-  (:require [devcards.core :refer-macros [defcard]]
-            [clojure.pprint :refer [pprint]]
+  (:require [clojure.pprint :refer [pprint]]
+            [devcards.core :refer-macros [defcard]]
             [rum.core :as rum]))
 
 (def fruits

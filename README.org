@@ -16,8 +16,8 @@
    provide the dependencies yourself like this:
 
    #+BEGIN_SRC clojure :exports code :results silent
-    [cljsjs/react "15.4.2-2"]
-    [cljsjs/react-dom "15.4.2-2"]
+    [cljsjs/react "16.2.0-3"]
+    [cljsjs/react-dom "16.2.0-3"]
    #+END_SRC
 
    If you want to do server rendering and use the =render= or
@@ -25,7 +25,7 @@
    need to add the following dependency as well:
 
    #+BEGIN_SRC clojure :exports code :results silent
-    [cljsjs/react-dom-server "15.4.2-2"]
+    [cljsjs/react-dom-server "16.2.0-3"]
    #+END_SRC
 
 ** Usage
@@ -130,6 +130,20 @@
     #+BEGIN_SRC sh :exports code :results silent
       lein doo phantom none auto
     #+END_SRC
+
+*** Why is there a compiler and an interpreter?
+
+    The interpreter is executed at *run time*, and it's job is to
+    evaluate Hiccup forms and produce React elements. The compiler on
+    the other hand, is executed at *compile time* and can optimize
+    certain Hiccup forms. It's job is to evaluate Hiccup forms and
+    produce executable code.
+
+    A good introduction to this topic can be found in Peter Seibel's
+    [[http://www.gigamonkeys.com/book/practical-an-html-generation-library-the-compiler.html][Practical Common Lisp]]:
+
+    - [[http://www.gigamonkeys.com/book/practical-an-html-generation-library-the-interpreter.html][An HTML Generation Library, the Interpreter]]
+    - [[http://www.gigamonkeys.com/book/practical-an-html-generation-library-the-compiler.html][An HTML Generation Library, the Compiler]]
 
 ** Thanks
 
