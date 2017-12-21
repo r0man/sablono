@@ -5,7 +5,7 @@
   :min-lein-version "2.0.0"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.9.0-RC1"]
+  :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.omcljs/om "1.0.0-beta1"
                   :exclusions [cljsjs/react cljsjs/react-dom]]]
   :profiles {:dev {:dependencies [[criterium "0.4.4"]
@@ -92,8 +92,8 @@
                 :compiler
                 {:asset-path "target/nodejs/out"
                  :install-deps true
-                 :npm-deps {:react "16.0.0"
-                            :react-dom "16.0.0"}
+                 :npm-deps {:react "16.2.0"
+                            :react-dom "16.2.0"}
                  :main sablono.test.runner
                  :optimizations :none
                  :output-dir "target/nodejs/out"
