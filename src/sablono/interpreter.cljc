@@ -43,7 +43,7 @@
               (object/getValueByKeys event "target" property))))
 
          (componentWillReceiveProps [this new-props]
-           (let [state-value (object/getValueByKeys this "state" property)
+           (let [state-value (str (object/getValueByKeys this "state" property))
                  element-value (object/get (js/ReactDOM.findDOMNode this) property)]
              ;; On IE, onChange event might come after actual value of
              ;; an element have changed. We detect this and render
