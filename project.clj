@@ -18,7 +18,7 @@
                                   [org.clojure/test.check "0.9.0"]
                                   [perforate-x "0.1.0"]
                                   [reagent "0.7.0"]
-                                  [rum "0.10.8" :exclusions [sablono]]]
+                                  [rum "0.11.0" :exclusions [sablono]]]
                    :plugins [[lein-cljsbuild "1.1.7"]
                              [lein-doo "0.1.8"]
                              [lein-figwheel "0.5.14"]

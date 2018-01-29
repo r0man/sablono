@@ -5,7 +5,7 @@
             [clojure.pprint :refer [pprint]]
             [clojure.test :refer [are is testing]]
             [devcards.core :refer-macros [defcard deftest]]
-            ;; [rum.core :as rum]
+            [rum.core :as rum]
             [sablono.core :as html]
             [sablono.server :as server]
             [sablono.util :refer [to-str]]
@@ -1256,20 +1256,20 @@
             [{:tag :div :attributes {} :content ["john (2)"]}
              {:tag :div :attributes {} :content ["!Pixel Scout"]}]}))))
 
-;; (rum/defc issue-57-rum [text]
-;;   (html
-;;    (let [text-add (str text " warning")]
-;;      [:div
-;;       [:h1 text]
-;;       [:h1 text-add]])))
+(rum/defc issue-57-rum [text]
+  (html
+   (let [text-add (str text " warning")]
+     [:div
+      [:h1 text]
+      [:h1 text-add]])))
 
-;; (deftest test-issue-57-rum
-;;   (is (= (html-data (issue-57-rum "This gives"))
-;;          {:tag :div
-;;           :attributes {}
-;;           :content
-;;           [{:tag :h1 :attributes {} :content ["This gives"]}
-;;            {:tag :h1 :attributes {} :content ["This gives warning"]}]})))
+(deftest test-issue-57-rum
+  (is (= (html-data (issue-57-rum "This gives"))
+         {:tag :div
+          :attributes {}
+          :content
+          [{:tag :h1 :attributes {} :content ["This gives"]}
+           {:tag :h1 :attributes {} :content ["This gives warning"]}]})))
 
 (deftest test-issue-115
   (is (= (html-data [:a {:id :XY}])
