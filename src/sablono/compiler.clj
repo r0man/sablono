@@ -63,12 +63,19 @@
       :else `(sablono.interpreter/attributes
               (sablono.normalize/merge-with-class ~attrs-1 ~attrs-2)))))
 
+(defn- maybe-fragment
+  "Replace fragment syntax (`:*`) by 'js/React.Fragment, otherwise the name of the tag"
+  [tag]
+  (if (= "*" tag)
+    'js/React.Fragment
+    (name tag)))
+
 (defn compile-react-element
   "Render an element vector as a HTML element."
   [element]
   (let [[tag attrs content] (normalize/element element)]
     `(~(react-fn tag)
-      ~(name tag)
+      ~(maybe-fragment tag)
       ~(compile-attrs attrs)
       ~@(if content (compile-react content)))))
 
@@ -205,7 +212,7 @@
   [[tag attrs & content]]
   (let [[tag attrs _] (normalize/element [tag attrs])]
     `(~(react-fn tag)
-      ~(name tag)
+      ~(maybe-fragment tag)
       ~(compile-attrs attrs)
       ~@(map compile-html content))))
 
@@ -223,7 +230,7 @@
         attrs-sym (gensym "attrs")]
     `(let [~attrs-sym ~attrs]
        (apply ~(react-fn tag)
-              ~(name tag)
+              ~(maybe-fragment tag)
               ~(compile-merge-attrs tag-attrs attrs-sym)
               ~(when-not (empty? content)
                  (mapv compile-html content))))))
@@ -234,7 +241,7 @@
         attrs-sym (gensym "attrs")]
     `(let [~attrs-sym ~attrs]
        (apply ~(react-fn tag)
-              ~(name tag)
+              ~(maybe-fragment tag)
               (if (map? ~attrs-sym)
                 ~(compile-merge-attrs tag-attrs attrs-sym)
                 ~(compile-attrs tag-attrs))

@@ -254,6 +254,25 @@
       (html-expand [:div (foo)])
       (is (= @times-called 1)))))
 
+(deftest fragments
+  (testing "React 16 fragment syntactic support"
+    (are-html
+      '[:*] '(js/React.createElement js/React.Fragment nil)
+      '[:* [:p]] '(js/React.createElement js/React.Fragment nil (js/React.createElement "p" nil))
+      '[:* [:p] [:p]] '(js/React.createElement js/React.Fragment
+                                               nil
+                                               (js/React.createElement "p" nil)
+                                               (js/React.createElement "p" nil))
+      '[:dl (for [n (range 2)]
+              [:* {:key n} [:dt (str "term " n)] [:dd (str "definition " n)]])]
+      '(js/React.createElement "dl" nil
+                               (into-array
+                                 (clojure.core/for
+                                   [n (range 2)]
+                                   (js/React.createElement js/React.Fragment #j {:key n}
+                                                           (js/React.createElement "dt" (sablono.interpreter/interpret (str "term " n)))
+                                                           (js/React.createElement "dd" (sablono.interpreter/interpret (str "definition " n))))))))))
+
 (deftest test-benchmark-template
   (are-html
    '[:li
