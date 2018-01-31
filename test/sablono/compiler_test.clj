@@ -1,6 +1,7 @@
 (ns sablono.compiler-test
   (:refer-clojure :exclude [compile])
   (:require [clojure.spec.alpha :as s]
+            [clojure.spec.gen.alpha :as gen]
             [clojure.test :refer :all]
             [clojure.test.check.clojure-test :refer [defspec]]
             [clojure.test.check.properties :as prop]
@@ -75,9 +76,12 @@
           (is (= 2 (first (.val v))))
           (is (= [3] (.val (second (.val v))))))))))
 
+(def gen-tag
+  (gen/such-that (complement fragment?) (s/gen keyword?)))
+
 (defspec test-basic-tags
   (prop/for-all
-   [tag (s/gen keyword?)]
+   [tag gen-tag]
    (=== (eval `(compile [~tag]))
         `(js/React.createElement ~(name tag) nil))))
 
@@ -253,6 +257,38 @@
           foo #(swap! times-called inc)]
       (html-expand [:div (foo)])
       (is (= @times-called 1)))))
+
+(deftest fragments
+  (testing "React 16 fragment syntactic support"
+    (are-html
+     '[:*]
+     '(js/React.createElement
+       js/React.Fragment nil)
+
+     '[:* [:p]]
+     '(js/React.createElement
+       js/React.Fragment nil
+       (js/React.createElement "p" nil))
+
+     '[:* [:p] [:p]]
+     '(js/React.createElement
+       js/React.Fragment nil
+       (js/React.createElement "p" nil)
+       (js/React.createElement "p" nil))
+
+     '[:dl (for [n (range 2)]
+             [:* {:key n}
+              [:dt {} (str "term " n)]
+              [:dd {} (str "definition " n)]])]
+     '(js/React.createElement
+       "dl" nil
+       (into-array
+        (clojure.core/for
+            [n (range 2)]
+          (js/React.createElement
+           js/React.Fragment #j {:key n}
+           (js/React.createElement "dt" nil (sablono.interpreter/interpret (str "term " n)))
+           (js/React.createElement "dd" nil (sablono.interpreter/interpret (str "definition " n))))))))))
 
 (deftest test-benchmark-template
   (are-html

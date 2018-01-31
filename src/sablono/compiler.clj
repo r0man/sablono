@@ -14,6 +14,11 @@
 (defprotocol IJSValue
   (to-js [x]))
 
+(defn fragment?
+  "Returns true if `tag` is the fragment tag \"*\", otherwise false."
+  [tag]
+  (= (name tag) "*"))
+
 (defmulti compile-attr (fn [name value] name))
 
 (defmethod compile-attr :class [_ value]
@@ -47,6 +52,13 @@
        (html-to-dom-attrs)
        (to-js)))
 
+(defn- compile-constructor
+  "Return the symbol of a fn that build a React element. "
+  [type]
+  (if (contains? #{:input :select :textarea} (keyword type))
+    'sablono.interpreter/create-element
+    'js/React.createElement))
+
 (defn compile-merge-attrs [attrs-1 attrs-2]
   (let [empty-attrs? #(or (nil? %1) (and (map? %1) (empty? %1)))]
     (cond
@@ -63,12 +75,20 @@
       :else `(sablono.interpreter/attributes
               (sablono.normalize/merge-with-class ~attrs-1 ~attrs-2)))))
 
+(defn- compile-tag
+  "Replace fragment syntax (`:*`) by 'js/React.Fragment, otherwise the
+  name of the tag"
+  [tag]
+  (if (fragment? tag)
+    'js/React.Fragment
+    (name tag)))
+
 (defn compile-react-element
   "Render an element vector as a HTML element."
   [element]
   (let [[tag attrs content] (normalize/element element)]
-    `(~(react-fn tag)
-      ~(name tag)
+    `(~(compile-constructor tag)
+      ~(compile-tag tag)
       ~(compile-attrs attrs)
       ~@(if content (compile-react content)))))
 
@@ -204,8 +224,8 @@
 (defmethod compile-element ::literal-tag-and-attributes
   [[tag attrs & content]]
   (let [[tag attrs _] (normalize/element [tag attrs])]
-    `(~(react-fn tag)
-      ~(name tag)
+    `(~(compile-constructor tag)
+      ~(compile-tag tag)
       ~(compile-attrs attrs)
       ~@(map compile-html content))))
 
@@ -222,8 +242,8 @@
   (let [[tag tag-attrs _] (normalize/element [tag])
         attrs-sym (gensym "attrs")]
     `(let [~attrs-sym ~attrs]
-       (apply ~(react-fn tag)
-              ~(name tag)
+       (apply ~(compile-constructor tag)
+              ~(compile-tag tag)
               ~(compile-merge-attrs tag-attrs attrs-sym)
               ~(when-not (empty? content)
                  (mapv compile-html content))))))
@@ -233,8 +253,8 @@
   (let [[tag tag-attrs _] (normalize/element [tag])
         attrs-sym (gensym "attrs")]
     `(let [~attrs-sym ~attrs]
-       (apply ~(react-fn tag)
-              ~(name tag)
+       (apply ~(compile-constructor tag)
+              ~(compile-tag tag)
               (if (map? ~attrs-sym)
                 ~(compile-merge-attrs tag-attrs attrs-sym)
                 ~(compile-attrs tag-attrs))

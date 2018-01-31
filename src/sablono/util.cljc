@@ -68,13 +68,6 @@
                  (remove nil?)))
        (str/join " ")))
 
-(defn react-fn
-  "Return the symbol of a fn that build a React element. "
-  [type]
-  (if (contains? #{:input :select :textarea} (keyword type))
-    'sablono.interpreter/create-element
-    'js/React.createElement))
-
 #?(:cljs
    (extend-protocol ToString
      cljs.core.Keyword

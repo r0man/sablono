@@ -4,12 +4,12 @@
             [sablono.server :as server]))
 
 (deftest test-render
-  (are [markup match]
-      (re-matches (re-pattern match) (server/render markup))
+  (are [markup expected]
+      (= (server/render markup) expected)
     (html [:div#a.b "c"])
-    "<div id=\"a\" class=\"b\" data-reactroot=\"\" data-reactid=\".*\" data-react-checksum=\".*\">c</div>"
+    "<div id=\"a\" class=\"b\" data-reactroot=\"\">c</div>"
     (html [:div (when true [:p "data"]) (if true [:p "data"] nil)])
-    "<div data-reactroot=\"\" data-reactid=\".*\" data-react-checksum=\".*\"><p data-reactid=\".*\">data</p><p data-reactid=\".*\">data</p></div>"))
+    "<div data-reactroot=\"\"><p>data</p><p>data</p></div>"))
 
 (deftest test-render-static
   (are [markup expected]
