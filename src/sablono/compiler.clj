@@ -136,10 +136,28 @@
   [[_ condition & body]]
   `(if ~condition ~@(for [x body] (compile-html x))))
 
+(defmethod compile-form "case"
+  [[_ v & cases]]
+  `(case ~v
+     ~@(mapcat
+        (fn [[test markup]]
+          (if markup
+            [test (compile-html markup)]
+            [(compile-html test)]))
+        (partition-all 2 cases))))
+
 (defmethod compile-form :default
   [expr]
-  (if (:inline (meta expr))
-    expr `(sablono.interpreter/interpret ~expr)))
+  (if (or (nil? expr)
+          (:inline (meta expr)))
+    expr
+    (try
+      (let [mform (macroexpand expr)]
+        (if (= mform expr)
+          `(sablono.interpreter/interpret ~expr)
+          (compile-form mform)))
+      (catch ClassNotFoundException e
+        `(sablono.interpreter/interpret ~expr)))))
 
 (defn- not-hint?
   "True if x is not hinted to be the supplied type."
