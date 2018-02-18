@@ -106,7 +106,8 @@
 (deftest test-element-meta
   (are [element expected]
       (= (->> (nth (normalize/element element) 2)
-              (map (comp map? meta))))
+              (map (comp true? :inline meta)))
+         expected)
     '[:span (constantly 1)] [false]
     '[:span ^:inline (constantly 1)] [true]
-    '[:span ^:inline (constantly 1) nil ^:inline (constantly 2)] [true false true]))
+    '[:span ^:inline (constantly 1) nil ^:inline (constantly 2)] [true true]))
