@@ -450,9 +450,7 @@
 (deftest test-issue-90
   (is (=== (compile [:div nil (case :a :a "a")])
            '(js/React.createElement
-             "div" nil nil
-             (sablono.interpreter/interpret
-              (case :a :a "a"))))))
+             "div" nil nil (clojure.core/case :a :a "a")))))
 
 (deftest test-compile-attr-class
   (are [form expected]
@@ -495,11 +493,69 @@
                    js/React.createElement "li"
                    (sablono.interpreter/attributes attrs) nil))))))))
 
+(deftest test-compile-case
+  (is (=== (compile [:div {:class "a"}
+                     (case "a"
+                       "a" [:div "a"]
+                       "b" [:div "b"]
+                       [:div "else"])])
+           '(js/React.createElement
+             "div" #j {:className "a"}
+             (clojure.core/case "a"
+               "a" (js/React.createElement "div" nil "a")
+               "b" (js/React.createElement "div" nil "b")
+               (js/React.createElement "div" nil "else"))))))
+
+(deftest test-compile-cond
+  (is (=== (compile [:div {:class "a"}
+                     (condp = "a"
+                       "a" [:div "a"]
+                       "b" [:div "b"]
+                       [:div "else"])])
+           '(js/React.createElement
+             "div" #j {:className "a"}
+             (clojure.core/condp = "a"
+               "a" (js/React.createElement "div" nil "a")
+               "b" (js/React.createElement "div" nil "b")
+               (js/React.createElement "div" nil "else"))))))
+
+(deftest test-compile-condp
+  (is (=== (compile [:div {:class "a"}
+                     (cond
+                       (= "a" "a") [:div "a"]
+                       (= "b" "b") [:div "b"]
+                       :else [:div "else"])])
+           '(js/React.createElement
+             "div" #j {:className "a"}
+             (clojure.core/cond
+               (= "a" "a")
+               (js/React.createElement "div" nil "a")
+               (= "b" "b")
+               (js/React.createElement "div" nil "b")
+               :else
+               (js/React.createElement "div" nil "else"))))))
+
 (deftest test-optimize-if
   (is (=== (compile (if true [:span "foo"] [:span "bar"]) )
            '(if true
               (js/React.createElement "span" nil "foo")
               (js/React.createElement "span" nil "bar")))))
+
+(deftest test-compile-if-not
+  (is (=== (compile [:div {:class "a"} (if-not false [:div [:div]])])
+           '(js/React.createElement
+             "div" #j {:className "a"}
+             (clojure.core/if-not false
+               (js/React.createElement
+                "div" nil (js/React.createElement "div" nil)))))))
+
+(deftest test-compile-if-some
+  (is (=== (compile [:div {:class "a"} (if-some [x true] [:div [:div]])])
+           '(js/React.createElement
+             "div" #j {:className "a"}
+             (clojure.core/if-some [x true]
+               (js/React.createElement
+                "div" nil (js/React.createElement "div" nil)))))))
 
 (deftest test-issue-115
   (is (=== (compile [:a {:id :XY}])
@@ -534,3 +590,28 @@
              "div" #j {:style (sablono.interpreter/attributes
                                (merge {:margin-left "2rem"}
                                       (when focused? {:color "red"})))}))))
+
+
+(deftest test-compile-when
+  (is (=== (compile [:div {:class "a"} (when true [:div [:div]])])
+           '(js/React.createElement
+             "div" #j {:className "a"}
+             (clojure.core/when true
+               (js/React.createElement
+                "div" nil (js/React.createElement "div" nil)))))))
+
+(deftest test-compile-when-not
+  (is (=== (compile [:div {:class "a"} (when-not false [:div [:div]])])
+           '(js/React.createElement
+             "div" #j {:className "a"}
+             (clojure.core/when-not false
+               (js/React.createElement
+                "div" nil (js/React.createElement "div" nil)))))))
+
+(deftest test-compile-when-some
+  (is (=== (compile [:div {:class "a"} (when-some [x true] [:div [:div]])])
+           '(js/React.createElement
+             "div" #j {:className "a"}
+             (clojure.core/when-some [x true]
+               (js/React.createElement
+                "div" nil (js/React.createElement "div" nil)))))))

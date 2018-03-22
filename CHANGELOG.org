@@ -1,6 +1,9 @@
 * Changelog
 ** Unreleased
 
+- [[https://github.com/r0man/sablono/pull/188/files][#188]] Optimize more forms.
+- [[https://github.com/r0man/sablono/pull/185][#185]] Fix test-element-meta test.
+
 ** 0.8.3
 
 - [[https://github.com/r0man/sablono/pull/181][#181]] Update React to =16.2.0=.
