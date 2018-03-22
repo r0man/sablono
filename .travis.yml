@@ -1,7 +1,18 @@
+cache:
+  directories:
+  - $HOME/.cljs
+  - $HOME/.m2
+env:
+  matrix:
+    - TASK=benchmark
+    - TASK=test
+    - TASK=test.nashorn
+    - TASK=test.node
+    - TASK=test.phantom
 language: clojure
 install:
   - . $HOME/.nvm/nvm.sh
   - nvm install stable
   - nvm use stable
-script: lein ci
+script: lein $TASK
 sudo: false

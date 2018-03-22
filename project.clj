@@ -7,9 +7,6 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.omcljs/om "1.0.0-beta2"]]
-  :npm {:dependencies [[benchmark "1.0.0"]
-                       [react "16.2.0"]
-                       [react-dom "16.2.0"]]}
   :profiles {:dev {:dependencies [[criterium "0.4.4"]
                                   [devcards "0.2.4" :exclusions [sablono]]
                                   [doo "0.1.9"]
@@ -21,8 +18,7 @@
                                   [rum "0.11.2" :exclusions [sablono]]]
                    :plugins [[lein-cljsbuild "1.1.7"]
                              [lein-doo "0.1.9"]
-                             [lein-figwheel "0.5.16-SNAPSHOT"]
-                             [lein-npm "0.6.2"]
+                             [lein-figwheel "0.5.15"]
                              [perforate "0.3.4"]]
                    :resource-paths ["test-resources" "target"]}
              :provided {:dependencies [[cljsjs/create-react-class "15.6.2-0"]
@@ -32,17 +28,12 @@
                                        [org.clojure/clojurescript "1.10.217"]]}
              :repl {:dependencies [[com.cemerick/piggieback "0.2.2"]]
                     :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}}
-  :aliases {"ci" ["do"
-                  ["clean"]
-                  ["npm" "install"]
-                  ["test" ":default"]
-                  ["doo" "node" "nodejs" "once"]
-                  ;; TODO: Fix ReferenceError: Can't find variable: React
-                  ;; ["doo" "phantom" "none" "once"]
-                  ["doo" "nashorn" "advanced" "once"]
-                  ["doo" "phantom" "advanced" "once"]
-                  ["doo" "node" "benchmark" "once"]]
-            "deploy" ["do" "clean," "deploy" "clojars"]}
+  :aliases {"benchmark" ["doo" "node" "benchmark" "once"]
+            "ci" ["do" ["clean"] ["test"] ["test.nashorn"] ["test.node"] ["test.phantom"] ["benchmark"]]
+            "deploy" ["do" "clean," "deploy" "clojars"]
+            "test.nashorn" ["doo" "nashorn" "advanced" "once"]
+            "test.node" ["doo" "node" "nodejs" "once"]
+            "test.phantom" ["doo" "phantom" "advanced" "once"]}
   :clean-targets ^{:protect false} [:target-path]
   :cljsbuild {:builds
               [{:id "devcards"
@@ -63,6 +54,11 @@
                 {:asset-path "target/benchmark/out"
                  :aot-cache true
                  :main sablono.benchmark
+                 :npm-deps
+                 {:benchmark "1.0.0"
+                  :react "16.2.0"
+                  :react-dom "16.2.0"}
+                 :install-deps true
                  :output-dir "target/benchmark/out"
                  :output-to "target/benchmark/sablono.js"
                  :optimizations :none
@@ -75,6 +71,11 @@
                 {:asset-path "target/nodejs/out"
                  :aot-cache true
                  :main sablono.test.runner
+                 :npm-deps
+                 {:benchmark "1.0.0"
+                  :react "16.2.0"
+                  :react-dom "16.2.0"}
+                 :install-deps true
                  :optimizations :none
                  :output-dir "target/nodejs/out"
                  :output-to "target/nodejs/sablono.js"
