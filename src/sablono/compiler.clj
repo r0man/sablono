@@ -112,6 +112,32 @@
   {:private true}
   form-name)
 
+(defmethod compile-form "case"
+  [[_ v & cases]]
+  `(case ~v
+     ~@(doall (mapcat
+               (fn [[test hiccup]]
+                 (if hiccup
+                   [test (compile-html hiccup)]
+                   [(compile-html test)]))
+               (partition-all 2 cases)))))
+
+(defmethod compile-form "cond"
+  [[_ & clauses]]
+  `(cond ~@(mapcat
+            (fn [[check expr]] [check (compile-html expr)])
+            (partition 2 clauses))))
+
+(defmethod compile-form "condp"
+  [[_ f v & cases]]
+  `(condp ~f ~v
+     ~@(doall (mapcat
+               (fn [[test hiccup]]
+                 (if hiccup
+                   [test (compile-html hiccup)]
+                   [(compile-html test)]))
+               (partition-all 2 cases)))))
+
 (defmethod compile-form "do"
   [[_ & forms]]
   `(do ~@(butlast forms) ~(compile-html (last forms))))
@@ -135,6 +161,26 @@
 (defmethod compile-form "if"
   [[_ condition & body]]
   `(if ~condition ~@(for [x body] (compile-html x))))
+
+(defmethod compile-form "if-not"
+  [[_ bindings & body]]
+  `(if-not ~bindings ~@(doall (for [x body] (compile-html x)))))
+
+(defmethod compile-form "if-some"
+  [[_ bindings & body]]
+  `(if-some ~bindings ~@(doall (for [x body] (compile-html x)))))
+
+(defmethod compile-form "when"
+  [[_ bindings & body]]
+  `(when ~bindings ~@(doall (for [x body] (compile-html x)))))
+
+(defmethod compile-form "when-not"
+  [[_ bindings & body]]
+  `(when-not ~bindings ~@(doall (for [x body] (compile-html x)))))
+
+(defmethod compile-form "when-some"
+  [[_ bindings & body]]
+  `(when-some ~bindings ~@(butlast body) ~(compile-html (last body))))
 
 (defmethod compile-form :default
   [expr]

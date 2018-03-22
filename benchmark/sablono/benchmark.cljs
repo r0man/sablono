@@ -123,4 +123,25 @@
 (defcase :compile-attributes-children :reagent []
   #(render (reagent/as-element [:div {:class "a"} "b" 1 2 3])))
 
+
+
+(defgoal :compile-when-form
+  "Render element with literal attributes and children")
+
+(defcase :compile-when-form :sablono []
+  #(render (html [:div {:class "a"}
+                  (when true [:div [:div]])])))
+
+(defcase :compile-when-form :react []
+  #(render (js/React.createElement
+            "div" #js {:className "a"}
+            (when true
+              (js/React.createElement
+               "div" nil (js/React.createElement "div"))))))
+
+(defcase :compile-when-form :reagent []
+  #(render (reagent/as-element
+            [:div {:class "a"}
+             (when true [:div [:div]])])))
+
 (perf/run-goals)
