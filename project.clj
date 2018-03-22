@@ -13,7 +13,7 @@
   :profiles {:dev {:dependencies [[criterium "0.4.4"]
                                   [devcards "0.2.4" :exclusions [sablono]]
                                   [doo "0.1.9"]
-                                  [figwheel-sidecar "0.5.15"]
+                                  [figwheel-sidecar "0.5.16-SNAPSHOT"]
                                   [funcool/tubax "0.2.0"]
                                   [org.clojure/test.check "0.9.0"]
                                   [perforate-x "0.1.0"]
@@ -21,7 +21,7 @@
                                   [rum "0.11.2" :exclusions [sablono]]]
                    :plugins [[lein-cljsbuild "1.1.7"]
                              [lein-doo "0.1.9"]
-                             [lein-figwheel "0.5.15"]
+                             [lein-figwheel "0.5.16-SNAPSHOT"]
                              [lein-npm "0.6.2"]
                              [perforate "0.3.4"]]
                    :resource-paths ["test-resources" "target"]}
@@ -29,7 +29,7 @@
                                        [cljsjs/react "16.2.0-3"]
                                        [cljsjs/react-dom "16.2.0-3"]
                                        [cljsjs/react-dom-server "16.2.0-3"]
-                                       [org.clojure/clojurescript "1.9.946"]]}
+                                       [org.clojure/clojurescript "1.10.217"]]}
              :repl {:dependencies [[com.cemerick/piggieback "0.2.2"]]
                     :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}}
   :aliases {"ci" ["do"
@@ -48,6 +48,7 @@
               [{:id "devcards"
                 :compiler
                 {:asset-path "devcards"
+                 :aot-cache true
                  :main sablono.test.runner
                  :output-to "target/public/sablono.js"
                  :output-dir "target/public/devcards"
@@ -60,6 +61,7 @@
                {:id "benchmark"
                 :compiler
                 {:asset-path "target/benchmark/out"
+                 :aot-cache true
                  :main sablono.benchmark
                  :output-dir "target/benchmark/out"
                  :output-to "target/benchmark/sablono.js"
@@ -71,6 +73,7 @@
                {:id "nodejs"
                 :compiler
                 {:asset-path "target/nodejs/out"
+                 :aot-cache true
                  :main sablono.test.runner
                  :optimizations :none
                  :output-dir "target/nodejs/out"
@@ -83,6 +86,7 @@
                {:id "none"
                 :compiler
                 {:asset-path "target/none/out"
+                 :aot-cache true
                  :main sablono.test.runner
                  :output-to "target/none/sablono.js"
                  :output-dir "target/none/out"
@@ -94,6 +98,7 @@
                {:id "advanced"
                 :compiler
                 {:asset-path "target/advanced/out"
+                 :aot-cache true
                  :main sablono.test.runner
                  :output-dir "target/advanced/out"
                  :optimizations :advanced
@@ -110,6 +115,7 @@
                {:id "sample"
                 :compiler
                 {:asset-path "target/sample/out"
+                 :aot-cache true
                  :main example.core
                  :output-dir "target/sample/out"
                  :output-to "target/sample/sablono.js"
