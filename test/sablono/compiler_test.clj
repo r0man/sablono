@@ -5,6 +5,7 @@
             [clojure.test :refer :all]
             [clojure.test.check.clojure-test :refer [defspec]]
             [clojure.test.check.properties :as prop]
+            [clojure.walk :refer [macroexpand-all postwalk]]
             [sablono.compiler :refer :all]
             [sablono.core :refer [attrs html* html-expand]]
             [sablono.interpreter :as interpreter]
@@ -16,6 +17,27 @@
 (defmacro are-html [& body]
   `(are [form# expected#]
        (=== (macroexpand `(html* ~form#))
+            expected#)
+     ~@body))
+
+(defn- unify-gensyms
+  "Macros with gensym do not compare to each other, as gensyms get continous, different numbers.
+   This little helper renumber gensyms to 0-based."
+  [form]
+  (let [base (atom nil)]
+    (postwalk (fn [x]
+                (if-let [[_ p d] (and (symbol? x)
+                                    (re-find #"^(.+__)(\d+)$" (name x)))]
+                  (let [d (Integer/parseInt d)
+                        _ (compare-and-set! base nil d)
+                        d (- d @base)]
+                    (symbol (str p d)))
+                  x))
+              form)))
+
+(defmacro are-html-gensym-friendly [& body]
+  `(are [form# expected#]
+       (=== (unify-gensyms (macroexpand `(html* ~form#)))
             expected#)
      ~@body))
 
@@ -451,8 +473,7 @@
   (is (=== (compile [:div nil (case :a :a "a")])
            '(js/React.createElement
              "div" nil nil
-             (sablono.interpreter/interpret
-              (case :a :a "a"))))))
+             (clojure.core/case :a :a "a")))))
 
 (deftest test-compile-attr-class
   (are [form expected]
@@ -467,9 +488,75 @@
     '[(list "foo" "bar")]
     '(sablono.util/join-classes [(list "foo" "bar")])))
 
-(deftest test-optimize-let-form
-  (is (=== (compile (let [x "x"] [:div "x"]))
-           '(let* [x "x"] (js/React.createElement "div" nil "x")))))
+(deftest test-optimized-forms
+  (are-html
+   '(let [x "x"] [:div "x"])
+   '(let* [x "x"] (js/React.createElement "div" nil "x"))
+
+   '(do [:div "y"] [:div "x"])
+   '(do [:div "y"] (js/React.createElement "div" nil "x"))
+
+   '(if true [:span "foo"] [:span "bar"])
+   '(if true
+      (js/React.createElement "span" nil "foo")
+      (js/React.createElement "span" nil "bar"))
+
+   '(if-not x [:span "foo"] [:span "bar"])
+   '(if (clojure.core/not x)
+      (js/React.createElement "span" nil "foo")
+      (js/React.createElement "span" nil "bar"))
+
+   '(when true [:span "foo"] [:span "bar"])
+   '(if true
+      (do
+        [:span "foo"]
+        (js/React.createElement "span" nil "bar")))
+
+   '(when-not true [:span "foo"] [:span "bar"])
+   '(if true
+      nil
+      (do
+        [:span "foo"]
+        (js/React.createElement "span" nil "bar")))
+
+   '(if-some [x 8] [:span "foo"] [:span "bar"])
+   (macroexpand '(if-some [x 8]
+                   (js/React.createElement "span" nil "foo")
+                   (js/React.createElement "span" nil "bar")))
+
+   '(when-some [x 8] [:span "foo"] [:span "bar"])
+   (macroexpand '(when-some [x 8]
+                   [:span "foo"]
+                   (js/React.createElement "span" nil "bar")))
+
+   '(cond foo [:span "foo"]
+          bar [:span "bar"]
+          :else [:div "default"])
+   (macroexpand-all '(cond foo (js/React.createElement "span" nil "foo")
+                           bar (js/React.createElement "span" nil "bar")
+                           :else (js/React.createElement "div" nil "default")))
+   ))
+
+(deftest test-advanced-optimized-forms
+  (are-html-gensym-friendly
+   '(case u
+      17 [:span "foo"]
+      42 [:span "bar"]
+      [:div "default"])
+   (unify-gensyms (macroexpand-all '(case u
+                                      17 (js/React.createElement "span" nil "foo")
+                                      42 (js/React.createElement "span" nil "bar")
+                                      (js/React.createElement "div" nil "default"))))
+
+   '(condp = 9
+      17 [:span "foo"]
+      42 [:span "bar"]
+      [:div "default"])
+   (unify-gensyms (macroexpand-all '(condp = 9
+                                      17 (js/React.createElement "span" nil "foo")
+                                      42 (js/React.createElement "span" nil "bar")
+                                      (js/React.createElement "div" nil "default"))))
+   ))
 
 (deftest test-optimize-for-loop
   (is (=== (compile [:ul (for [n (range 3)] [:li n])])
@@ -494,12 +581,6 @@
                   (clojure.core/apply
                    js/React.createElement "li"
                    (sablono.interpreter/attributes attrs) nil))))))))
-
-(deftest test-optimize-if
-  (is (=== (compile (if true [:span "foo"] [:span "bar"]) )
-           '(if true
-              (js/React.createElement "span" nil "foo")
-              (js/React.createElement "span" nil "bar")))))
 
 (deftest test-issue-115
   (is (=== (compile [:a {:id :XY}])
