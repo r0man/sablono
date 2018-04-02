@@ -9,7 +9,7 @@
                  [org.omcljs/om "1.0.0-beta2"]]
   :profiles {:dev {:dependencies [[criterium "0.4.4"]
                                   [devcards "0.2.4" :exclusions [sablono]]
-                                  [doo "0.1.9"]
+                                  [doo "0.1.10"]
                                   [figwheel-sidecar "0.5.16-SNAPSHOT"]
                                   [funcool/tubax "0.2.0"]
                                   [org.clojure/test.check "0.9.0"]
@@ -17,15 +17,15 @@
                                   [reagent "0.7.0"]
                                   [rum "0.11.2" :exclusions [sablono]]]
                    :plugins [[lein-cljsbuild "1.1.7"]
-                             [lein-doo "0.1.9"]
+                             [lein-doo "0.1.10"]
                              [lein-figwheel "0.5.15"]
                              [perforate "0.3.4"]]
                    :resource-paths ["test-resources" "target"]}
              :provided {:dependencies [[cljsjs/create-react-class "15.6.2-0"]
-                                       [cljsjs/react "16.2.0-3"]
-                                       [cljsjs/react-dom "16.2.0-3"]
-                                       [cljsjs/react-dom-server "16.2.0-3"]
-                                       [org.clojure/clojurescript "1.10.217"]]}
+                                       [cljsjs/react "16.3.0-0"]
+                                       [cljsjs/react-dom "16.3.0-0"]
+                                       [cljsjs/react-dom-server "16.3.0-0"]
+                                       [org.clojure/clojurescript "1.10.238"]]}
              :repl {:dependencies [[com.cemerick/piggieback "0.2.2"]]
                     :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}}
   :aliases {"benchmark" ["doo" "node" "benchmark" "once"]
@@ -56,8 +56,8 @@
                  :main sablono.benchmark
                  :npm-deps
                  {:benchmark "1.0.0"
-                  :react "16.2.0"
-                  :react-dom "16.2.0"}
+                  :react "16.3.0"
+                  :react-dom "16.3.0"}
                  :install-deps true
                  :output-dir "target/benchmark/out"
                  :output-to "target/benchmark/sablono.js"
@@ -73,8 +73,8 @@
                  :main sablono.test.runner
                  :npm-deps
                  {:benchmark "1.0.0"
-                  :react "16.2.0"
-                  :react-dom "16.2.0"}
+                  :react "16.3.0"
+                  :react-dom "16.3.0"}
                  :install-deps true
                  :optimizations :none
                  :output-dir "target/nodejs/out"
