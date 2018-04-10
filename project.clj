@@ -18,7 +18,7 @@
                                   [rum "0.11.2" :exclusions [sablono]]]
                    :plugins [[lein-cljsbuild "1.1.7"]
                              [lein-doo "0.1.10"]
-                             [lein-figwheel "0.5.15"]
+                             [lein-figwheel "0.5.16-SNAPSHOT"]
                              [perforate "0.3.4"]]
                    :resource-paths ["test-resources" "target"]}
              :provided {:dependencies [[cljsjs/create-react-class "15.6.2-0"]
@@ -39,7 +39,7 @@
               [{:id "devcards"
                 :compiler
                 {:asset-path "devcards"
-                 :aot-cache true
+                 ;:aot-cache true
                  :main sablono.test.runner
                  :output-to "target/public/sablono.js"
                  :output-dir "target/public/devcards"
@@ -52,7 +52,7 @@
                {:id "benchmark"
                 :compiler
                 {:asset-path "target/benchmark/out"
-                 :aot-cache true
+                 ;:aot-cache true
                  :main sablono.benchmark
                  :npm-deps
                  {:benchmark "1.0.0"
@@ -69,7 +69,7 @@
                {:id "nodejs"
                 :compiler
                 {:asset-path "target/nodejs/out"
-                 :aot-cache true
+                 ;:aot-cache true
                  :main sablono.test.runner
                  :npm-deps
                  {:benchmark "1.0.0"
@@ -87,7 +87,7 @@
                {:id "none"
                 :compiler
                 {:asset-path "target/none/out"
-                 :aot-cache true
+                 ;:aot-cache true
                  :main sablono.test.runner
                  :output-to "target/none/sablono.js"
                  :output-dir "target/none/out"
@@ -99,7 +99,7 @@
                {:id "advanced"
                 :compiler
                 {:asset-path "target/advanced/out"
-                 :aot-cache true
+                 ;:aot-cache true
                  :main sablono.test.runner
                  :output-dir "target/advanced/out"
                  :optimizations :advanced
@@ -116,7 +116,7 @@
                {:id "sample"
                 :compiler
                 {:asset-path "target/sample/out"
-                 :aot-cache true
+                 ;:aot-cache true
                  :main example.core
                  :output-dir "target/sample/out"
                  :output-to "target/sample/sablono.js"
