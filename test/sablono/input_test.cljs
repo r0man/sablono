@@ -1,7 +1,8 @@
 (ns sablono.input-test
   (:require [clojure.pprint :refer [pprint]]
             [devcards.core :refer-macros [defcard]]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [sablono.core :refer [html] :refer-macros [html]]))
 
 (def fruits
   [["grapefruit" "Grapefruit"]
@@ -108,3 +109,8 @@
 
 (defcard select-toggle-issue-145
   (select-toggle (atom ["1st" "2nd" "3rd"])))
+
+(defcard input-conflict-issue-148
+  (html [:div [:input {:type      "text"
+                       :value     "hello world"
+                       :on-change (fn [e] (println e))}]]))
