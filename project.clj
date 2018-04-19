@@ -22,9 +22,9 @@
                              [perforate "0.3.4"]]
                    :resource-paths ["test-resources" "target"]}
              :provided {:dependencies [[cljsjs/create-react-class "15.6.2-0"]
-                                       [cljsjs/react "16.3.0-0"]
-                                       [cljsjs/react-dom "16.3.0-0"]
-                                       [cljsjs/react-dom-server "16.3.0-0"]
+                                       [cljsjs/react "16.3.0-1"]
+                                       [cljsjs/react-dom "16.3.0-1"]
+                                       [cljsjs/react-dom-server "16.3.0-1"]
                                        [org.clojure/clojurescript "1.10.238"]]}
              :repl {:dependencies [[com.cemerick/piggieback "0.2.2"]]
                     :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}}
