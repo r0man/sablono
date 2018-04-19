@@ -1,7 +1,9 @@
 (ns sablono.input-test
   (:require [clojure.pprint :refer [pprint]]
             [devcards.core :refer-macros [defcard]]
-            [rum.core :as rum]))
+            [om.next :as om :refer [defui]]
+            [rum.core :as rum]
+            [sablono.core :refer [html]]))
 
 (def fruits
   [["grapefruit" "Grapefruit"]
@@ -108,3 +110,27 @@
 
 (defcard select-toggle-issue-145
   (select-toggle (atom ["1st" "2nd" "3rd"])))
+
+
+(defui OmControlledCheckbox
+  Object
+  (componentDidMount [this]
+    (js/setTimeout #(om/update-state! this assoc :checked? true) 1000))
+
+  (initLocalState [this]
+    {:checked? false})
+
+  (render [this]
+    (html
+     [:div
+      [:input
+       {:type "checkbox"
+        :checked (om/get-state this :checked?)
+        :on-change #(om/update-state! this update :checked? not)}]
+      [:pre (with-out-str (pprint (om/get-state this)))]])))
+
+(def om-controlled-checkbox
+  (om/factory OmControlledCheckbox))
+
+(defcard om-controlled-checkbox-test
+  (om-controlled-checkbox))

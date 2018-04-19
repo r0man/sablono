@@ -43,7 +43,7 @@
               (object/getValueByKeys event "target" property))))
 
          (componentWillReceiveProps [this new-props]
-           (let [state-value (str (object/getValueByKeys this "state" property))
+           (let [state-value (object/getValueByKeys this "state" property)
                  element-value (object/get (js/ReactDOM.findDOMNode this) property)]
              ;; On IE, onChange event might come after actual value of
              ;; an element have changed. We detect this and render
@@ -57,7 +57,7 @@
              ;; TODO: Find a better solution, since this conflicts
              ;; with controlled/uncontrolled inputs.
              ;; https://github.com/r0man/sablono/issues/148
-             (if (not= state-value element-value)
+             (if (not= (str state-value) (str element-value))
                (update-state this new-props property element-value)
                (update-state this new-props property (object/get new-props property)))))
 
