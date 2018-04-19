@@ -1,6 +1,7 @@
 * Changelog
 ** Unreleased
 
+- [[https://github.com/r0man/sablono/issues/194][#194]] Fix checkbox update regression.
 - [[https://github.com/r0man/sablono/pull/188/files][#188]] Optimize more forms.
 - [[https://github.com/r0man/sablono/pull/185][#185]] Fix test-element-meta test.
 
