@@ -57,7 +57,7 @@
   [type]
   (if (contains? #{:input :select :textarea} (keyword type))
     'sablono.interpreter/create-element
-    'js/React.createElement))
+    'sablono.core/create-element))
 
 (defn compile-merge-attrs [attrs-1 attrs-2]
   (let [empty-attrs? #(or (nil? %1) (and (map? %1) (empty? %1)))]
@@ -76,11 +76,11 @@
               (sablono.normalize/merge-with-class ~attrs-1 ~attrs-2)))))
 
 (defn- compile-tag
-  "Replace fragment syntax (`:*`) by 'js/React.Fragment, otherwise the
+  "Replace fragment syntax (`:*`) by 'React.Fragment, otherwise the
   name of the tag"
   [tag]
   (if (fragment? tag)
-    'js/React.Fragment
+    'sablono.core/fragment
     (name tag)))
 
 (defn compile-react-element

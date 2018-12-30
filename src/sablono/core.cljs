@@ -5,7 +5,16 @@
             [sablono.normalize :as normalize]
             [sablono.util :refer [as-str to-uri]]
             [sablono.interpreter :as interpreter]
-            [goog.dom :as dom]))
+            [goog.dom :as dom]
+            [react :as React]))
+
+(def create-element
+  "The React.js create element function."
+  React/createElement)
+
+(def fragment
+  "The React.js Fragment."
+  React/Fragment)
 
 (defn wrap-attrs
   "Add an optional attribute argument to a function that returns a element vector."

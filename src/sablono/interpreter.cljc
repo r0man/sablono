@@ -1,6 +1,8 @@
 (ns sablono.interpreter
   (:require #?(:clj [om.dom :as dom])
             #?(:cljs [goog.object :as object])
+            #?(:cljs [react :as React])
+            #?(:cljs [react-dom :as ReactDOM])
             [clojure.string :as str]
             [clojure.string :refer [blank? join]]
             [sablono.normalize :as normalize]
@@ -30,9 +32,9 @@
                             (->> #js {:onChange (goog.bind (object/get this "onChange") this)}
                                  (object/extend state props))
                             state))
-                    (.call js/React.Component this props)))]
+                    (.call React/Component this props)))]
        (set! (.-displayName ctor) (str "wrapped-" element))
-       (goog.inherits ctor js/React.Component)
+       (goog.inherits ctor React/Component)
        (specify! (.-prototype ctor)
          Object
          (onChange [this event]
@@ -44,7 +46,7 @@
 
          (componentWillReceiveProps [this new-props]
            (let [state-value (object/getValueByKeys this "state" property)
-                 element-value (object/get (js/ReactDOM.findDOMNode this) property)]
+                 element-value (object/get (ReactDOM/findDOMNode this) property)]
              ;; On IE, onChange event might come after actual value of
              ;; an element have changed. We detect this and render
              ;; element as-is, hoping that next onChange will
@@ -62,7 +64,7 @@
                (update-state this new-props property (object/get new-props property)))))
 
          (render [this]
-           (js/React.createElement element (.-state this))))
+           (React/createElement element (.-state this))))
        ctor)))
 
 #?(:cljs (def wrapped-input))
@@ -119,7 +121,7 @@
             :children children
             :react-key nil
             :tag type})
-     :cljs (apply js/React.createElement (element-class type props) props children)))
+     :cljs (apply React/createElement (element-class type props) props children)))
 
 (defn attributes [attrs]
   #?(:clj (-> (util/html-to-dom-attrs attrs)
