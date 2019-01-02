@@ -1,96 +1,100 @@
 * Changelog
 ** Unreleased
 
+** 0.8.5
+
+   - [[https://github.com/r0man/sablono/pull/199][#199]] Refer to React via require, not js/React.
+
 ** 0.8.4
 
-- [[https://github.com/r0man/sablono/issues/194][#194]] Fix checkbox update regression.
-- [[https://github.com/r0man/sablono/pull/188/files][#188]] Optimize more forms.
-- [[https://github.com/r0man/sablono/pull/185][#185]] Fix test-element-meta test.
+   - [[https://github.com/r0man/sablono/issues/194][#194]] Fix checkbox update regression.
+   - [[https://github.com/r0man/sablono/pull/188/files][#188]] Optimize more forms.
+   - [[https://github.com/r0man/sablono/pull/185][#185]] Fix test-element-meta test.
 
 ** 0.8.3
 
-- [[https://github.com/r0man/sablono/pull/181][#181]] Update React to =16.2.0=.
+   - [[https://github.com/r0man/sablono/pull/181][#181]] Update React to =16.2.0=.
 
 ** 0.8.2
 
-- [[https://github.com/r0man/sablono/pull/183][#183]] Allow non strings as :value.
-- [[https://github.com/r0man/sablono/pull/180][#180]] Update dependencies.
+   - [[https://github.com/r0man/sablono/pull/183][#183]] Allow non strings as :value.
+   - [[https://github.com/r0man/sablono/pull/180][#180]] Update dependencies.
 
 ** 0.8.1
 
-- [[https://github.com/r0man/sablono/pull/174][#174]] Update React to =15.6.1=.
-- [[https://github.com/r0man/sablono/pull/167][#167]] Update React to =15.5.0-0= and get rid of =React.createClass=.
+   - [[https://github.com/r0man/sablono/pull/174][#174]] Update React to =15.6.1=.
+   - [[https://github.com/r0man/sablono/pull/167][#167]] Update React to =15.5.0-0= and get rid of =React.createClass=.
 
 ** 0.8.0
 
-- [[https://github.com/r0man/sablono/pull/165][#165]] Remove lein-npm from development dependencies.
-- [[https://github.com/r0man/sablono/issues/158][#158]] Fix camel-case bug in :style attributes and handle nil in =interpreter/atributes=.
-- [[https://github.com/r0man/sablono/pull/152][#152]] Don't coerce nil/undefined input :value to be consistent with React.
-- [[https://github.com/r0man/sablono/pull/149][#149]] Force lazy seq in interpret-seq to be realized.
-- [[https://github.com/r0man/sablono/pull/146][#146]] Keep state and props of inputs synchronized.
-- [[https://github.com/r0man/sablono/issues/140][#140]] Don't loose focus when switching from an uncontrolled to a
-  controlled input.
+   - [[https://github.com/r0man/sablono/pull/165][#165]] Remove lein-npm from development dependencies.
+   - [[https://github.com/r0man/sablono/issues/158][#158]] Fix camel-case bug in :style attributes and handle nil in =interpreter/atributes=.
+   - [[https://github.com/r0man/sablono/pull/152][#152]] Don't coerce nil/undefined input :value to be consistent with React.
+   - [[https://github.com/r0man/sablono/pull/149][#149]] Force lazy seq in interpret-seq to be realized.
+   - [[https://github.com/r0man/sablono/pull/146][#146]] Keep state and props of inputs synchronized.
+   - [[https://github.com/r0man/sablono/issues/140][#140]] Don't loose focus when switching from an uncontrolled to a
+     controlled input.
 
 ** 0.7.7
 
-- [[https://github.com/r0man/sablono/pull/133][#133]] Improve performance by using transducers.
-- [[https://github.com/r0man/sablono/issues/141][#141]] Fix =^:inline= hint for elements without attributes.
+   - [[https://github.com/r0man/sablono/pull/133][#133]] Improve performance by using transducers.
+   - [[https://github.com/r0man/sablono/issues/141][#141]] Fix =^:inline= hint for elements without attributes.
 
 ** 0.7.6
 
-- [[https://github.com/r0man/sablono/pull/135][#135]] Skip interpretation when using the =:inline= type hint.
-- [[https://github.com/r0man/sablono/pull/134][#134]] Use the Tubax library to parse HTML in the tests and run them
-  on Node.
+   - [[https://github.com/r0man/sablono/pull/135][#135]] Skip interpretation when using the =:inline= type hint.
+   - [[https://github.com/r0man/sablono/pull/134][#134]] Use the Tubax library to parse HTML in the tests and run them
+     on Node.
 
 ** 0.7.5
 
-- [[https://github.com/r0man/sablono/pull/132][#132]] Don’t join nil classes into classes string (#132)
-- [[https://github.com/r0man/sablono/pull/131][#131]] Fix class compilation of keyword map lookup.
+   - [[https://github.com/r0man/sablono/pull/132][#132]] Don’t join nil classes into classes string (#132)
+   - [[https://github.com/r0man/sablono/pull/131][#131]] Fix class compilation of keyword map lookup.
 
 ** 0.7.4
 
-- [[https://github.com/r0man/sablono/pull/129][#129]] Fixed wrapped inputs with non-string values & checkboxes.
+   - [[https://github.com/r0man/sablono/pull/129][#129]] Fixed wrapped inputs with non-string values & checkboxes.
 
 ** 0.7.3
 
-- [[https://github.com/r0man/sablono/pull/128][#128]] Update React to 15.2.1-1.
-- [[https://github.com/r0man/sablono/pull/125][#125]] and [[https://github.com/r0man/sablono/pull/126][#126]] Update dependencies used for development.
-- [[https://github.com/r0man/sablono/pull/127][#127]] Fixed skipped keys in controlled components on IE.
-- [[https://github.com/r0man/sablono/pull/123][#123]] and [[https://github.com/r0man/sablono/pull/124][#124]] Don't wrap uncontrolled input elements.
+   - [[https://github.com/r0man/sablono/pull/128][#128]] Update React to 15.2.1-1.
+   - [[https://github.com/r0man/sablono/pull/125][#125]] and [[https://github.com/r0man/sablono/pull/126][#126]] Update dependencies used for development.
+   - [[https://github.com/r0man/sablono/pull/127][#127]] Fixed skipped keys in controlled components on IE.
+   - [[https://github.com/r0man/sablono/pull/123][#123]] and [[https://github.com/r0man/sablono/pull/124][#124]] Don't wrap uncontrolled input elements.
 
 ** 0.7.2
 
-- [[https://github.com/r0man/sablono/issues/119][#119]] Force lazy sequences to make dynamic binding work properly.
+   - [[https://github.com/r0man/sablono/issues/119][#119]] Force lazy sequences to make dynamic binding work properly.
 
 ** 0.7.1
 
-- [[https://github.com/r0man/sablono/pull/118][#118]] Add type hint support for attributes.
+   - [[https://github.com/r0man/sablono/pull/118][#118]] Add type hint support for attributes.
 
 ** 0.7.0
 
-- [[https://github.com/r0man/sablono/pull/117][#117]] Switch to React 15.0.
+   - [[https://github.com/r0man/sablono/pull/117][#117]] Switch to React 15.0.
 
 ** 0.6.3
 
-- [[https://github.com/r0man/sablono/issues/115][#115]] Fix keyword compilation in attributes.
+   - [[https://github.com/r0man/sablono/issues/115][#115]] Fix keyword compilation in attributes.
 
 ** 0.6.2
 
-- [[https://github.com/r0man/sablono/pull/105][#105]] Don't remove/sort duplicate class names.
-- [[https://github.com/r0man/sablono/issues/56][#56]] Add =attrs= macro to compile Clojure maps into JavaScript
-  literals.
+   - [[https://github.com/r0man/sablono/pull/105][#105]] Don't remove/sort duplicate class names.
+   - [[https://github.com/r0man/sablono/issues/56][#56]] Add =attrs= macro to compile Clojure maps into JavaScript
+     literals.
 
 ** 0.6.1
 
-- [[https://github.com/r0man/sablono/pull/105][#105]] Remove duplicate class names with =distinct=, not =dedupe=.
-- [[https://github.com/r0man/sablono/issues/103][#103]] Optimize =let= forms.
+   - [[https://github.com/r0man/sablono/pull/105][#105]] Remove duplicate class names with =distinct=, not =dedupe=.
+   - [[https://github.com/r0man/sablono/issues/103][#103]] Optimize =let= forms.
 
 ** 0.6.0
 
-- [[https://github.com/r0man/sablono/issues/100][#100]] Move the =render= and =render-static= functions into the
-  =sablono.server= namespace, to make the dependency on
-  =react-dom-server= optional.
+   - [[https://github.com/r0man/sablono/issues/100][#100]] Move the =render= and =render-static= functions into the
+     =sablono.server= namespace, to make the dependency on
+     =react-dom-server= optional.
 
 ** 0.5.4
 
-- [[https://github.com/r0man/sablono/issues/98][#98]] Preserve CSS class order
+   - [[https://github.com/r0man/sablono/issues/98][#98]] Preserve CSS class order
