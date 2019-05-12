@@ -28,7 +28,7 @@
                                        [cljsjs/react-dom "16.8.3-0"]
                                        [cljsjs/react-dom-server "16.8.3-0"]
                                        [org.clojure/clojurescript "1.10.439"]]}
-             :repl {:dependencies [[cider/piggieback "0.3.10"]]
+             :repl {:dependencies [[cider/piggieback "0.4.4"]]
                     :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}}}
   :aliases {"benchmark" ["doo" "node" "benchmark" "once"]
             "ci" ["do" ["clean"] ["test"] ["test.nashorn"] ["test.node"] ["test.phantom"] ["benchmark"]]
