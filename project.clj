@@ -9,7 +9,7 @@
                  [com.cognitect/transit-cljs "0.8.256"]
                  [org.clojure/clojure "1.10.0"]
                  [org.omcljs/om "1.0.0-beta2"]]
-  :profiles {:dev {:dependencies [[criterium "0.4.4"]
+  :profiles {:dev {:dependencies [[criterium "0.4.5"]
                                   [devcards "0.2.6" :exclusions [sablono]]
                                   [doo "0.1.11"]
                                   [figwheel-sidecar "0.5.18"]
