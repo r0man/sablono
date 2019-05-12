@@ -24,9 +24,9 @@
                              [perforate "0.3.4"]]
                    :resource-paths ["test-resources" "target"]}
              :provided {:dependencies [[cljsjs/create-react-class "15.6.3-1"]
-                                       [cljsjs/react "16.6.0-0"]
-                                       [cljsjs/react-dom "16.6.0-0"]
-                                       [cljsjs/react-dom-server "16.6.0-0"]
+                                       [cljsjs/react "16.8.3-0"]
+                                       [cljsjs/react-dom "16.8.3-0"]
+                                       [cljsjs/react-dom-server "16.8.3-0"]
                                        [org.clojure/clojurescript "1.10.439"]]}
              :repl {:dependencies [[cider/piggieback "0.3.10"]]
                     :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}}}
@@ -59,8 +59,8 @@
                  :npm-deps
                  {:benchmark "1.0.0"
                   :create-react-class "15.6.3"
-                  :react "16.7.0"
-                  :react-dom "16.7.0"}
+                  :react "16.8.3"
+                  :react-dom "16.8.3"}
                  :install-deps true
                  :output-dir "target/benchmark/out"
                  :output-to "target/benchmark/sablono.js"
@@ -76,8 +76,8 @@
                  :main sablono.test.runner
                  :npm-deps
                  {:benchmark "1.0.0"
-                  :react "16.7.0"
-                  :react-dom "16.7.0"}
+                  :react "16.8.3"
+                  :react-dom "16.8.3"}
                  :install-deps true
                  :optimizations :none
                  :output-dir "target/nodejs/out"
