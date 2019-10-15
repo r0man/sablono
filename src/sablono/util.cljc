@@ -65,6 +65,7 @@
   (->> classes
        (into [] (comp
                  (mapcat (fn [x] (if (string? x) [x] (seq x))))
+                 (flatten)
                  (remove nil?)))
        (str/join " ")))
 
