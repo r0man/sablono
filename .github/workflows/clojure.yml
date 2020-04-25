@@ -16,4 +16,4 @@ jobs:
     - name: Install dependencies
       run: lein deps
     - name: Run tests
-      run: lein test
+      run: lein ci
