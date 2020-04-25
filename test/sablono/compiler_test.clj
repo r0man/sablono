@@ -77,7 +77,9 @@
           (is (= [3] (.val (second (.val v))))))))))
 
 (def gen-tag
-  (gen/such-that (complement fragment?) (s/gen keyword?)))
+  (as-> (s/gen simple-keyword?) g
+    (gen/such-that #(not (re-find #"[\.]" (name %))) g 100)
+    (gen/such-that (complement fragment?) g 100)))
 
 (defspec test-basic-tags
   (prop/for-all
