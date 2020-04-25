@@ -5,30 +5,30 @@
   :min-lein-version "2.0.0"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[com.cognitect/transit-clj "0.8.313"]
+  :dependencies [[com.cognitect/transit-clj "1.0.324"]
                  [com.cognitect/transit-cljs "0.8.256"]
-                 [org.clojure/clojure "1.10.0"]
+                 [org.clojure/clojure "1.10.1"]
                  [org.omcljs/om "1.0.0-beta2"]]
   :profiles {:dev {:dependencies [[criterium "0.4.5"]
                                   [devcards "0.2.6" :exclusions [sablono]]
                                   [doo "0.1.11"]
-                                  [figwheel-sidecar "0.5.18"]
+                                  [figwheel-sidecar "0.5.19"]
                                   [funcool/tubax "0.2.0"]
-                                  [org.clojure/test.check "0.9.0"]
+                                  [org.clojure/test.check "1.0.0"]
                                   [perforate-x "0.1.0"]
-                                  [reagent "0.8.1"]
-                                  [rum "0.11.3" :exclusions [sablono]]]
-                   :plugins [[lein-cljsbuild "1.1.7"]
+                                  [reagent "0.10.0"]
+                                  [rum "0.11.4" :exclusions [sablono]]]
+                   :plugins [[lein-cljsbuild "1.1.8"]
                              [lein-doo "0.1.11"]
-                             [lein-figwheel "0.5.18"]
+                             [lein-figwheel "0.5.19"]
                              [perforate "0.3.4"]]
                    :resource-paths ["test-resources" "target"]}
              :provided {:dependencies [[cljsjs/create-react-class "15.6.3-1"]
-                                       [cljsjs/react "16.8.3-0"]
-                                       [cljsjs/react-dom "16.8.3-0"]
-                                       [cljsjs/react-dom-server "16.8.3-0"]
+                                       [cljsjs/react "16.13.1-0"]
+                                       [cljsjs/react-dom "16.13.1-0"]
+                                       [cljsjs/react-dom-server "16.13.1-0"]
                                        [org.clojure/clojurescript "1.10.439"]]}
-             :repl {:dependencies [[cider/piggieback "0.4.4"]]
+             :repl {:dependencies [[cider/piggieback "0.4.2"]]
                     :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}}}
   :aliases {"benchmark" ["doo" "node" "benchmark" "once"]
             "ci" ["do" ["clean"] ["test"] ["test.nashorn"] ["test.node"] ["test.phantom"] ["benchmark"]]
@@ -59,8 +59,8 @@
                  :npm-deps
                  {:benchmark "1.0.0"
                   :create-react-class "15.6.3"
-                  :react "16.8.3"
-                  :react-dom "16.8.3"}
+                  :react "16.13.1"
+                  :react-dom "16.13.1"}
                  :install-deps true
                  :output-dir "target/benchmark/out"
                  :output-to "target/benchmark/sablono.js"
@@ -76,8 +76,9 @@
                  :main sablono.test.runner
                  :npm-deps
                  {:benchmark "1.0.0"
-                  :react "16.8.3"
-                  :react-dom "16.8.3"}
+                  :create-react-class "15.6.3"
+                  :react "16.13.1"
+                  :react-dom "16.13.1"}
                  :install-deps true
                  :optimizations :none
                  :output-dir "target/nodejs/out"

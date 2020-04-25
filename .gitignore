@@ -14,3 +14,5 @@ pom.xml.asc
 /figwheel_server.log
 /.cljs_node_repl
 /node_modules
+/package.json
+/package-lock.json

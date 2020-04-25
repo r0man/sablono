@@ -44,7 +44,7 @@
               this (.-props this) property
               (object/getValueByKeys event "target" property))))
 
-         (componentWillReceiveProps [this new-props]
+         (UNSAFE_componentWillReceiveProps [this new-props]
            (let [state-value (object/getValueByKeys this "state" property)
                  element-value (object/get (ReactDOM/findDOMNode this) property)]
              ;; On IE, onChange event might come after actual value of
