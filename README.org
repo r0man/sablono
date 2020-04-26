@@ -147,11 +147,12 @@
 
 ** Thanks
 
-   This library is based on James Reeves excellent [[https://github.com/weavejester/hiccup][Hiccup]] library.
+   This library is based on James Reeves excellent [[https://github.com/weavejester/hiccup][Hiccup]] library. The
+   server side rendering code has been taken from [[https://github.com/omcljs/om][om.next]].
 
 ** License
 
-   Copyright © 2013-2016 [[https://github.com/r0man][r0man]]
+   Copyright © 2013-2020 [[https://github.com/r0man][r0man]]
 
    Distributed under the Eclipse Public License either version 1.0 or
    (at your option) any later version.

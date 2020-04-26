@@ -1,11 +1,12 @@
 (ns sablono.interpreter
-  (:require #?(:clj [om.dom :as dom])
-            #?(:cljs [goog.object :as object])
+  (:require #?(:cljs [goog.object :as object])
             #?(:cljs [react :as React])
             #?(:cljs [react-dom :as ReactDOM])
             [clojure.string :as str]
             [clojure.string :refer [blank? join]]
+            [sablono.html :as html]
             [sablono.normalize :as normalize]
+            [sablono.protocol :as p]
             [sablono.util :as util]))
 
 (defprotocol IInterpreter
@@ -116,7 +117,7 @@
   "Create a React element. Returns a JavaScript object when running
   under ClojureScript, and a om.dom.Element record in Clojure."
   [type props & children]
-  #?(:clj (dom/element
+  #?(:clj (html/element
            {:attrs props
             :children children
             :react-key nil
@@ -199,7 +200,9 @@
 
   #?(:clj Object :cljs default)
   (interpret [this]
-    this)
+    (if (satisfies? p/IReactComponent this)
+      (p/-render this)
+      this))
 
   nil
   (interpret [this]
