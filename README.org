@@ -1,7 +1,7 @@
 * ŜABLONO
 
   [[https://clojars.org/sablono][https://img.shields.io/clojars/v/sablono.svg]]
-  [[https://travis-ci.org/r0man/sablono][https://travis-ci.org/r0man/sablono.svg]]
+  [[https://github.com/r0man/sablono/actions?query=workflow%3A%22Clojure+CI%22][https://github.com/r0man/sablono/workflows/Clojure%20CI/badge.svg]]
   [[https://versions.deps.co/r0man/sablono][https://versions.deps.co/r0man/sablono/status.svg]]
   [[https://versions.deps.co/r0man/sablono][https://versions.deps.co/r0man/sablono/downloads.svg]]
 
