@@ -1,15 +1,15 @@
 (ns sablono.interpreter-test
   #?(:cljs (:require-macros [devcards.core :refer [deftest]]))
-  (:require [om.dom :as dom]
-            [clojure.spec.alpha :as s]
+  (:require [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
             [clojure.string :as str]
             [clojure.test :refer [are is #?(:clj deftest)]]
             [clojure.test.check.clojure-test #?(:clj :refer :cljs :refer-macros) [defspec]]
             [clojure.test.check.properties #?(:clj :refer :cljs :refer-macros) [for-all]]
-            [om.next :as om :refer [defui]]
+            [sablono.protocol :as p]
             [sablono.core :refer [defhtml html]]
             [sablono.interpreter :as i]
+            [sablono.html :as html]
             [sablono.specs :as specs]
             [sablono.test :refer [parse-xml render-str]]))
 
@@ -58,33 +58,33 @@
 
 (defspec test-tag-only
   (for-all [tag (s/gen ::specs/tag)]
-           (= (interpret [tag])
-              {:tag tag
-               :attributes {}
-               :content []})))
+    (= (interpret [tag])
+       {:tag tag
+        :attributes {}
+        :content []})))
 
 (defspec test-tag-with-id
   (for-all [tag (s/gen ::specs/tag)
             id (gen/not-empty (s/gen string?))]
-           (= (interpret [(keyword (str (name tag) "#" id))])
-              {:tag tag
-               :attributes {:id id}
-               :content []})))
+    (= (interpret [(keyword (str (name tag) "#" id))])
+       {:tag tag
+        :attributes {:id id}
+        :content []})))
 
 (defspec test-tag-with-class
   (for-all [tag (s/gen ::specs/tag)
             class (s/gen ::specs/class-name)]
-           (= (interpret [(keyword (str (name tag) "." class))])
-              {:tag tag
-               :attributes {:class class}
-               :content []})))
+    (= (interpret [(keyword (str (name tag) "." class))])
+       {:tag tag
+        :attributes {:class class}
+        :content []})))
 
 (defspec test-tag-with-classes
   (for-all [tag (s/gen ::specs/tag), classes gen-class-names]
-           (is (= (interpret [(keyword (str (name tag) "." (str/join "." classes)))])
-                  {:tag tag
-                   :attributes {:class (str/join " " classes)}
-                   :content []}))))
+    (is (= (interpret [(keyword (str (name tag) "." (str/join "." classes)))])
+           {:tag tag
+            :attributes {:class (str/join " " classes)}
+            :content []}))))
 
 (deftest test-class-duplication
   (is (= (interpret [:div.a.a.b.b.c {:class "c"}])
@@ -94,66 +94,66 @@
 
 (defspec test-class-as-set
   (for-all [tag (s/gen ::specs/tag), classes gen-class-names]
-           (= (interpret [tag {:class (set classes)}])
-              {:tag tag
-               :attributes {:class (str/join " " (set classes))}
-               :content []})))
+    (= (interpret [tag {:class (set classes)}])
+       {:tag tag
+        :attributes {:class (str/join " " (set classes))}
+        :content []})))
 
 (defspec test-class-as-list
   (for-all [tag (s/gen ::specs/tag), classes gen-class-names]
-           (= (interpret [tag {:class (apply list classes)}])
-              {:tag tag
-               :attributes {:class (str/join " " classes)}
-               :content []})))
+    (= (interpret [tag {:class (apply list classes)}])
+       {:tag tag
+        :attributes {:class (str/join " " classes)}
+        :content []})))
 
 (defspec test-class-as-vector
   (for-all [tag (s/gen ::specs/tag), classes gen-class-names]
-           (= (interpret [tag {:class (vec classes)}])
-              {:tag tag
-               :attributes {:class (str/join " " classes)}
-               :content []})))
+    (= (interpret [tag {:class (vec classes)}])
+       {:tag tag
+        :attributes {:class (str/join " " classes)}
+        :content []})))
 
 (defspec test-child-as-string
   (for-all [child gen-string-child]
-           (= (interpret [:div child])
-              {:tag :div
-               :attributes {}
-               :content [child]})))
+    (= (interpret [:div child])
+       {:tag :div
+        :attributes {}
+        :content [child]})))
 
 (defspec test-child-as-int
   (for-all [child (s/gen int?)]
-           (= (interpret [:div child])
-              {:tag :div
-               :attributes {}
-               :content [(str child)]})))
+    (= (interpret [:div child])
+       {:tag :div
+        :attributes {}
+        :content [(str child)]})))
 
 (defspec test-child-as-double
   (for-all [child (s/gen (s/double-in :infinite? false :NaN? false))]
-           (= (interpret [:div child])
-              {:tag :div
-               :attributes {}
-               :content [(str child)]})))
+    (= (interpret [:div child])
+       {:tag :div
+        :attributes {}
+        :content [(str child)]})))
 
 (defspec test-div-with-seq-child
   (for-all [children (gen/not-empty (gen/list gen-string-child))]
-           (= (interpret [:div (seq children)])
-              {:tag :div
-               :attributes {}
-               :content [(apply str children)]})))
+    (= (interpret [:div (seq children)])
+       {:tag :div
+        :attributes {}
+        :content [(apply str children)]})))
 
 (defspec test-div-with-list-child
   (for-all [children (gen/not-empty (gen/list gen-string-child))]
-           (= (interpret [:div children])
-              {:tag :div
-               :attributes {}
-               :content [(apply str children)]})))
+    (= (interpret [:div children])
+       {:tag :div
+        :attributes {}
+        :content [(apply str children)]})))
 
 (defspec test-div-with-vector-child
   (for-all [children (gen/not-empty (gen/vector gen-string-child))]
-           (= (interpret [:div children])
-              {:tag :div
-               :attributes {}
-               :content [(apply str children)]})))
+    (= (interpret [:div children])
+       {:tag :div
+        :attributes {}
+        :content [(apply str children)]})))
 
 (deftest test-issue-80
   (is (= (interpret
@@ -210,12 +210,15 @@
 (defhtml element-a []
   [:div.a])
 
-(defui ElementB
-  Object
-  (render [this]
+(defrecord ElementB [data]
+  p/IReactComponent
+  (-render [this]
     (html [:div.b])))
 
-(def element-b (om/factory ElementB))
+(defn element-b [data]
+  (map->ElementB data))
+
+;; (interpret (element-b {}))
 
 (deftest test-om-render-defhtml
   (is (= (interpret [:div (element-a)])
@@ -236,14 +239,14 @@
             :content []}]})))
 
 #?(:clj (deftest test-om-render-str-defhtml
-          (is (= (dom/render-to-str (html [:div (element-a)]))
+          (is (= (html/render-to-str (html [:div (element-a)]))
                  (str "<div data-reactroot=\"\" data-reactid=\"1\" "
                       "data-react-checksum=\"-1277879407\">"
                       "<div class=\"a\" data-reactid=\"2\">"
                       "</div></div>")))))
 
 #?(:clj (deftest test-om-render-str-defui
-          (is (= (dom/render-to-str (html [:div (element-b {})]))
+          (is (= (html/render-to-str (html [:div (element-b {})]))
                  (str "<div data-reactroot=\"\" data-reactid=\"1\" "
                       "data-react-checksum=\"-1275782254\">"
                       "<div class=\"b\" data-reactid=\"2\">"

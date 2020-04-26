@@ -1,9 +1,9 @@
 (ns sablono.normalize
   (:refer-clojure :exclude [class])
-  (:require #?(:clj [om.next.protocols :as p])
-            #?(:clj [om.dom :as dom])
-            [clojure.set :as set]
+  (:require [clojure.set :as set]
             [clojure.string :as str]
+            [sablono.html :as html]
+            [sablono.protocol :as p]
             [sablono.util :as util]))
 
 (defn compact-map
@@ -141,11 +141,11 @@
   otherwise false."
   [x]
   (and (map? x)
-       ;; Server rendered Om.next components are also maps. They
+       ;; Server rendered components are also maps or records. They
        ;; should NOT be treated as HTML element attributes.
-       #?(:clj (and (not (instance? om.dom.Element x))
-                    (not (instance? om.next.protocols.IReactComponent x))
-                    (not (satisfies? p/IReactComponent x))))))
+       (and (not (instance? sablono.html.Element x))
+            (not (instance? sablono.protocol.IReactComponent x))
+            (not (satisfies? p/IReactComponent x)))))
 
 (defn element
   "Ensure an element vector is of the form [tag-name attrs content]."

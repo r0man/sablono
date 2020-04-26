@@ -1,19 +1,17 @@
-(defproject sablono "0.8.7-SNAPSHOT"
+(defproject sablono "0.9.0-SNAPSHOT"
   :description "Lisp style templating for Facebook's React."
   :url "http://github.com/r0man/sablono"
   :author "r0man"
   :min-lein-version "2.0.0"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[com.cognitect/transit-clj "1.0.324"]
-                 [com.cognitect/transit-cljs "0.8.256"]
-                 [org.clojure/clojure "1.10.1"]
-                 [org.omcljs/om "1.0.0-beta2"]]
+  :dependencies [[org.clojure/clojure "1.10.1"]]
   :profiles {:dev {:dependencies [[criterium "0.4.5"]
                                   [devcards "0.2.6" :exclusions [sablono]]
                                   [doo "0.1.11"]
                                   [figwheel-sidecar "0.5.19"]
                                   [funcool/tubax "0.2.0"]
+                                  [org.clojure/core.rrb-vector "0.1.1"]
                                   [org.clojure/test.check "1.0.0"]
                                   [perforate-x "0.1.0"]
                                   [reagent "0.10.0"]

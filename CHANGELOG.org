@@ -1,6 +1,12 @@
 * Changelog
 ** Unreleased
 
+   - [[https://github.com/r0man/sablono/pull/209][#209]] Remove om.next dependency
+
+** 0.8.6
+
+   - Update dependencies
+
 ** 0.8.5
 
    - [[https://github.com/r0man/sablono/pull/199][#199]] Refer to React via require, not js/React.

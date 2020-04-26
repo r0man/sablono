@@ -6,7 +6,7 @@
             [clojure.walk :refer [prewalk]]
             [clojure.xml :as xml]
             [sablono.core]
-            [om.dom :as dom])
+            [sablono.html :as html])
   (:import cljs.tagged_literals.JSValue
            java.io.StringBufferInputStream))
 
@@ -94,4 +94,4 @@
       (reshape)))
 
 (defn render-str [x]
-  (dom/render-to-str x))
+  (html/render-to-str x))
