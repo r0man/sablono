@@ -144,7 +144,7 @@
     produce executable code.
 
     A good introduction to this topic can be found in Peter Seibel's
-    [[http://www.gigamonkeys.com/book/practical-an-html-generation-library-the-compiler.html][Practical Common Lisp]]:
+    [[http://www.gigamonkeys.com/book][Practical Common Lisp]]:
 
     - [[http://www.gigamonkeys.com/book/practical-an-html-generation-library-the-interpreter.html][An HTML Generation Library, the Interpreter]]
     - [[http://www.gigamonkeys.com/book/practical-an-html-generation-library-the-compiler.html][An HTML Generation Library, the Compiler]]
