@@ -7,6 +7,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.10.1"]]
   :profiles {:dev {:dependencies [[criterium "0.4.5"]
+                                  [codox-theme-rdash "0.1.2"]
                                   [devcards "0.2.6" :exclusions [sablono]]
                                   [doo "0.1.11"]
                                   [figwheel-sidecar "0.5.19"]
@@ -18,6 +19,7 @@
                                   [rum "0.11.4" :exclusions [sablono]]
                                   [uix/core "0.0.1-alpha"]]
                    :plugins [[lein-cljsbuild "1.1.8"]
+                             [lein-codox "0.10.7"]
                              [lein-doo "0.1.11"]
                              [lein-figwheel "0.5.19"]
                              [perforate "0.3.4"]]
@@ -128,6 +130,9 @@
                  :pretty-print true
                  :verbose false}
                 :source-paths ["src" "sample"]}]}
+  :codox {:metadata {:doc/format :markdown}
+          :themes [:rdash]
+          :output-path "codox"}
   :deploy-repositories [["releases" :clojars]]
   :perforate {:environments [{:namespaces [sablono.benchmark]}]}
   :test-selectors {:benchmark :benchmark
