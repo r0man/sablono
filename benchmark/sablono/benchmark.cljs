@@ -3,11 +3,11 @@
             [react :as React]
             [reagent.impl.template :as reagent]
             [sablono.core :as html :refer-macros [html]]
-            [sablono.server :refer [render-static]]))
+            [sablono.server :refer [render-static]]
+            [uix.compiler.alpha :as uix]))
 
 (defn render [x]
   (render-static x))
-
 
 (defgoal :compile-tag-only
   "Render element with tag only")
@@ -20,6 +20,9 @@
 
 (defcase :compile-tag-only :reagent []
   #(render (reagent/as-element [:div])))
+
+(defcase :compile-tag-only :uix []
+  #(render (uix/as-element [:div])))
 
 
 
@@ -35,6 +38,9 @@
 (defcase :compile-class-attribute :reagent []
   #(render (reagent/as-element [:div.x])))
 
+(defcase :compile-class-attribute :uix []
+  #(render (uix/as-element [:div.x])))
+
 
 
 (defgoal :compile-class-and-id-attributes
@@ -48,6 +54,9 @@
 
 (defcase :compile-class-and-id-attributes :reagent []
   #(render (reagent/as-element [:div#x.y])))
+
+(defcase :compile-class-and-id-attributes :uix []
+  #(render (uix/as-element [:div#x.y])))
 
 
 
@@ -81,6 +90,15 @@
               [:span {:style {:color "red"}} " and red"]
               " text."]])))
 
+(defcase :compile-nested-literals :uix []
+  #(render (uix/as-element
+            [:div
+             [:h3 "I am a component!"]
+             [:p.someclass
+              "I have " [:strong "bold"]
+              [:span {:style {:color "red"}} " and red"]
+              " text."]])))
+
 
 (defgoal :interpret-attributes
   "Render elements with interpreted attributes")
@@ -93,6 +111,9 @@
 
 (defcase :interpret-attributes :reagent []
   #(render (reagent/as-element [:div ((constantly {:class "x"}))])))
+
+(defcase :interpret-attributes :uix []
+  #(render (uix/as-element [:div ((constantly {:class "x"}))])))
 
 
 
@@ -108,6 +129,9 @@
 (defcase :interpret-hinted-attributes :reagent []
   #(render (reagent/as-element [:div ((constantly {:class "x"}))])))
 
+(defcase :interpret-hinted-attributes :uix []
+  #(render (uix/as-element [:div ((constantly {:class "x"}))])))
+
 
 (defgoal :compile-attributes-children
   "Render element with literal attributes and children")
@@ -120,6 +144,9 @@
 
 (defcase :compile-attributes-children :reagent []
   #(render (reagent/as-element [:div {:class "a"} "b" 1 2 3])))
+
+(defcase :compile-attributes-children :uix []
+  #(render (uix/as-element [:div {:class "a"} "b" 1 2 3])))
 
 
 
@@ -139,6 +166,11 @@
 
 (defcase :compile-when-form :reagent []
   #(render (reagent/as-element
+            [:div {:class "a"}
+             (when true [:div [:div]])])))
+
+(defcase :compile-when-form :uix []
+  #(render (uix/as-element
             [:div {:class "a"}
              (when true [:div [:div]])])))
 
