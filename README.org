@@ -97,6 +97,10 @@
 
    You can read more at [[http://facebook.github.io/react/docs/special-non-dom-attributes.html][React's special attributes]].
 
+** Benchmark
+
+   Benchmark results can be found [[https://r0man.github.io/sablono/dev/bench/][here]].
+
 ** FAQ
 
 *** How to run the tests?

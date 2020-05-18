@@ -22,7 +22,30 @@ jobs:
         path: ~/.cljs/aot_cache
         key: ${{ runner.os }}-cljs-${{ hashFiles('**/project.clj') }}
     - name: Benchmark
-      run: lein benchmark
+      run: lein benchmark | tee output.txt
+    - name: Download previous benchmark data
+      uses: actions/cache@v1
+      with:
+        path: ./cache
+        key: ${{ runner.os }}-benchmark
+      # Run `github-action-benchmark` action
+    - name: Store benchmark result
+      uses: rhysd/github-action-benchmark@v1
+      with:
+        # What benchmark tool the output.txt came from
+        tool: 'benchmarkjs'
+        # Where the output from the benchmark tool is stored
+        output-file-path: output.txt
+        # Workflow will fail when an alert happens
+        fail-on-alert: true
+        # GitHub API token to make a commit comment
+        github-token: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
+        # Push and deploy GitHub pages branch automatically
+        auto-push: true
+        # Enable commit comment
+        comment-always: true
+        # Show alert with commit comment on detecting possible performance regression
+        alert-threshold: '300%'
 
   test:
     runs-on: ubuntu-latest
