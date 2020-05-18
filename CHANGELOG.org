@@ -1,6 +1,7 @@
 * Changelog
 ** Unreleased
 
+   - [[https://github.com/r0man/sablono/pull/213][#213]] Use type inference
    - [[https://github.com/r0man/sablono/pull/209][#209]] Remove om.next dependency
 
 ** 0.8.6

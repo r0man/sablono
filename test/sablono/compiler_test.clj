@@ -1,6 +1,10 @@
 (ns sablono.compiler-test
   (:refer-clojure :exclude [compile])
-  (:require [clojure.spec.alpha :as s]
+  (:require [cljs.analyzer :as ana]
+            [cljs.compiler :as comp]
+            [cljs.core]
+            [cljs.env :as env]
+            [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
             [clojure.test :refer :all]
             [clojure.test.check.clojure-test :refer [defspec]]
@@ -9,6 +13,23 @@
             [sablono.core :refer [attrs html* html-expand]]
             [sablono.interpreter :as interpreter]
             [sablono.test :refer [=== js-value?]]))
+
+(defmacro with-compiler-env [[env-sym] & body]
+  `(binding [ana/*cljs-static-fns* true]
+     (env/with-compiler-env (env/default-compiler-env)
+       (let [~env-sym (assoc-in (ana/empty-env) [:ns :name] 'cljs.user)]
+         ~@body))))
+
+(defn analyze
+  ([env form]
+   (env/ensure (ana/analyze env form)))
+  ([env form name]
+   (env/ensure (ana/analyze env form name)))
+  ([env form name opts]
+   (env/ensure (ana/analyze env form name opts))))
+
+(defn emit [ast]
+  (env/ensure (comp/emit ast)))
 
 (defmacro compile [form]
   `(macroexpand '(html* ~form)))
@@ -78,8 +99,8 @@
 
 (def gen-tag
   (as-> (s/gen simple-keyword?) g
-    (gen/such-that #(not (re-find #"[\.]" (name %))) g 100)
-    (gen/such-that (complement fragment?) g 100)))
+        (gen/such-that #(not (re-find #"[\.]" (name %))) g 100)
+        (gen/such-that (complement fragment?) g 100)))
 
 (defspec test-basic-tags
   (prop/for-all
@@ -106,7 +127,7 @@
             (sablono.normalize/merge-with-class {:class ["foo"]} attrs))
            #j {:className "foo"})
          (if (clojure.core/map? attrs)
-           nil [(sablono.interpreter/interpret attrs)])))
+           nil [(sablono.compiler/interpret-maybe attrs)])))
      '[:div.a.b] '(sablono.core/create-element "div" #j {:className "a b"})
      '[:div.a.b.c] '(sablono.core/create-element "div" #j {:className "a b c"})
      '[:div#foo.bar.baz] '(sablono.core/create-element "div" #j {:id "foo", :className "bar baz"})
@@ -145,7 +166,7 @@
            (sablono.interpreter/attributes attrs)
            nil)
          (if (clojure.core/map? attrs)
-           nil [(sablono.interpreter/interpret attrs)])))
+           nil [(sablono.compiler/interpret-maybe attrs)])))
      '(list [:p "a"] [:p "b"])
      '(sablono.interpreter/interpret (list [:p "a"] [:p "b"]))))
   (testing "tags can contain tags"
@@ -216,7 +237,7 @@
              (sablono.interpreter/attributes attrs)
              nil)
            (if (clojure.core/map? attrs)
-             nil [(sablono.interpreter/interpret attrs)])))
+             nil [(sablono.compiler/interpret-maybe attrs)])))
        '[:span ^:attrs y]
        '(let* [attrs y]
           (clojure.core/apply
@@ -232,7 +253,7 @@
            (sablono.interpreter/attributes attrs)
            nil)
          (if (clojure.core/map? attrs)
-           nil [(sablono.interpreter/interpret attrs)])))
+           nil [(sablono.compiler/interpret-maybe attrs)])))
      [:span ({:foo "bar"} :foo)] '(sablono.core/create-element "span" nil "bar")
      '[:span ^:attrs (merge {:type "button"} attrs)]
      '(let* [attrs (merge {:type "button"} attrs)]
@@ -249,7 +270,7 @@
      '[:img {:src (str "/foo" "/bar")}]
      '(sablono.core/create-element "img" #j {:src (str "/foo" "/bar")})
      '[:div {:id (str "a" "b")} (str "foo")]
-     '(sablono.core/create-element "div" #j {:id (str "a" "b")} (sablono.interpreter/interpret (str "foo")))))
+     '(sablono.core/create-element "div" #j {:id (str "a" "b")} (sablono.compiler/interpret-maybe (str "foo")))))
   (testing "type hints"
     (let [string "x"]
       (are-html
@@ -289,8 +310,8 @@
             [n (range 2)]
           (sablono.core/create-element
            sablono.core/fragment #j {:key n}
-           (sablono.core/create-element "dt" nil (sablono.interpreter/interpret (str "term " n)))
-           (sablono.core/create-element "dd" nil (sablono.interpreter/interpret (str "definition " n))))))))))
+           (sablono.core/create-element "dt" nil (sablono.compiler/interpret-maybe (str "term " n)))
+           (sablono.core/create-element "dd" nil (sablono.compiler/interpret-maybe (str "definition " n))))))))))
 
 (deftest test-benchmark-template
   (are-html
@@ -307,7 +328,7 @@
       "div" #j {:id (str "item" (:key datum)), :className "class1 class2"}
       (sablono.core/create-element
        "span" #j {:className "anchor"}
-       (sablono.interpreter/interpret (:name datum)))))))
+       (sablono.compiler/interpret-maybe (:name datum)))))))
 
 (deftest test-issue-2-merge-class
   (are-html
@@ -337,7 +358,7 @@
                  :className "dropdown"}
         (sablono.core/create-element
          "a" #j {:href "#", :role "button", :className "dropdown-toggle"}
-         (sablono.interpreter/interpret (str "Welcome, " username))
+         (sablono.compiler/interpret-maybe (str "Welcome, " username))
          (sablono.core/create-element
           "span" #j {:className "caret"}))
         (sablono.core/create-element
@@ -361,7 +382,7 @@
           (sablono.normalize/merge-with-class {:class ["aa"]} attrs))
          #j {:className "aa"})
        (if (clojure.core/map? attrs)
-         nil [(sablono.interpreter/interpret attrs)])))))
+         nil [(sablono.compiler/interpret-maybe attrs)])))))
 
 (deftest test-issue-33-number-warning
   (are-html
@@ -373,7 +394,7 @@
          (sablono.interpreter/attributes attrs)
          nil)
        (if (clojure.core/map? attrs)
-         nil [(sablono.interpreter/interpret attrs)])))))
+         nil [(sablono.compiler/interpret-maybe attrs)])))))
 
 (deftest test-issue-37-camel-case-style-attrs
   (are-html
@@ -410,7 +431,7 @@
                  nil)
                (if (clojure.core/map? attrs)
                  nil
-                 [(sablono.interpreter/interpret attrs)]))))))
+                 [(sablono.compiler/interpret-maybe attrs)]))))))
 
 (deftest test-compile-div-with-nested-list
   (is (=== (compile [:div '("A" "B")])
@@ -428,7 +449,7 @@
                  nil)
                (if (clojure.core/map? attrs)
                  nil
-                 [(sablono.interpreter/interpret attrs)]))))))
+                 [(sablono.compiler/interpret-maybe attrs)]))))))
 
 (deftest test-class-as-set
   (is (=== (compile [:div.a {:class #{"a" "b" "c"}}])
@@ -484,7 +505,7 @@
                      (sablono.interpreter/attributes attrs)
                      nil)
                    (if (clojure.core/map? attrs)
-                     nil [(sablono.interpreter/interpret attrs)]))))))))
+                     nil [(sablono.compiler/interpret-maybe attrs)]))))))))
   (is (=== (compile [:ul (for [n (range 3)] [:li ^:attrs n])])
            '(sablono.core/create-element
              "ul" nil
@@ -617,3 +638,54 @@
              (clojure.core/when-some [x true]
                (sablono.core/create-element
                 "div" nil (sablono.core/create-element "div" nil)))))))
+
+(deftest test-infer-tag-any
+  (with-compiler-env [env]
+    (is (= '#{any} (infer-tag env '(my-fn))))))
+
+(deftest test-infer-tag-react-fn
+  (with-compiler-env [env]
+    (analyze env '(defn ^{:tag js/React.Element} my-fn []
+                    (js/React.createElement "div")))
+    (is (= '#{js/React.Element} (infer-tag env '(my-fn))))))
+
+(deftest test-infer-tag-react-fns
+  (with-compiler-env [env]
+    (analyze env '(defn ^{:tag js/React.Element} my-fn-1 []
+                    (js/React.createElement "div")))
+    (analyze env '(defn  my-fn-2 []
+                    (my-fn-1)))
+    (is (= '#{js/React.Element} (infer-tag env '(my-fn-2))))))
+
+(deftest test-infer-tag-react-defhtml
+  (with-compiler-env [env]
+    (analyze env '(sablono.core/defhtml my-fn []
+                    [:div]))
+    (is (= '#{js/React.Element} (infer-tag env '(my-fn))))))
+
+(deftest test-compile-interpret-maybe
+  (with-compiler-env [env]
+    (is (= '(sablono.interpreter/interpret (my-fn))
+           (ana/macroexpand-1 env '(sablono.compiler/interpret-maybe (my-fn)))))))
+
+(deftest test-compile-interpret-maybe-infered
+  (with-compiler-env [env]
+    (analyze env '(sablono.core/defhtml my-fn [] [:div]))
+    (is (= '(my-fn) (ana/macroexpand-1 env '(sablono.compiler/interpret-maybe (my-fn)))))))
+
+(deftest test-compile-interpret-maybe-infered
+  (with-compiler-env [env]
+    (analyze env '(defn attrs [] {:class "x"}))
+    (ana/macroexpand-1 env '(sablono.core/html [:div (attrs) "content"]))
+    (compile [:div (attrs) "content"])))
+
+(deftest test-compile-inferred-attribute-map
+  (with-compiler-env [env]
+    (analyze env '(defn attrs [] {:class "x"}))
+    (is (=== '(clojure.core/let [attrs (attrs)]
+                (clojure.core/apply
+                 sablono.core/create-element
+                 "div"
+                 (sablono.interpreter/attributes attrs)
+                 ["content"]))
+             (ana/macroexpand-1 env '(sablono.core/html [:div (attrs) "content"]))))))

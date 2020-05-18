@@ -292,9 +292,8 @@
   (s/map-of ::attribute string?))
 
 (s/def ::simple-child
-  (s/or
-   :integer int?
-   :string string?))
+  (s/or :integer int?
+        :string string?))
 
 (s/def ::child
   (s/or :complex ::element
