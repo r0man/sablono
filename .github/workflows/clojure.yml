@@ -1,0 +1,45 @@
+name: Clojure CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/cache@v1
+      name: Cache Maven dependencies
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/project.clj') }}
+    - uses: actions/cache@v1
+      name: Cache ClojureScript
+      with:
+        path: ~/.cljs/aot_cache
+        key: ${{ runner.os }}-cljs-${{ hashFiles('**/project.clj') }}
+    - name: Benchmark
+      run: lein benchmark
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: ["test", "test.nashorn", "test.node", "test.phantom"]
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/cache@v1
+      name: Cache Maven dependencies
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/project.clj') }}
+    - uses: actions/cache@v1
+      name: Cache ClojureScript
+      with:
+        path: ~/.cljs/aot_cache
+        key: ${{ runner.os }}-cljs-${{ hashFiles('**/project.clj') }}
+    - name: Test ${{ matrix.target }}
+      run: lein ${{ matrix.target }}
