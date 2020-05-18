@@ -1,5 +1,7 @@
 (ns sablono.compiler
-  (:require [cljs.compiler :as cljs]
+  (:require [cljs.analyzer :as ana]
+            [cljs.compiler :as cljs]
+            [clojure.set :as set]
             [sablono.normalize :as normalize]
             [sablono.util :refer :all])
   ;; TODO: Fix emit-constant exception for JSValue.
@@ -9,10 +11,28 @@
   (:import cljs.tagged_literals.JSValue))
 
 (defprotocol ICompile
-  (compile-react [this] "Compile a Clojure data structure into a React fn call."))
+  (compile-react [this env]
+    "Compile a Clojure data structure into code that returns a React element."))
 
 (defprotocol IJSValue
   (to-js [x]))
+
+(def ^:private primitive-types
+  "The set of primitive types that can be handled by React."
+  #{'clj-nil 'js/React.Element 'number 'string 'sablono.html.Element})
+
+(defn- primitive-type?
+  "Return true if `tag` is a primitive type that can be handled by
+  React, otherwise false. "
+  [tags]
+  (and (not (empty? tags)) (set/subset? tags primitive-types)))
+
+(defn infer-tag
+  "Infer the tag of `form` using `env`."
+  [env form]
+  (when env
+    (when-let [tags (ana/infer-tag env (ana/no-warn (ana/analyze env form)))]
+      (if (set? tags) tags (set [tags])))))
 
 (defn fragment?
   "Returns true if `tag` is the fragment tag \"*\", otherwise false."
@@ -85,12 +105,12 @@
 
 (defn compile-react-element
   "Render an element vector as a HTML element."
-  [element]
+  [element env]
   (let [[tag attrs content] (normalize/element element)]
     `(~(compile-constructor tag)
       ~(compile-tag tag)
       ~(compile-attrs attrs)
-      ~@(if content (compile-react content)))))
+      ~@(if content (compile-react content env)))))
 
 (defn- unevaluated?
   "True if the expression has not been evaluated."
@@ -98,6 +118,14 @@
   (or (symbol? expr)
       (and (seq? expr)
            (not= (first expr) `quote))))
+
+(defmacro interpret-maybe
+  "Macro that wraps `expr` with a call to
+  `sablono.interpreter/interpret` if the inferred return type is not a
+  primitive React type."
+  [expr]
+  (if (primitive-type? (infer-tag &env expr))
+    expr `(sablono.interpreter/interpret ~expr)))
 
 (defn- form-name
   "Get the name of the supplied form."
@@ -110,82 +138,83 @@
 (defmulti compile-form
   "Pre-compile certain standard forms, where possible."
   {:private true}
-  form-name)
+  (fn [form env] (form-name form)))
 
 (defmethod compile-form "case"
-  [[_ v & cases]]
+  [[_ v & cases] env]
   `(case ~v
      ~@(doall (mapcat
                (fn [[test hiccup]]
                  (if hiccup
-                   [test (compile-html hiccup)]
-                   [(compile-html test)]))
+                   [test (compile-html hiccup env)]
+                   [(compile-html test env)]))
                (partition-all 2 cases)))))
 
 (defmethod compile-form "cond"
-  [[_ & clauses]]
+  [[_ & clauses] env]
   `(cond ~@(mapcat
-            (fn [[check expr]] [check (compile-html expr)])
+            (fn [[check expr]]
+              [check (compile-html expr env)])
             (partition 2 clauses))))
 
 (defmethod compile-form "condp"
-  [[_ f v & cases]]
+  [[_ f v & cases] env]
   `(condp ~f ~v
      ~@(doall (mapcat
                (fn [[test hiccup]]
                  (if hiccup
-                   [test (compile-html hiccup)]
-                   [(compile-html test)]))
+                   [test (compile-html hiccup env)]
+                   [(compile-html test env)]))
                (partition-all 2 cases)))))
 
 (defmethod compile-form "do"
-  [[_ & forms]]
-  `(do ~@(butlast forms) ~(compile-html (last forms))))
+  [[_ & forms] env]
+  `(do ~@(butlast forms) ~(compile-html (last forms) env)))
 
 (defmethod compile-form "let"
-  [[_ bindings & body]]
-  `(let ~bindings ~@(butlast body) ~(compile-html (last body))))
+  [[_ bindings & body] env]
+  `(let ~bindings ~@(butlast body) ~(compile-html (last body) env)))
 
 (defmethod compile-form "let*"
-  [[_ bindings & body]]
-  `(let* ~bindings ~@(butlast body) ~(compile-html (last body))))
+  [[_ bindings & body] env]
+  `(let* ~bindings ~@(butlast body) ~(compile-html (last body) env)))
 
 (defmethod compile-form "letfn*"
-  [[_ bindings & body]]
-  `(letfn* ~bindings ~@(butlast body) ~(compile-html (last body))))
+  [[_ bindings & body] env]
+  `(letfn* ~bindings ~@(butlast body) ~(compile-html (last body) env)))
 
 (defmethod compile-form "for"
-  [[_ bindings body]]
-  `(~'into-array (for ~bindings ~(compile-html body))))
+  [[_ bindings body] env]
+  `(~'into-array (for ~bindings ~(compile-html body env))))
 
 (defmethod compile-form "if"
-  [[_ condition & body]]
-  `(if ~condition ~@(for [x body] (compile-html x))))
+  [[_ condition & body] env]
+  `(if ~condition ~@(for [x body] (compile-html x env))))
 
 (defmethod compile-form "if-not"
-  [[_ bindings & body]]
-  `(if-not ~bindings ~@(doall (for [x body] (compile-html x)))))
+  [[_ bindings & body] env]
+  `(if-not ~bindings ~@(doall (for [x body] (compile-html x env)))))
 
 (defmethod compile-form "if-some"
-  [[_ bindings & body]]
-  `(if-some ~bindings ~@(doall (for [x body] (compile-html x)))))
+  [[_ bindings & body] env]
+  `(if-some ~bindings ~@(doall (for [x body] (compile-html x env)))))
 
 (defmethod compile-form "when"
-  [[_ bindings & body]]
-  `(when ~bindings ~@(doall (for [x body] (compile-html x)))))
+  [[_ bindings & body] env]
+  `(when ~bindings ~@(doall (for [x body] (compile-html x env)))))
 
 (defmethod compile-form "when-not"
-  [[_ bindings & body]]
-  `(when-not ~bindings ~@(doall (for [x body] (compile-html x)))))
+  [[_ bindings & body] env]
+  `(when-not ~bindings ~@(doall (for [x body] (compile-html x env)))))
 
 (defmethod compile-form "when-some"
-  [[_ bindings & body]]
-  `(when-some ~bindings ~@(butlast body) ~(compile-html (last body))))
+  [[_ bindings & body] env]
+  `(when-some ~bindings ~@(butlast body) ~(compile-html (last body) env)))
 
 (defmethod compile-form :default
-  [expr]
+  [expr env]
   (if (:inline (meta expr))
-    expr `(sablono.interpreter/interpret ~expr)))
+    expr `(interpret-maybe ~expr)))
 
 (defn- not-hint?
   "True if x is not hinted to be the supplied type."
@@ -225,7 +254,7 @@
 
 (defn- element-compile-strategy
   "Returns the compilation strategy to use for a given element."
-  [[tag attrs & content :as element]]
+  [[tag attrs & content :as element] env]
   (cond
     ;; e.g. [:span "foo"]
     (every? literal? element)
@@ -238,6 +267,11 @@
     ;; e.g. [:span ^String x]
     (and (literal? tag) (not-implicit-map? attrs))
     ::literal-tag-and-no-attributes
+
+    ;; e.g. [:span (attrs)], return type of `attrs` is a map
+    (and (literal? tag)
+         (= '#{cljs.core/IMap} (infer-tag env attrs)))
+    ::literal-tag-and-hinted-attributes
 
     ;; e.g. [:span ^:attrs y]
     (and (literal? tag) (attrs-hint? attrs))
@@ -261,30 +295,31 @@
   "Returns an unevaluated form that will render the supplied vector as a HTML
   element."
   {:private true}
-  element-compile-strategy)
+  (fn [element env]
+    (element-compile-strategy element env)))
 
 (defmethod compile-element ::all-literal
-  [element]
-  (compile-react-element (eval element)))
+  [element env]
+  (compile-react-element (eval element) env))
 
 (defmethod compile-element ::literal-tag-and-attributes
-  [[tag attrs & content]]
+  [[tag attrs & content] env]
   (let [[tag attrs _] (normalize/element [tag attrs])]
     `(~(compile-constructor tag)
       ~(compile-tag tag)
       ~(compile-attrs attrs)
-      ~@(map compile-html content))))
+      ~@(map #(compile-html % env) content))))
 
 (defmethod compile-element ::literal-tag-and-no-attributes
-  [[tag & content]]
-  (compile-element (apply vector tag {} content)))
+  [[tag & content] env]
+  (compile-element (apply vector tag {} content) env))
 
 (defmethod compile-element ::literal-tag-and-inline-content
-  [[tag & content]]
-  (compile-element (apply vector tag {} content)))
+  [[tag & content] env]
+  (compile-element (apply vector tag {} content) env))
 
 (defmethod compile-element ::literal-tag-and-hinted-attributes
-  [[tag attrs & content]]
+  [[tag attrs & content] env]
   (let [[tag tag-attrs _] (normalize/element [tag])
         attrs-sym (gensym "attrs")]
     `(let [~attrs-sym ~attrs]
@@ -292,10 +327,10 @@
               ~(compile-tag tag)
               ~(compile-merge-attrs tag-attrs attrs-sym)
               ~(when-not (empty? content)
-                 (mapv compile-html content))))))
+                 (mapv #(compile-html % env) content))))))
 
 (defmethod compile-element ::literal-tag
-  [[tag attrs & content]]
+  [[tag attrs & content] env]
   (let [[tag tag-attrs _] (normalize/element [tag])
         attrs-sym (gensym "attrs")]
     `(let [~attrs-sym ~attrs]
@@ -306,43 +341,45 @@
                 ~(compile-attrs tag-attrs))
               (if (map? ~attrs-sym)
                 ~(when-not (empty? content)
-                   (mapv compile-html content))
+                   (mapv #(compile-html % env) content))
                 ~(when attrs
-                   (mapv compile-html (cons attrs-sym content))))))))
+                   (mapv #(compile-html % env) (cons attrs-sym content))))))))
 
 (defmethod compile-element :default
-  [element]
+  [element env]
   `(sablono.interpreter/interpret
     [~(first element)
      ~@(for [x (rest element)]
          (if (vector? x)
-           (compile-element x)
+           (compile-element x env)
            x))]))
 
 (defn compile-html
   "Pre-compile data structures into HTML where possible."
-  [content]
-  (cond
-    (vector? content) (compile-element content)
-    (literal? content) content
-    (hint? content String) content
-    (hint? content Number) content
-    :else (compile-form content)))
+  ([content]
+   (compile-html content nil))
+  ([content env]
+   (cond
+     (vector? content) (compile-element content env)
+     (literal? content) content
+     (hint? content String) content
+     (hint? content Number) content
+     :else (compile-form content env))))
 
 (extend-protocol ICompile
   clojure.lang.IPersistentVector
-  (compile-react [this]
+  (compile-react [this env]
     (if (element? this)
-      (compile-react-element this)
-      (compile-react (seq this))))
+      (compile-react-element this env)
+      (compile-react (seq this) env)))
   clojure.lang.ISeq
-  (compile-react [this]
-    (map compile-react this))
+  (compile-react [this env]
+    (map #(compile-react % env) this))
   Object
-  (compile-react [this]
+  (compile-react [this env]
     this)
   nil
-  (compile-react [this]
+  (compile-react [this env]
     nil))
 
 (defn- to-js-map

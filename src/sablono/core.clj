@@ -17,7 +17,7 @@
   "Compile the Hiccup `form`. Always produces code that evaluates to
   React elements."
   [form]
-  (compiler/compile-html form))
+  (compiler/compile-html form &env))
 
 (defmacro html
   "Compile the Hiccup `form`. Produces code that evaluates to React
@@ -25,7 +25,7 @@
   om.dom.Element records when running under Clojure."
   [form]
   (if (cljs-env? &env)
-    (compiler/compile-html form)
+    (compiler/compile-html form &env)
     `(interpreter/interpret ~form)))
 
 (defmacro html-expand
@@ -37,7 +37,9 @@
   "Define a function, but wrap its output in an implicit html macro."
   [name & fdecl]
   (let [[fhead fbody] (split-with #(not (or (list? %) (vector? %))) fdecl)
-        wrap-html (fn [[args & body]] `(~args (html ~@body)))]
+        wrap-html (fn [[args & body]] `(~args (html ~@body)))
+        tag (if (cljs-env? &env) 'js/React.Element 'sablono.html.Element)
+        name (vary-meta name assoc :tag tag)]
     `(defn ~name
        ~@fhead
        ~@(if (vector? (first fbody))
