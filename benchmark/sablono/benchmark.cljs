@@ -4,7 +4,7 @@
             [reagent.impl.template :as reagent]
             [sablono.core :as html :refer-macros [html]]
             [sablono.server :refer [render-static]]
-            [uix.compiler.alpha :as uix]))
+            [uix.core.alpha :as uix]))
 
 (defn render [x]
   (render-static x))
@@ -22,9 +22,7 @@
   #(render (reagent/as-element [:div])))
 
 (defcase :compile-tag-only :compile-tag-only-uix []
-  #(render (uix/as-element [:div])))
-
-
+  #(render (uix/html [:div])))
 
 (defgoal :compile-class-attribute
   "Render element with class attribute")
@@ -39,7 +37,7 @@
   #(render (reagent/as-element [:div.x])))
 
 (defcase :compile-class-attribute :compile-class-attribute-uix []
-  #(render (uix/as-element [:div.x])))
+  #(render (uix/html [:div.x])))
 
 
 
@@ -56,7 +54,7 @@
   #(render (reagent/as-element [:div#x.y])))
 
 (defcase :compile-class-and-id-attributes :compile-class-and-id-attributes-uix []
-  #(render (uix/as-element [:div#x.y])))
+  #(render (uix/html [:div#x.y])))
 
 
 
@@ -91,7 +89,7 @@
               " text."]])))
 
 (defcase :compile-nested-literals :compile-nested-literals-uix []
-  #(render (uix/as-element
+  #(render (uix/html
             [:div
              [:h3 "I am a component!"]
              [:p.someclass
@@ -133,6 +131,7 @@
   #(render (uix/as-element [:div ((constantly {:class "x"}))])))
 
 
+
 (defgoal :compile-attributes-children
   "Render element with literal attributes and children")
 
@@ -146,7 +145,7 @@
   #(render (reagent/as-element [:div {:class "a"} "b" 1 2 3])))
 
 (defcase :compile-attributes-children :compile-attributes-children-uix []
-  #(render (uix/as-element [:div {:class "a"} "b" 1 2 3])))
+  #(render (uix/html [:div {:class "a"} "b" 1 2 3])))
 
 
 
@@ -170,7 +169,7 @@
              (when true [:div [:div]])])))
 
 (defcase :compile-when-form :compile-when-form-uix []
-  #(render (uix/as-element
+  #(render (uix/html
             [:div {:class "a"}
              (when true [:div [:div]])])))
 
