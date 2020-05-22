@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1590131514757,
+  "lastUpdate": 1590135088270,
   "repoUrl": "https://github.com/r0man/sablono",
   "entries": {
     "Benchmark": [
@@ -1476,6 +1476,250 @@ window.BENCHMARK_DATA = {
             "range": "±0.43%",
             "unit": "ops/sec",
             "extra": "100 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "r0man",
+            "username": "r0man"
+          },
+          "committer": {
+            "name": "r0man",
+            "username": "r0man"
+          },
+          "id": "bbac5a1434442f10a788de0bc2c81612baea4b7e",
+          "message": "Use type inference",
+          "timestamp": "2020-05-22T07:08:12Z",
+          "url": "https://github.com/r0man/sablono/pull/213/commits/bbac5a1434442f10a788de0bc2c81612baea4b7e"
+        },
+        "date": 1590135087764,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "compile-tag-only-sablono",
+            "value": 372316,
+            "range": "±1.16%",
+            "unit": "ops/sec",
+            "extra": "94 samples"
+          },
+          {
+            "name": "compile-tag-only-react",
+            "value": 378550,
+            "range": "±1.09%",
+            "unit": "ops/sec",
+            "extra": "92 samples"
+          },
+          {
+            "name": "compile-tag-only-reagent",
+            "value": 298361,
+            "range": "±0.95%",
+            "unit": "ops/sec",
+            "extra": "91 samples"
+          },
+          {
+            "name": "compile-tag-only-uix",
+            "value": 1018020,
+            "range": "±1.94%",
+            "unit": "ops/sec",
+            "extra": "86 samples"
+          },
+          {
+            "name": "compile-class-attribute-sablono",
+            "value": 323678,
+            "range": "±1.12%",
+            "unit": "ops/sec",
+            "extra": "93 samples"
+          },
+          {
+            "name": "compile-class-attribute-react",
+            "value": 325402,
+            "range": "±0.98%",
+            "unit": "ops/sec",
+            "extra": "92 samples"
+          },
+          {
+            "name": "compile-class-attribute-reagent",
+            "value": 175678,
+            "range": "±12.07%",
+            "unit": "ops/sec",
+            "extra": "87 samples"
+          },
+          {
+            "name": "compile-class-attribute-uix",
+            "value": 608411,
+            "range": "±1.26%",
+            "unit": "ops/sec",
+            "extra": "90 samples"
+          },
+          {
+            "name": "compile-class-and-id-attributes-sablono",
+            "value": 244172,
+            "range": "±1.37%",
+            "unit": "ops/sec",
+            "extra": "88 samples"
+          },
+          {
+            "name": "compile-class-and-id-attributes-react",
+            "value": 239822,
+            "range": "±1.53%",
+            "unit": "ops/sec",
+            "extra": "88 samples"
+          },
+          {
+            "name": "compile-class-and-id-attributes-reagent",
+            "value": 142323,
+            "range": "±1.81%",
+            "unit": "ops/sec",
+            "extra": "90 samples"
+          },
+          {
+            "name": "compile-class-and-id-attributes-uix",
+            "value": 439597,
+            "range": "±1.24%",
+            "unit": "ops/sec",
+            "extra": "89 samples"
+          },
+          {
+            "name": "compile-nested-literals-sablono",
+            "value": 41083,
+            "range": "±1.05%",
+            "unit": "ops/sec",
+            "extra": "91 samples"
+          },
+          {
+            "name": "compile-nested-literals-react",
+            "value": 40757,
+            "range": "±1.20%",
+            "unit": "ops/sec",
+            "extra": "91 samples"
+          },
+          {
+            "name": "compile-nested-literals-reagent",
+            "value": 26678,
+            "range": "±1.65%",
+            "unit": "ops/sec",
+            "extra": "89 samples"
+          },
+          {
+            "name": "compile-nested-literals-uix",
+            "value": 59098,
+            "range": "±1.26%",
+            "unit": "ops/sec",
+            "extra": "90 samples"
+          },
+          {
+            "name": "interpret-attributes-sablono",
+            "value": 57043,
+            "range": "±12.96%",
+            "unit": "ops/sec",
+            "extra": "80 samples"
+          },
+          {
+            "name": "interpret-attributes-react",
+            "value": 243624,
+            "range": "±1.90%",
+            "unit": "ops/sec",
+            "extra": "86 samples"
+          },
+          {
+            "name": "interpret-attributes-reagent",
+            "value": 145145,
+            "range": "±1.86%",
+            "unit": "ops/sec",
+            "extra": "87 samples"
+          },
+          {
+            "name": "interpret-attributes-uix",
+            "value": 142629,
+            "range": "±5.93%",
+            "unit": "ops/sec",
+            "extra": "89 samples"
+          },
+          {
+            "name": "interpret-hinted-attributes-sablono",
+            "value": 71148,
+            "range": "±1.21%",
+            "unit": "ops/sec",
+            "extra": "93 samples"
+          },
+          {
+            "name": "interpret-hinted-attributes-react",
+            "value": 265653,
+            "range": "±1.33%",
+            "unit": "ops/sec",
+            "extra": "89 samples"
+          },
+          {
+            "name": "interpret-hinted-attributes-reagent",
+            "value": 144898,
+            "range": "±1.89%",
+            "unit": "ops/sec",
+            "extra": "84 samples"
+          },
+          {
+            "name": "interpret-hinted-attributes-uix",
+            "value": 146657,
+            "range": "±1.22%",
+            "unit": "ops/sec",
+            "extra": "89 samples"
+          },
+          {
+            "name": "compile-attributes-children-sablono",
+            "value": 157424,
+            "range": "±1.10%",
+            "unit": "ops/sec",
+            "extra": "89 samples"
+          },
+          {
+            "name": "compile-attributes-children-react",
+            "value": 154956,
+            "range": "±1.80%",
+            "unit": "ops/sec",
+            "extra": "86 samples"
+          },
+          {
+            "name": "compile-attributes-children-reagent",
+            "value": 85924,
+            "range": "±2.01%",
+            "unit": "ops/sec",
+            "extra": "86 samples"
+          },
+          {
+            "name": "compile-attributes-children-uix",
+            "value": 282803,
+            "range": "±1.05%",
+            "unit": "ops/sec",
+            "extra": "92 samples"
+          },
+          {
+            "name": "compile-when-form-sablono",
+            "value": 69254,
+            "range": "±1.59%",
+            "unit": "ops/sec",
+            "extra": "89 samples"
+          },
+          {
+            "name": "compile-when-form-react",
+            "value": 67222,
+            "range": "±1.41%",
+            "unit": "ops/sec",
+            "extra": "87 samples"
+          },
+          {
+            "name": "compile-when-form-reagent",
+            "value": 48481,
+            "range": "±1.50%",
+            "unit": "ops/sec",
+            "extra": "89 samples"
+          },
+          {
+            "name": "compile-when-form-uix",
+            "value": 102733,
+            "range": "±1.58%",
+            "unit": "ops/sec",
+            "extra": "90 samples"
           }
         ]
       }
