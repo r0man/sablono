@@ -66,6 +66,7 @@
        (into [] (comp
                  (mapcat (fn [x] (if (string? x) [x] (seq x))))
                  (remove nil?)))
+       (flatten)
        (str/join " ")))
 
 #?(:cljs
