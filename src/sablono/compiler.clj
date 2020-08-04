@@ -54,7 +54,7 @@
     :else `(sablono.util/join-classes ~value)))
 
 (defmethod compile-attr :style [_ value]
-  (let [value (camel-case-keys value)]
+  (let [value (style-attribute-camel-case-keys value)]
     (if (map? value)
       (to-js value)
       `(sablono.interpreter/attributes ~value))))
