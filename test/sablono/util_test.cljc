@@ -28,6 +28,8 @@
     {:httpEquiv "Expires"}
     {:style {:z-index 1000}}
     {:style {:zIndex 1000}}
+    {:style {:--var 1}}
+    {:style {:--var 1}}
     {:on-click '(fn [e] (let [m {:a-b "c"}]))}
     {:onClick '(fn [e] (let [m {:a-b "c"}]))}
     {'(identity :class) "my-class"
@@ -46,6 +48,8 @@
     {:httpEquiv "Expires"}
     {:style {:z-index 1000}}
     {:style {:zIndex 1000}}
+    {:style {:--var 1}}
+    {:style {:--var 1}}
     {:on-click '(fn [e] (let [m {:a-b "c"}]))}
     {:onClick '(fn [e] (let [m {:a-b "c"}]))}
     {'(identity :class) "my-class"

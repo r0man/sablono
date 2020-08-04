@@ -1,7 +1,8 @@
 (ns sablono.html
   (:refer-clojure :exclude [map meta time])
   (:require [clojure.string :as str]
-            [sablono.protocol :as p])
+            [sablono.protocol :as p]
+            [sablono.util :as util])
   #?(:cljs (:import goog.string.StringBuffer)))
 
 (def MOD 65521)
@@ -468,8 +469,9 @@
                    (pos? v))
               (str "px")))]
     (run! (fn [[k v]]
-            (let [k (name k)]
-              (append! sb (camel->kebab-case k) ":" (coerce-value k v) ";")))
+            (let [k (name k)
+                  k-ident (if (util/css-custom-property? k) k (camel->kebab-case k))]
+              (append! sb k-ident ":" (coerce-value k v) ";")))
           styles)))
 
 (defn render-styles! [sb styles]

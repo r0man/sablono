@@ -55,6 +55,8 @@
      :style {:background-color '(identity "black")}}
     #j {:className (sablono.util/join-classes (identity "my-class"))
         :style #j {:backgroundColor (identity "black")}}
+    {:style {:--var 1}}
+    #j {:style #j {:--var 1}}
     {:id :XY}
     #j {:id "XY"}))
 
@@ -74,7 +76,9 @@
     {:class '(identity "my-class")
      :style {:background-color '(identity "black")}}
     #j {:className (sablono.util/join-classes '(identity "my-class"))
-        :style #j {:backgroundColor '(identity "black")}}))
+        :style #j {:backgroundColor '(identity "black")}}
+    {:style {:--var 1}}
+    #j {:style #j {:--var 1}}))
 
 (deftest test-to-js
   (let [v (to-js [])]

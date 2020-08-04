@@ -16,6 +16,11 @@
   [& xs]
   (str/join (map to-str xs)))
 
+(defn css-custom-property? [k]
+  "Tests whether the string `k` represents a CSS custom property;
+  according to the standard, such properties starts with the prefix '--'."
+  (str/starts-with? (name k) "--"))
+
 (defn camel-case
   "Returns camel case version of the key, e.g. :http-equiv becomes :httpEquiv."
   [k]
@@ -33,16 +38,27 @@
             keyword)))
     k))
 
+(defn map-keys [k-fn m]
+  (into {}
+        (map (fn [[k v]] [(k-fn k) v]))
+        m))
+
+(defn style-attribute-camel-case-keys
+  "Transform all the map keys into camel case while not transforming CSS custom properties."
+  [style-m]
+  (if (map? style-m)
+    (map-keys #(if (css-custom-property? %) % (camel-case %)) style-m)
+    style-m))
+
 (defn camel-case-keys
-  "Recursively transforms all map keys into camel case."
+  "Recursively transforms all map keys into camel case; the `:style` key is handled as
+  a special case to support CSS custom properties."
   [m]
   (if (map? m)
-    (let [m (into {}
-                  (map (fn [[k v]] [(camel-case k) v]))
-                  m)]
+    (let [m (map-keys camel-case m)]
       (cond-> m
         (map? (:style m))
-        (update :style camel-case-keys)))
+        (update :style style-attribute-camel-case-keys)))
     m))
 
 (defn element?
